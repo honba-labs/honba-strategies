@@ -86,6 +86,26 @@
         "momentum",
         "trend"
       ]
+    },
+    {
+      "name": "supertrend_follow",
+      "category": "momentum/trend",
+      "path": "momentum/trend/supertrend_follow",
+      "description": "Long-only Supertrend trend follower; indicator and parameters come from [indicators.trend] in config.toml.",
+      "tags": [
+        "trend",
+        "volatility"
+      ]
+    },
+    {
+      "name": "vwap_reversion",
+      "category": "mean_reversion/bands",
+      "path": "mean_reversion/bands/vwap_reversion",
+      "description": "Intraday long-only reversion to the IST-session VWAP with entry cutoff and 15:15 square-off.",
+      "tags": [
+        "volume",
+        "volatility"
+      ]
     }
   ]
 }

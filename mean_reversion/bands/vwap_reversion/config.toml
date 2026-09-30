@@ -1,1 +1,13 @@
-# Strategy configuration
+name = "vwap_reversion"
+symbol = "NIFTY50"
+venue = "NSE"
+
+[params]
+capital = 1000000       # INR available to the strategy
+allocation = 0.95       # fraction of capital deployed per entry
+entry_cutoff = "14:30"  # no new entries at or after this IST time
+squareoff = "15:15"     # flatten at or after this IST time (before the broker's ~15:20 MIS auto square-off)
+
+[indicators.vwap]
+kind = "vwap"
+band_mult = 2.0         # band half-width in standard deviations
