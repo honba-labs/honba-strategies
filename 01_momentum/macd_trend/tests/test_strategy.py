@@ -49,3 +49,10 @@ def test_no_trade_before_warmup(load_strategy, make_bars):
 def test_rejects_bad_params(load_strategy, bad):
     with pytest.raises(ValueError):
         build(load_strategy, **bad)
+
+
+def test_indicator_seed_is_configurable(load_strategy):
+    s, _ = build(load_strategy, seed="first")
+    assert s._ema.seed == "first" and s._macd._fast.seed == "first"
+    with pytest.raises(ValueError):
+        build(load_strategy, seed="bogus")

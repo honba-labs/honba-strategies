@@ -7,5 +7,6 @@ ema = 100         # trend EMA period (bars)
 fastperiod = 12   # MACD fast EMA
 slowperiod = 26   # MACD slow EMA
 signal = 9        # MACD signal EMA
+seed = "sma"      # EMA seeding: "sma" (TA-Lib) or "first" (Jesse)
 capital = 1000000  # INR available to the strategy
 allocation = 0.95  # fraction of capital deployed per entry

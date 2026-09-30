@@ -30,8 +30,8 @@ class KdjCross(Strategy):
             raise ValueError("fastk, slowk, slowd and atr_period must be positive")
         if not self.atr_mult > 0:
             raise ValueError("atr_mult must be positive")
-        self._kdj = Kdj(self.fastk, self.slowk, self.slowd)
-        self._atr = Atr(self.atr_period)
+        self._kdj = Kdj(self.fastk, self.slowk, self.slowd, str(p.get("slowk_ma", "sma")), str(p.get("slowd_ma", "sma")))
+        self._atr = Atr(self.atr_period, bool(p.get("atr_first_bar", False)))
         self._prev_j: float | None = None
         self._entry = self._stop = None
 

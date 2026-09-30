@@ -66,3 +66,11 @@ def test_kdj_values_on_known_series(load_strategy):
 def test_rejects_bad_params(load_strategy, bad):
     with pytest.raises(ValueError):
         build(load_strategy, **bad)
+
+
+def test_kdj_smoothing_and_atr_are_configurable(load_strategy):
+    s, _ = build(load_strategy, atr_first_bar=True, slowk_ma="ema", slowd_ma="wma")
+    assert s._atr.include_first_bar is True
+    assert type(s._kdj._k).__name__ == "Ema" and type(s._kdj._d).__name__ == "Wma"
+    with pytest.raises(ValueError):
+        build(load_strategy, slowk_ma="nope")

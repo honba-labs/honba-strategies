@@ -28,7 +28,9 @@ class MacdTrend(Strategy):
             raise ValueError("ema and signal must be positive")
         if not 0 < self.fast < self.slow:
             raise ValueError("fastperiod must be positive and less than slowperiod")
-        self._ema, self._macd = Ema(self.ema_period), Macd(self.fast, self.slow, self.signal)
+        seed = str(p.get("seed", "sma"))  # "first" reproduces Jesse's EMA seeding
+        self._ema = Ema(self.ema_period, seed)
+        self._macd = Macd(self.fast, self.slow, self.signal, seed)
 
     def on_bar(self, bar: Bar) -> None:
         ema, m = self._ema.update(bar.close), self._macd.update(bar.close)

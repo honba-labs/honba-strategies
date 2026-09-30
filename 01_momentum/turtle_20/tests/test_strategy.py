@@ -56,3 +56,9 @@ def test_no_trade_before_warmup(load_strategy, make_bars):
 def test_rejects_bad_params(load_strategy, bad):
     with pytest.raises(ValueError):
         build(load_strategy, **bad)
+
+
+def test_atr_first_bar_is_configurable(load_strategy):
+    s, _ = build(load_strategy, atr_first_bar=True)
+    assert s._atr.include_first_bar is True
+    assert build(load_strategy)[0]._atr.include_first_bar is False

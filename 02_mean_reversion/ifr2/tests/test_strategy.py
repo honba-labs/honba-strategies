@@ -25,7 +25,8 @@ def ohlc(rows, symbol="NIFTY50"):
     return [Bar(iid, i + 1, c, h, l, c, 1000.0) for i, (h, l, c) in enumerate(rows)]
 
 
-SMALL = dict(oversold=10, tenkan=2, kijun=3, senkou_b=4, displacement=10, capital=1000.0, allocation=1.0)
+SMALL = dict(oversold=10, tenkan=2, kijun=3, senkou_b=4, displacement=11,  # cloud lags displacement-1 = 10 bars
+              capital=1000.0, allocation=1.0)
 RAMP_THEN_DIP = [100 + i for i in range(40)] + [135, 131]
 
 

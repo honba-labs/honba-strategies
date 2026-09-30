@@ -31,7 +31,7 @@ class Turtle20(Strategy):
         if not self.atr_mult > 0:
             raise ValueError("atr_mult must be positive")
         self._entry_ch, self._exit_ch = Donchian(self.entry), Donchian(self.exit)
-        self._atr = Atr(self.atr_period)
+        self._atr = Atr(self.atr_period, bool(p.get("atr_first_bar", False)))
         self._prev_entry = self._prev_exit = None
         self._stop: float | None = None
 
