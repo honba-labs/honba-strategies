@@ -5,6 +5,8 @@ previous ``exit``-bar low, or when the bar low touches a protective stop of
 ``atr_mult`` x ATR below the entry. Costs are applied by the Honba engine.
 """
 from honba.entities.bar import Bar
+from honba.entities.order import OrderSide
+from honba.entities.trade import Trade
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig
 from honba.strategies.indicators import Atr, Donchian
@@ -38,12 +40,19 @@ class Turtle20(Strategy):
         px, self._prev_exit = self._prev_exit, self._exit_ch.update(bar.high, bar.low)
         atr = self._atr.update(bar.high, bar.low, bar.close)
         held = self.position(self.instrument_id)
+        if self.busy(self.instrument_id):
+            return  # an order is still unfilled
         if held > 0:
             if (self._stop is not None and bar.low <= self._stop) or (px is not None and bar.close < px.lower):
-                self._stop = None
                 self.sell(self.instrument_id, held)
         elif pe is not None and atr is not None and bar.close > pe.upper:
             qty = whole_shares(self.capital, self.allocation, bar.close)
             if qty > 0:
-                self._stop = bar.close - self.atr_mult * atr
                 self.buy(self.instrument_id, qty)
+
+    def on_fill(self, fill: Trade) -> None:
+        if fill.side is OrderSide.BUY:
+            atr = self._atr.value
+            self._stop = fill.price - self.atr_mult * atr if atr is not None else None
+        else:
+            self._stop = None

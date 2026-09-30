@@ -34,6 +34,8 @@ class DonchianTrend(Strategy):
         if prev is None or sma is None:
             return
         held = self.position(self.instrument_id)
+        if self.busy(self.instrument_id):
+            return  # an order is still unfilled
         if held == 0 and bar.close > sma and bar.close > prev.upper:
             qty = whole_shares(self.capital, self.allocation, bar.close)
             if qty > 0:

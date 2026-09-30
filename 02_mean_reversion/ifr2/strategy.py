@@ -42,6 +42,8 @@ class Ifr2(Strategy):
         prior_highs = list(self._highs)
         self._highs.append(bar.high)
         held = self.position(self.instrument_id)
+        if self.busy(self.instrument_id):
+            return  # an order is still unfilled
         if held == 0:
             if rsi is not None and cloud is not None and bar.close > max(cloud) and rsi < self.oversold:
                 qty = whole_shares(self.capital, self.allocation, bar.close)

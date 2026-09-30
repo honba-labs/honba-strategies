@@ -5,6 +5,8 @@ Buy when RSI is below ``entry`` while the close is above the trend SMA
 or after ``max_hold`` bars. Costs are applied by the Honba engine, not here.
 """
 from honba.entities.bar import Bar
+from honba.entities.order import OrderSide
+from honba.entities.trade import Trade
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig
 from honba.strategies.indicators import Rsi, Sma
@@ -40,10 +42,15 @@ class RsiOversold(Strategy):
         if rsi is None or (self._sma and sma is None):
             return
         held = self.position(self.instrument_id)
+        if self.busy(self.instrument_id):
+            return  # an order is still unfilled
         if held == 0 and rsi < self.entry and (sma is None or bar.close > sma):
             qty = whole_shares(self.capital, self.allocation, bar.close)
             if qty > 0:
-                self._entry_bar = self._bars
                 self.buy(self.instrument_id, qty)
         elif held > 0 and (rsi > self.exit or self._bars - self._entry_bar >= self.max_hold):
             self.sell(self.instrument_id, held)
+
+    def on_fill(self, fill: Trade) -> None:
+        if fill.side is OrderSide.BUY:
+            self._entry_bar = self._bars

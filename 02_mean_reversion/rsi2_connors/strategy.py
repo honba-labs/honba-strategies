@@ -33,6 +33,8 @@ class Rsi2Connors(Strategy):
     def on_bar(self, bar: Bar) -> None:
         rsi, trend, exit_ma = self._rsi.update(bar.close), self._trend.update(bar.close), self._exit.update(bar.close)
         held = self.position(self.instrument_id)
+        if self.busy(self.instrument_id):
+            return  # an order is still unfilled
         if held == 0:
             if rsi is not None and trend is not None and bar.close > trend and rsi <= self.oversold:
                 qty = whole_shares(self.capital, self.allocation, bar.close)

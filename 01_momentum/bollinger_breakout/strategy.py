@@ -41,6 +41,8 @@ class BollingerBreakout(Strategy):
         if bb is None or cloud is None:
             return
         held = self.position(self.instrument_id)
+        if self.busy(self.instrument_id):
+            return  # an order is still unfilled
         if held == 0 and bar.close > max(cloud) and bar.close > bb.upper:
             qty = whole_shares(self.capital, self.allocation, bar.close)
             if qty > 0:
