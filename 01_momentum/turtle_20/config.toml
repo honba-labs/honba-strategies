@@ -1,0 +1,11 @@
+name = "turtle_20"
+symbol = "NIFTY50"
+venue = "NSE"
+
+[params]
+entry = 20       # entry breakout lookback (bars)
+exit = 10        # exit channel lookback (bars)
+atr_period = 20  # ATR period for the protective stop
+atr_mult = 2.0   # stop distance in ATRs below entry
+capital = 1000000  # INR available to the strategy
+allocation = 0.95  # fraction of capital deployed per entry

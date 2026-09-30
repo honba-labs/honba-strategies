@@ -1,0 +1,9 @@
+name = "donchian_trend"
+symbol = "NIFTY50"
+venue = "NSE"
+
+[params]
+period = 20      # channel lookback (bars, excludes current bar)
+trend_sma = 200  # trend filter SMA period
+capital = 1000000  # INR available to the strategy
+allocation = 0.95  # fraction of capital deployed per entry

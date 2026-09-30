@@ -1,0 +1,12 @@
+name = "ifr2"
+symbol = "NIFTY50"
+venue = "NSE"
+
+[params]
+oversold = 10      # buy when RSI(2) is below this
+tenkan = 9         # Ichimoku conversion line period
+kijun = 26         # Ichimoku base line period
+senkou_b = 52      # Ichimoku span B period
+displacement = 26  # cloud displacement (bars)
+capital = 1000000  # INR available to the strategy
+allocation = 0.95  # fraction of capital deployed per entry

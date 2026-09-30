@@ -1,0 +1,12 @@
+name = "kdj_cross"
+symbol = "NIFTY50"
+venue = "NSE"
+
+[params]
+fastk = 9        # stochastic lookback (bars)
+slowk = 3        # K smoothing
+slowd = 3        # D smoothing
+atr_period = 14  # ATR period for the protective stop
+atr_mult = 2.0   # stop distance in ATRs below entry
+capital = 1000000  # INR available to the strategy
+allocation = 0.95  # fraction of capital deployed per entry

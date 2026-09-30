@@ -1,0 +1,56 @@
+from pathlib import Path
+
+import pytest
+
+from honba.entities.bar import Bar
+from honba.entities.instrument import InstrumentId
+from honba.entities.order import OrderSide
+from honba.strategies.config import StrategyConfig
+from honba.strategies.testing import replay
+
+HERE = Path(__file__).resolve().parent.parent
+CLS = "Rsi2Connors"
+
+
+def build(load_strategy, **params):
+    mod = load_strategy(HERE)
+    cfg = StrategyConfig.from_toml(HERE / "config.toml")
+    cfg.params.update(params)
+    return getattr(mod, CLS)(cfg), cfg
+
+
+def ohlc(rows, symbol="NIFTY50"):
+    """Bars from (high, low, close) rows; open = close."""
+    iid = InstrumentId(symbol, "NSE")
+    return [Bar(iid, i + 1, c, h, l, c, 1000.0) for i, (h, l, c) in enumerate(rows)]
+
+
+SMALL = dict(oversold=10, trend_sma=40, exit_sma=2, capital=1000.0, allocation=1.0)
+RAMP_THEN_DIP = [100 + i for i in range(40)] + [135, 131]
+
+
+def test_buys_oversold_dip_above_trend_and_exits_over_exit_sma(load_strategy, make_bars):
+    s, cfg = build(load_strategy, **SMALL)
+    result = replay(s, make_bars(RAMP_THEN_DIP + [140], cfg.symbol))
+    assert [f.side for f in result.fills] == [OrderSide.BUY, OrderSide.SELL]
+    assert (result.fills[0].ts, result.fills[0].price, result.fills[0].quantity) == (42, 131, 7)
+    assert result.fills[1].ts == 43
+
+
+def test_no_entry_below_trend_sma(load_strategy, make_bars):
+    s, cfg = build(load_strategy, **{**SMALL, "trend_sma": 5})
+    result = replay(s, make_bars(RAMP_THEN_DIP, cfg.symbol))
+    assert result.fills == []
+
+
+def test_no_trade_before_warmup(load_strategy, make_bars):
+    s, cfg = build(load_strategy)
+    result = replay(s, make_bars([100 - i for i in range(30)], cfg.symbol))
+    assert result.fills == []
+
+
+@pytest.mark.parametrize("bad", [dict(oversold=0), dict(oversold=100), dict(trend_sma=0),
+                                 dict(exit_sma=0), dict(capital=0)])
+def test_rejects_bad_params(load_strategy, bad):
+    with pytest.raises(ValueError):
+        build(load_strategy, **bad)

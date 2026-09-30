@@ -1,0 +1,10 @@
+name = "rsi2_connors"
+symbol = "NIFTY50"
+venue = "NSE"
+
+[params]
+oversold = 10    # buy when RSI(2) is at or below this
+trend_sma = 200  # only buy above this SMA
+exit_sma = 5     # sell when close is above this SMA
+capital = 1000000  # INR available to the strategy
+allocation = 0.95  # fraction of capital deployed per entry

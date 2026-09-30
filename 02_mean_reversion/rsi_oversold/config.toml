@@ -1,1 +1,12 @@
-# Strategy configuration
+name = "rsi_oversold"
+symbol = "NIFTY50"
+venue = "NSE"
+
+[params]
+rsi_period = 4   # RSI period
+entry = 25       # buy when RSI is below this
+exit = 60        # sell when RSI is above this
+trend_sma = 50    # only buy above this SMA (0 disables)
+max_hold = 10     # exit after this many bars in the trade
+capital = 1000000  # INR available to the strategy
+allocation = 0.95  # fraction of capital deployed per entry
