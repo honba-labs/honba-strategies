@@ -1,0 +1,1 @@
+"""Strategy: macd_trend"""

@@ -1,0 +1,1 @@
+"""Strategy: sma_crossover"""

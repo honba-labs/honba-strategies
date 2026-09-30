@@ -1,0 +1,1 @@
+"""Strategy: supertrend_follow"""

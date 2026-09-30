@@ -1,0 +1,1 @@
+"""Strategy: sector_rotation"""

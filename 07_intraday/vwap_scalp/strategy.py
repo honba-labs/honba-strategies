@@ -1,0 +1,1 @@
+"""Strategy: vwap_scalp"""
