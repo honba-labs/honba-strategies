@@ -2,57 +2,91 @@
   "strategies": [
     {
       "name": "sma_crossover",
-      "category": "01_momentum",
-      "path": "01_momentum/sma_crossover",
-      "description": "Long-only SMA crossover: buy when the fast SMA is above the slow SMA, exit when it falls below."
+      "category": "momentum/trend",
+      "path": "momentum/trend/sma_crossover",
+      "description": "Long-only SMA crossover: buy when the fast SMA is above the slow SMA, exit when it falls below.",
+      "tags": [
+        "trend"
+      ]
     },
     {
       "name": "macd_trend",
-      "category": "01_momentum",
-      "path": "01_momentum/macd_trend",
-      "description": "MACD/EMA trend follower: buy MACD above signal and close above trend EMA; exit when both flip."
+      "category": "momentum/trend",
+      "path": "momentum/trend/macd_trend",
+      "description": "MACD/EMA trend follower: buy MACD above signal and close above trend EMA; exit when both flip.",
+      "tags": [
+        "trend",
+        "momentum"
+      ]
     },
     {
       "name": "donchian_trend",
-      "category": "01_momentum",
-      "path": "01_momentum/donchian_trend",
-      "description": "Donchian channel breakout above a trend SMA; exit on a close below the channel low."
+      "category": "momentum/trend",
+      "path": "momentum/trend/donchian_trend",
+      "description": "Donchian channel breakout above a trend SMA; exit on a close below the channel low.",
+      "tags": [
+        "trend",
+        "volatility"
+      ]
     },
     {
       "name": "turtle_20",
-      "category": "01_momentum",
-      "path": "01_momentum/turtle_20",
-      "description": "Simplified Turtle System 1: N-bar high breakout, shorter low exit, ATR protective stop."
+      "category": "momentum/trend",
+      "path": "momentum/trend/turtle_20",
+      "description": "Simplified Turtle System 1: N-bar high breakout, shorter low exit, ATR protective stop.",
+      "tags": [
+        "trend",
+        "volatility"
+      ]
     },
     {
       "name": "bollinger_breakout",
-      "category": "01_momentum",
-      "path": "01_momentum/bollinger_breakout",
-      "description": "Upper Bollinger band breakout above the Ichimoku cloud; exit below the middle band."
+      "category": "momentum/breakout",
+      "path": "momentum/breakout/bollinger_breakout",
+      "description": "Upper Bollinger band breakout above the Ichimoku cloud; exit below the middle band.",
+      "tags": [
+        "volatility",
+        "trend"
+      ]
     },
     {
       "name": "kdj_cross",
-      "category": "01_momentum",
-      "path": "01_momentum/kdj_cross",
-      "description": "KDJ momentum: buy when J is above K and D; exit on J turning down, J below K or D, or an ATR stop."
+      "category": "momentum/oscillator",
+      "path": "momentum/oscillator/kdj_cross",
+      "description": "KDJ momentum: buy when J is above K and D; exit on J turning down, J below K or D, or an ATR stop.",
+      "tags": [
+        "momentum"
+      ]
     },
     {
       "name": "rsi_oversold",
-      "category": "02_mean_reversion",
-      "path": "02_mean_reversion/rsi_oversold",
-      "description": "RSI oversold dip buying above a trend SMA; exit on RSI recovery or max holding period."
+      "category": "mean_reversion/oscillator",
+      "path": "mean_reversion/oscillator/rsi_oversold",
+      "description": "RSI oversold dip buying above a trend SMA; exit on RSI recovery or max holding period.",
+      "tags": [
+        "momentum",
+        "trend"
+      ]
     },
     {
       "name": "rsi2_connors",
-      "category": "02_mean_reversion",
-      "path": "02_mean_reversion/rsi2_connors",
-      "description": "RSI(2) oversold dip buying above a long SMA; exit above a short SMA."
+      "category": "mean_reversion/oscillator",
+      "path": "mean_reversion/oscillator/rsi2_connors",
+      "description": "RSI(2) oversold dip buying above a long SMA; exit above a short SMA.",
+      "tags": [
+        "momentum",
+        "trend"
+      ]
     },
     {
       "name": "ifr2",
-      "category": "02_mean_reversion",
-      "path": "02_mean_reversion/ifr2",
-      "description": "RSI(2) dip buying above the Ichimoku cloud; exit above the prior two highs."
+      "category": "mean_reversion/oscillator",
+      "path": "mean_reversion/oscillator/ifr2",
+      "description": "RSI(2) dip buying above the Ichimoku cloud; exit above the prior two highs.",
+      "tags": [
+        "momentum",
+        "trend"
+      ]
     }
   ]
 }
