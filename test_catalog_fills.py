@@ -14,7 +14,11 @@ from honba.strategies.config import StrategyConfig
 from honba.strategies.testing import replay
 
 ROOT = Path(__file__).resolve().parent
-DIRS = [ROOT / e["path"] for e in json.loads((ROOT / "registry.json").read_text())["strategies"]]
+DIRS = [
+    ROOT / e["path"]
+    for e in json.loads((ROOT / "registry.json").read_text())["strategies"]
+    if not e["category"].startswith("alpha_universe")
+]
 
 
 def wave_bars(symbol):

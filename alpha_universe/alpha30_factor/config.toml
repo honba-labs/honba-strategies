@@ -1,1 +1,10 @@
-# Strategy configuration
+name = "alpha30_factor"
+symbol = "NIFTY200_ALPHA_30"
+venue = "NSE"
+
+[params]
+capital = 1000000.0        # Initial starting fund (INR)
+rebalance_days = 15        # Rebalance portfolio every 15th open trading day
+universe_name = "nifty200_alpha_30"
+equal_weight = true        # Equal weighting across constituents
+max_equities = 30          # Maximum constituents in the portfolio
