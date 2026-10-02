@@ -1,0 +1,9 @@
+name = "alpha30_equal_weight"
+
+[params]
+capital         = 1_000_000   # INR available to the strategy
+allocation      = 0.98        # fraction of capital deployed (cash buffer)
+rebalance_days  = 15          # trading days between rebalances
+venue           = "NSE"
+universe        = "NIFTY200_ALPHA_30"
+# Membership comes from the engine or an injected provider, never a static list.
