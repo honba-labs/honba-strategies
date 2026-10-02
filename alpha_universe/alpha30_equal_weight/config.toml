@@ -4,5 +4,5 @@ venue  = "NSE"
 
 [params]
 capital         = 1000000   # INR
-allocation      = 0.98      # leave 2 % cash buffer
+allocation      = 0.995     # leave 1-2 % cash buffer, no buy is rejected for lack of cash
 rebalance_days  = 15        # trading days

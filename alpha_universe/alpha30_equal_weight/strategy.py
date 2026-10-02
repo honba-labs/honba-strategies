@@ -92,15 +92,32 @@ class Alpha30EqualWeight(Strategy):
             self._rebalance()
             self._days_since = 0
 
-    # ------------------------------------------------------------------
+    def _portfolio_value(self) -> float:
+        """Cash + mark-to-market of every open position."""
+        value = float(self.ctx.cash())
+        for iid, qty in self.ctx.positions().items():
+            if qty == 0:
+                continue
+            px = self._last_prices.get(iid)
+            if px is not None and px > 0:
+                value += qty * px
+        return value
+
+
     def _rebalance(self) -> None:
         previous = set(self._universe)
         self._universe = _resolve(self.venue)
         if not self._universe:
             return
 
+        # ----- FIX: size off live equity, not the original capital -----
+        port_val = self._portfolio_value()
+        if port_val <= 0:
+            return
+
         n = len(self._universe)
-        target_notional = (self.capital * self.allocation) / n
+        target_notional = (port_val * self.allocation) / n
+        # ---------------------------------------------------------------
 
         # 1. Exit leavers
         held = {iid for iid, qty in self.ctx.positions().items() if qty > 0}
