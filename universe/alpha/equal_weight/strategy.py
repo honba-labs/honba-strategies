@@ -71,6 +71,9 @@ class Alpha30EqualWeight(Strategy):
     # ------------------------------------------------------------------
     def on_start(self) -> None:
         self._universe = _resolve(self.venue)
+        if self._universe:
+            self.log_event("EVENT_MEMBERSHIP_ADD", symbols=[i.symbol for i in sorted(self._universe, key=lambda x: x.symbol)])
+
 
     def on_bar(self, bar: Bar) -> None:
         self._last_prices[bar.instrument_id] = float(bar.close)
