@@ -19,8 +19,8 @@ from __future__ import annotations
 from datetime import date, datetime, timezone
 from typing import Any
 
-from honba.entities.bar import Bar
-from honba.entities.instrument import InstrumentId
+from honba.domain.bar import Bar
+from honba.domain.instrument import InstrumentId
 from honba.markets.india.universes import resolve_universe, UNIVERSES
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig
@@ -110,6 +110,14 @@ class Alpha30EqualWeight(Strategy):
         if not self._universe:
             return
 
+        # Log membership changes
+        joined = self._universe - previous
+        left = previous - self._universe
+        if joined:
+            self.log_event("EVENT_MEMBERSHIP_ADD", symbols=[i.symbol for i in sorted(joined, key=lambda x: x.symbol)])
+        if left:
+            self.log_event("EVENT_MEMBERSHIP_DEL", symbols=[i.symbol for i in sorted(left, key=lambda x: x.symbol)])
+
         # ----- FIX: size off live equity, not the original capital -----
         port_val = self._portfolio_value()
         if port_val <= 0:
@@ -124,7 +132,7 @@ class Alpha30EqualWeight(Strategy):
         for iid in held - self._universe:
             qty = self.position(iid)
             if qty > 0 and not self.busy(iid):
-                self.sell(iid, qty)
+                self.sell(iid, qty, reason="exit")
 
         # 2 + 3. Enter joiners & equalise survivors
         for iid in self._universe:
@@ -140,7 +148,7 @@ class Alpha30EqualWeight(Strategy):
             if diff > 0:
                 self.buy(iid, diff)
             else:
-                self.sell(iid, -diff)
+                self.sell(iid, -diff, reason="rebalance")
 
 
 def _bar_day(bar: Bar, now_ns: int) -> date:
