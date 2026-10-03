@@ -18,10 +18,12 @@ def load_strategy():
     def _load(strategy_dir):
         import sys
         d = Path(strategy_dir).resolve()
-        for p in (d, d.parent, d.parent.parent):
+        strategies_root = Path(__file__).resolve().parent
+        for p in (d, d.parent, d.parent.parent, strategies_root):
             if str(p) not in sys.path:
                 sys.path.insert(0, str(p))
         spec = importlib.util.spec_from_file_location(f"catalog_{d.name}", d / "strategy.py")
+        assert spec is not None and spec.loader is not None
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         return mod

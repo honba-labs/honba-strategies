@@ -28,7 +28,8 @@ from honba.strategies.sizing import whole_shares
 try:
     from ..base import AlphaBase
 except (ImportError, ValueError):
-    from base import AlphaBase
+    from universe.alpha.base import AlphaBase
+
 
 
 class Alpha30MeanReversion(AlphaBase):
