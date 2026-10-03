@@ -110,7 +110,7 @@
     {
       "name": "alpha30_factor",
       "category": "alpha_universe",
-      "path": "alpha_universe/alpha30_factor",
+      "path": "universe/alpha/factor",
       "description": "Equal-weight 30 equities portfolio from NSE NIFTY200 ALPHA 30 rebalancing every 15 open trading days.",
       "tags": [
         "statistical"

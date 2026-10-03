@@ -14,11 +14,11 @@ This category groups portfolio-level strategies that:
 
 | Strategy | Path | Idea |
 |----------|------|------|
-| **alpha30_momentum** | `alpha_universe/alpha30_momentum` | Cross-sectional momentum tilt inside the Alpha-30 |
-| **alpha30_low_vol** | `alpha_universe/alpha30_low_vol` | Prefer lower-volatility names within the universe |
-| **alpha30_quality** | `alpha_universe/alpha30_quality` | Quality-factor ranking of Alpha-30 constituents |
-| **alpha30_mean_reversion** | `alpha_universe/alpha30_mean_reversion` | Short-horizon mean-reversion signals on the same set |
-| **alpha30_factor** | `alpha_universe/alpha30_factor` | Multi-factor combination (momentum + quality + low-vol) |
+| **alpha30_momentum** | `universe/alpha/momentum` | Cross-sectional momentum tilt inside the Alpha-30 |
+| **alpha30_low_vol** | `universe/alpha/low_vol` | Prefer lower-volatility names within the universe |
+| **alpha30_quality** | `universe/alpha/quality` | Quality-factor ranking of Alpha-30 constituents |
+| **alpha30_mean_reversion** | `universe/alpha/mean_reversion` | Short-horizon mean-reversion signals on the same set |
+| **alpha30_factor** | `universe/alpha/factor` | Multi-factor combination (momentum + quality + low-vol) |
 
 Each strategy directory contains the standard catalog files:
 
