@@ -16,7 +16,11 @@ def load_strategy():
     """Load ``<strategy dir>/strategy.py`` under a unique module name."""
 
     def _load(strategy_dir):
-        d = Path(strategy_dir)
+        import sys
+        d = Path(strategy_dir).resolve()
+        for p in (d, d.parent, d.parent.parent):
+            if str(p) not in sys.path:
+                sys.path.insert(0, str(p))
         spec = importlib.util.spec_from_file_location(f"catalog_{d.name}", d / "strategy.py")
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)

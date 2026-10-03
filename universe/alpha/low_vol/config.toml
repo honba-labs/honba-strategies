@@ -1,1 +1,10 @@
-# Strategy configuration
+name   = "alpha30_low_vol"
+symbol = "MULTI"
+venue  = "NSE"
+
+[params]
+capital        = 1000000  # INR
+allocation     = 0.98
+rebalance_days = 15       # trading days
+vol_window     = 20       # rolling std-dev lookback (trading days)
+top_n          = 15       # number of lowest-vol names to hold

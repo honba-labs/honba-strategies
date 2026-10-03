@@ -76,16 +76,21 @@ class Alpha30EqualWeight(Strategy):
         self._last_prices[bar.instrument_id] = float(bar.close)
 
         day = _bar_day(bar, self.ctx.now())
+        day_changed = False
         if self._last_day is None:
             self._last_day = day
         elif day > self._last_day:
             self._days_since += 1
             self._last_day = day
+            day_changed = True
 
         if not self._initial_done:
-            self._rebalance()
-            self._initial_done = True
-            self._days_since = 0
+            # Rebalance on the initial day once prices are known for all members,
+            # or on day rollover as a fallback.
+            if len(self._last_prices) >= len(self._universe) or day_changed:
+                self._rebalance()
+                self._initial_done = True
+                self._days_since = 0
             return
 
         if self._days_since >= self.rebalance_days:
@@ -157,7 +162,7 @@ def _bar_day(bar: Bar, now_ns: int) -> date:
         return ts.date()
     if isinstance(ts, (int, float)):
         v = float(ts)
-        if v > 1e14:
+        if v > 1e13:
             v /= 1e9
         elif v > 1e11:
             v /= 1e3

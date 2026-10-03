@@ -6,8 +6,8 @@ from __future__ import annotations
 from datetime import date, datetime, timezone
 from typing import Any, ClassVar, Set
 
-from honba.entities.bar import Bar
-from honba.entities.instrument import InstrumentId
+from honba.domain.bar import Bar
+from honba.domain.instrument import InstrumentId
 from honba.markets.india.universes import resolve_universe, UNIVERSES
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig
@@ -25,16 +25,22 @@ class AlphaBase(Strategy):
     DEFAULT_ALLOCATION: ClassVar[float] = 0.98
     DEFAULT_REBALANCE_DAYS: ClassVar[int] = 15
 
+    _SEED: ClassVar[tuple[str, ...]] = (
+        "ADANIPOWER", "SHRIRAMFIN", "HINDALCO", "ADANIGREEN", "EICHERMOT",
+        "ADANIENSOL", "IDEA", "BHEL", "CUMMINSIND", "POWERINDIA",
+        "POLYCAB", "MUTHOOTFIN", "PAYTM", "INDIANB", "LAURUSLABS",
+        "VEDL", "BHARATFORG", "NYKAA", "ASHOKLEY", "MCX",
+        "FEDERALBNK", "AUBANK", "LTF", "SAIL", "GLENMARK",
+        "FORTIS", "NATIONALUM", "BSE", "ABCAPITAL", "DIXON",
+    )
+
     # ------------------------------------------------------------------ #
     # Seed injection – guarantees CI never fails on resolve_universe
     # ------------------------------------------------------------------ #
     @classmethod
     def _ensure_registered(cls) -> None:
         if cls.UNIVERSE_KEY not in UNIVERSES:
-            # Pull the seed list from the original equal‑weight module (it is the
-            # canonical seed for the α‑30 index).
-            from ..alpha_universe.alpha30_equal_weight import _SEED  # noqa: F401
-            UNIVERSES[cls.UNIVERSE_KEY] = _SEED
+            UNIVERSES[cls.UNIVERSE_KEY] = cls._SEED
 
     @classmethod
     def _resolve(cls, venue: str = "NSE") -> Set[InstrumentId]:
@@ -57,32 +63,44 @@ class AlphaBase(Strategy):
         self.venue: str = config.venue or "NSE"
 
         # State managed by the generic logic
-        self._universe: Set[InstrumentId] = set()
+        self._universe: Set[InstrumentId] = self._resolve(self.venue)
         self._last_prices: dict[InstrumentId, float] = {}
         self._last_day: date | None = None
         self._days_since: int = 0
         self._initial_done: bool = False
 
+    @property
+    def universe(self) -> Set[InstrumentId]:
+        return self._universe
+
+    @universe.setter
+    def universe(self, val: Any) -> None:
+        self._universe = set(val) if not isinstance(val, set) else val
+
     # ------------------------------------------------------------------ #
     # Lifecycle hooks (shared across all alphas)
     # ------------------------------------------------------------------ #
     def on_start(self) -> None:
-        self._universe = self._resolve(self.venue)
+        if not self._universe:
+            self._universe = self._resolve(self.venue)
 
     def on_bar(self, bar: Bar) -> None:
         self._last_prices[bar.instrument_id] = float(bar.close)
 
         day = self._bar_day(bar, self.ctx.now())
+        day_changed = False
         if self._last_day is None:
             self._last_day = day
         elif day > self._last_day:
             self._days_since += 1
             self._last_day = day
+            day_changed = True
 
         if not self._initial_done:
-            self._rebalance()
-            self._initial_done = True
-            self._days_since = 0
+            if len(self._last_prices) >= len(self._universe) or day_changed:
+                self._rebalance()
+                self._initial_done = True
+                self._days_since = 0
             return
 
         if self._days_since >= self.rebalance_days:
@@ -94,13 +112,15 @@ class AlphaBase(Strategy):
     # ------------------------------------------------------------------ #
     def _portfolio_value(self) -> float:
         """Cash + mark‑to‑market of every open position."""
-        value = float(self.ctx.cash())
+        value = float(self.ctx.cash()) if self.ctx else 0.0
         for iid, qty in self.ctx.positions().items():
             if qty == 0:
                 continue
             price = self._last_prices.get(iid)
             if price is not None and price > 0:
                 value += qty * price
+        if value <= 0:
+            value = self.capital
         return value
 
     # ------------------------------------------------------------------ #
@@ -113,7 +133,7 @@ class AlphaBase(Strategy):
             return ts.date()
         if isinstance(ts, (int, float)):
             v = float(ts)
-            if v > 1e14:
+            if v > 1e13:
                 v /= 1e9
             elif v > 1e11:
                 v /= 1e3

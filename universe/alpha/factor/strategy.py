@@ -1,97 +1,64 @@
 """Strategy: alpha30_factor
 
-An equal-weighted portfolio strategy configuring 30 equities from the
-NSE NIFTY 200 ALPHA 30 index. Rebalances every 15th open trading day, allocating
-equal capital weight to each constituent.
+Refactored to inherit the shared lifecycle (on_start / on_bar / helpers)
+from AlphaBase.  The rebalance logic is an equal-weight allocation identical
+to alpha30_equal_weight – this strategy is kept as a separate entry-point so
+it can carry its own config / backtest artefacts.
 """
 from __future__ import annotations
 
 import math
 from typing import ClassVar
 
-from honba.entities.bar import Bar
-from honba.entities.instrument import InstrumentId
-from honba.markets.india.universes import resolve_universe
-from honba.strategies.base import Strategy
-from honba.strategies.config import StrategyConfig
+from honba.strategies.sizing import whole_shares
+
+try:
+    from ..base import AlphaBase
+except (ImportError, ValueError):
+    from base import AlphaBase
 
 
-class Alpha30Factor(Strategy):
+class Alpha30Factor(AlphaBase):
+    """Equal-weight α-30 strategy (legacy entry-point).
+
+    All shared mechanics (universe resolution, day-counting, portfolio
+    valuation) live in :class:`AlphaBase`; this class only implements
+    ``_rebalance``.
+    """
+
     name: ClassVar[str] = "alpha30_factor"
 
-    def __init__(self, config: StrategyConfig) -> None:
-        p = config.params
-        self.capital = float(p.get("capital", 1_000_000.0))
-        self.rebalance_days = int(p.get("rebalance_days", 15))
-        self.universe_name = str(p.get("universe_name", "nifty200_alpha_30"))
-        self.max_equities = int(p.get("max_equities", 30))
-
-        try:
-            self.universe = resolve_universe(self.universe_name, venue=config.venue)[: self.max_equities]
-        except Exception:
-            self.universe = [InstrumentId(config.symbol, config.venue)]
-
-        self._target_set = {inst.symbol: inst for inst in self.universe}
-        self._latest_prices: dict[InstrumentId, float] = {}
-        self._current_session_ts: int | None = None
-        self._open_day_count: int = 0
-        self._bars_this_day: dict[InstrumentId, Bar] = {}
-
-    def on_bar(self, bar: Bar) -> None:
-        inst = bar.instrument_id
-        self._latest_prices[inst] = bar.close
-
-        # Group bars into calendar trading sessions (by day timestamp / IST day)
-        bar_day = bar.ts // 86_400_000_000_000
-        if self._current_session_ts is None:
-            self._current_session_ts = bar_day
-            self._open_day_count = 1
-            self._bars_this_day = {inst: bar}
-        elif bar_day != self._current_session_ts:
-            self._current_session_ts = bar_day
-            self._open_day_count += 1
-            self._bars_this_day = {inst: bar}
-        else:
-            self._bars_this_day[inst] = bar
-
-        # Check if rebalance is due today (e.g. day 1, day 16, day 31, etc.)
-        if (self._open_day_count - 1) % self.rebalance_days == 0:
-            # Execute once all available universe bars for today have arrived or last constituent
-            if len(self._bars_this_day) >= len(self.universe) or inst == self.universe[-1]:
-                self._execute_rebalance()
-
-
-
-    def _execute_rebalance(self) -> None:
-        """Rebalance portfolio to equal weights across all constituents."""
-        active_universe = [i for i in self.universe if i in self._latest_prices and self._latest_prices[i] > 0]
-        if not active_universe:
+    def _rebalance(self) -> None:
+        """Rebalance to equal weight across the current α-30 universe."""
+        port_val = self._portfolio_value()
+        if port_val <= 0:
             return
 
-        weight_per_asset = 1.0 / len(active_universe)
-        target_capital_per_asset = self.capital * weight_per_asset
+        n = len(self._universe)
+        if n == 0:
+            return
 
-        # 1. Rebalance existing positions / sell if excess or not in universe
-        for inst, held in list(self.ctx.positions().items()):
-            if held <= 0:
-                continue
-            if inst not in active_universe:
-                if not self.busy(inst):
-                    self.sell(inst, held)
-            else:
-                price = self._latest_prices[inst]
-                target_qty = math.floor(target_capital_per_asset / price)
-                diff = target_qty - held
-                if diff < 0 and not self.busy(inst):
-                    self.sell(inst, abs(diff))
+        target_notional = (port_val * self.allocation) / n
 
-        # 2. Buy up to target quantity for each asset
-        for inst in active_universe:
-            if self.busy(inst):
+        # 1. Exit leavers
+        held = {iid for iid, qty in self.ctx.positions().items() if qty > 0}
+        for iid in held - self._universe:
+            qty = self.position(iid)
+            if qty > 0 and not self.busy(iid):
+                self.sell(iid, qty)
+
+        # 2. Equalise survivors + enter joiners
+        for iid in self._universe:
+            if self.busy(iid):
                 continue
-            price = self._latest_prices[inst]
-            held = self.position(inst)
-            target_qty = math.floor(target_capital_per_asset / price)
-            diff = target_qty - held
+            px = self._last_prices.get(iid)
+            if px is None or px <= 0:
+                continue
+            target_qty = whole_shares(target_notional, 1.0, px)
+            diff = target_qty - self.position(iid)
+            if abs(diff) < 1:
+                continue
             if diff > 0:
-                self.buy(inst, diff)
+                self.buy(iid, diff)
+            else:
+                self.sell(iid, -diff)

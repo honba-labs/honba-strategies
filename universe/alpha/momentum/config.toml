@@ -1,1 +1,11 @@
-# Strategy configuration
+name   = "alpha30_momentum"
+symbol = "MULTI"
+venue  = "NSE"
+
+[params]
+capital        = 1000000  # INR
+allocation     = 0.98
+rebalance_days = 15       # trading days
+mom_window     = 60       # trailing return lookback (trading days)
+skip_days      = 5        # skip recent days to avoid short-term reversal
+top_n          = 10       # number of top-momentum names to hold

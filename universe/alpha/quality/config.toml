@@ -1,1 +1,8 @@
-# Strategy configuration
+name   = "alpha30_quality"
+symbol = "MULTI"
+venue  = "NSE"
+
+[params]
+capital        = 10000000  # INR 1Cr
+allocation     = 0.98      # 98% allocation
+rebalance_days = 29        # trading days
