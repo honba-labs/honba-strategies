@@ -1,6 +1,6 @@
 name = "rsi2_connors"
 symbol = "NIFTY50"
-venue = "NSE"
+exchange = "NSE"
 
 [params]
 oversold = 10    # buy when RSI(2) is at or below this

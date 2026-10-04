@@ -1,6 +1,6 @@
 name   = "alpha30_momentum"
 symbol = "MULTI"
-venue  = "NSE"
+exchange  = "NSE"
 
 [params]
 capital        = 1000000  # INR

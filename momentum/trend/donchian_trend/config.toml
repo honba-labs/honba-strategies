@@ -1,6 +1,6 @@
 name = "donchian_trend"
 symbol = "NIFTY50"
-venue = "NSE"
+exchange = "NSE"
 
 [params]
 period = 20      # channel lookback (bars, excludes current bar)

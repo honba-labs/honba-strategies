@@ -1,6 +1,6 @@
 name = "rsi_oversold"
 symbol = "NIFTY50"
-venue = "NSE"
+exchange = "NSE"
 
 [params]
 rsi_period = 4   # RSI period

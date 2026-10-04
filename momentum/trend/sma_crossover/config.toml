@@ -1,6 +1,6 @@
 name = "sma_crossover"
 symbol = "NIFTY50"
-venue = "NSE"
+exchange = "NSE"
 
 [params]
 fast = 20          # fast SMA period (bars)

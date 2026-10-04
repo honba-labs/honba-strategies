@@ -47,9 +47,9 @@ def _ensure_registered() -> None:
         UNIVERSES[UNIVERSE_KEY] = _SEED
 
 
-def _resolve(venue: str = "NSE") -> set[InstrumentId]:
+def _resolve(exchange: str = "NSE") -> set[InstrumentId]:
     _ensure_registered()
-    return set(resolve_universe(UNIVERSE_KEY, venue=venue))
+    return set(resolve_universe(UNIVERSE_KEY, exchange=exchange))
 
 
 class Alpha30EqualWeight(Strategy):
@@ -60,7 +60,7 @@ class Alpha30EqualWeight(Strategy):
         self.capital: float = float(p.get("capital", 1_000_000))
         self.allocation: float = float(p.get("allocation", 0.98))
         self.rebalance_days: int = int(p.get("rebalance_days", 15))
-        self.venue: str = config.venue or "NSE"
+        self.exchange: str = config.exchange or "NSE"
 
         self._universe: set[InstrumentId] = set()
         self._last_prices: dict[InstrumentId, float] = {}
@@ -70,7 +70,7 @@ class Alpha30EqualWeight(Strategy):
 
     # ------------------------------------------------------------------
     def on_start(self) -> None:
-        self._universe = _resolve(self.venue)
+        self._universe = _resolve(self.exchange)
         if self._universe:
             self.log_event("EVENT_MEMBERSHIP_ADD", symbols=[i.symbol for i in sorted(self._universe, key=lambda x: x.symbol)])
 
@@ -114,7 +114,7 @@ class Alpha30EqualWeight(Strategy):
 
     def _rebalance(self) -> None:
         previous = set(self._universe)
-        self._universe = _resolve(self.venue)
+        self._universe = _resolve(self.exchange)
         if not self._universe:
             return
 

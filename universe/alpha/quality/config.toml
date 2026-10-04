@@ -1,6 +1,6 @@
 name   = "alpha30_quality"
 symbol = "MULTI"
-venue  = "NSE"
+exchange  = "NSE"
 
 [params]
 capital        = 10000000  # INR 1Cr

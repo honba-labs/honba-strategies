@@ -1,6 +1,6 @@
 name = "alpha30_factor"
 symbol = "NIFTY200_ALPHA_30"
-venue = "NSE"
+exchange = "NSE"
 
 [params]
 capital = 1000000.0        # Initial starting fund (INR)

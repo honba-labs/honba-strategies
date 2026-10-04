@@ -1,6 +1,6 @@
 name = "bollinger_breakout"
 symbol = "NIFTY50"
-venue = "NSE"
+exchange = "NSE"
 
 [params]
 period = 20        # Bollinger period (on hl2)

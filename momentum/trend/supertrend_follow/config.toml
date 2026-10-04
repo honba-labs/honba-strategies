@@ -1,6 +1,6 @@
 name = "supertrend_follow"
 symbol = "NIFTY50"
-venue = "NSE"
+exchange = "NSE"
 
 [params]
 capital = 1000000  # INR available to the strategy

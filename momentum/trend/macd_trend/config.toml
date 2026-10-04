@@ -1,6 +1,6 @@
 name = "macd_trend"
 symbol = "NIFTY50"
-venue = "NSE"
+exchange = "NSE"
 
 [params]
 ema = 100         # trend EMA period (bars)

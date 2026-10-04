@@ -43,13 +43,13 @@ class AlphaBase(Strategy):
             UNIVERSES[cls.UNIVERSE_KEY] = cls._SEED
 
     @classmethod
-    def _resolve(cls, venue: str = "NSE") -> Set[InstrumentId]:
+    def _resolve(cls, exchange: str = "NSE") -> Set[InstrumentId]:
         cls._ensure_registered()
-        return set(resolve_universe(cls.UNIVERSE_KEY, venue=venue))
+        return set(resolve_universe(cls.UNIVERSE_KEY, exchange=exchange))
 
     # ------------------------------------------------------------------ #
     # Construction – reads the generic config keys that every α‑30 strategy
-    # needs (capital, allocation, rebalance cadence, venue).
+    # needs (capital, allocation, rebalance cadence, exchange).
     # ------------------------------------------------------------------ #
     def __init__(self, config: StrategyConfig) -> None:
         p = config.params
@@ -60,10 +60,10 @@ class AlphaBase(Strategy):
         self.rebalance_days: int = int(
             p.get("rebalance_days", self.DEFAULT_REBALANCE_DAYS)
         )
-        self.venue: str = config.venue or "NSE"
+        self.exchange: str = config.exchange or "NSE"
 
         # State managed by the generic logic
-        self._universe: Set[InstrumentId] = self._resolve(self.venue)
+        self._universe: Set[InstrumentId] = self._resolve(self.exchange)
         self._last_prices: dict[InstrumentId, float] = {}
         self._last_day: date | None = None
         self._days_since: int = 0
@@ -82,7 +82,7 @@ class AlphaBase(Strategy):
     # ------------------------------------------------------------------ #
     def on_start(self) -> None:
         if not self._universe:
-            self._universe = self._resolve(self.venue)
+            self._universe = self._resolve(self.exchange)
         if self._universe:
             self.log_event(
                 "EVENT_MEMBERSHIP_ADD",

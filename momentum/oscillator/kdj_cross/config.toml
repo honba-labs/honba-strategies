@@ -1,6 +1,6 @@
 name = "kdj_cross"
 symbol = "NIFTY50"
-venue = "NSE"
+exchange = "NSE"
 
 [params]
 fastk = 9        # stochastic lookback (bars)

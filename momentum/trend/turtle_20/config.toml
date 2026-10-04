@@ -1,6 +1,6 @@
 name = "turtle_20"
 symbol = "NIFTY50"
-venue = "NSE"
+exchange = "NSE"
 
 [params]
 entry = 20       # entry breakout lookback (bars)
