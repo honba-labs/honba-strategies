@@ -20,7 +20,7 @@ class AlphaBase(Strategy):
     # ------------------------------------------------------------------ #
     # Sub‑classes override these constants as needed
     # ------------------------------------------------------------------ #
-    UNIVERSE_KEY: ClassVar[str] = "nifty200_alpha_30"
+    UNIVERSE_KEY: ClassVar[str] = "nifty200_alpha30"
     DEFAULT_CAPITAL: ClassVar[float] = 1_000_000.0
     DEFAULT_ALLOCATION: ClassVar[float] = 0.98
     DEFAULT_REBALANCE_DAYS: ClassVar[int] = 15

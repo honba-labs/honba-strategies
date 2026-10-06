@@ -109,10 +109,20 @@
     },
     {
       "name": "alpha30_factor",
-      "category": "alpha_universe",
+      "category": "universe/alpha",
       "path": "universe/alpha/factor",
       "description": "Equal-weight 30 equities portfolio from NSE NIFTY200 ALPHA 30 rebalancing every 15 open trading days.",
       "tags": [
+        "statistical"
+      ]
+    },
+    {
+      "name": "alpha30_equal_weight",
+      "category": "universe/alpha",
+      "path": "universe/alpha/equal_weight",
+      "description": "Equal-weight Nifty200 Alpha 30; rebalance every 15 trading days — exit leavers, enter joiners, trim over-performers and top up under-performers.",
+      "tags": [
+        "breadth",
         "statistical"
       ]
     }

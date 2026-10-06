@@ -38,7 +38,7 @@ _SEED: tuple[str, ...] = (
     "FORTIS", "NATIONALUM", "BSE", "ABCAPITAL", "DIXON",
 )
 
-UNIVERSE_KEY = "nifty200_alpha_30"
+UNIVERSE_KEY = "nifty200_alpha30"
 
 
 def _ensure_registered() -> None:
@@ -143,7 +143,7 @@ class Alpha30EqualWeight(Strategy):
                 self.sell(iid, qty, reason="exit")
 
         # 2 + 3. Enter joiners & equalise survivors
-        for iid in self._universe:
+        for iid in sorted(self._universe, key=lambda x: x.symbol):
             if self.busy(iid):
                 continue
             px = self._last_prices.get(iid)
