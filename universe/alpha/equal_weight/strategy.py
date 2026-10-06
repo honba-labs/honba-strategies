@@ -21,7 +21,7 @@ from typing import Any
 
 from honba.domain.bar import Bar
 from honba.domain.instrument import InstrumentId
-from honba.markets.india.universes import resolve_universe, UNIVERSES
+from honba.markets.india.universes import _ALIASES, UNIVERSES, resolve_universe
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig
 from honba.strategies.sizing import whole_shares
@@ -41,15 +41,23 @@ _SEED: tuple[str, ...] = (
 UNIVERSE_KEY = "nifty200_alpha30"
 
 
-def _ensure_registered() -> None:
-    """Idempotently inject the seed so resolve_universe never fails in CI."""
-    if UNIVERSE_KEY not in UNIVERSES:
+def _canonical(name: str) -> str:
+    """Canonical universe key for ``name`` (same normalisation as ``resolve_universe``)."""
+    norm = name.lower().replace("-", "_").replace(" ", "_")
+    return _ALIASES.get(norm, norm)
+
+
+def _resolve(exchange: str = "NSE", universe_name: str = UNIVERSE_KEY) -> set[InstrumentId]:
+    """Resolve ``universe_name`` through the engine; fall back to the seed only for the
+    default universe when the engine does not know it (seed is registered under the
+    canonical key so an alias can never shadow it)."""
+    try:
+        return set(resolve_universe(universe_name, exchange=exchange))
+    except ValueError:
+        if _canonical(universe_name) != UNIVERSE_KEY:
+            raise
         UNIVERSES[UNIVERSE_KEY] = _SEED
-
-
-def _resolve(exchange: str = "NSE") -> set[InstrumentId]:
-    _ensure_registered()
-    return set(resolve_universe(UNIVERSE_KEY, exchange=exchange))
+        return set(resolve_universe(UNIVERSE_KEY, exchange=exchange))
 
 
 class Alpha30EqualWeight(Strategy):
@@ -61,6 +69,7 @@ class Alpha30EqualWeight(Strategy):
         self.allocation: float = float(p.get("allocation", 0.98))
         self.rebalance_days: int = int(p.get("rebalance_days", 15))
         self.exchange: str = config.exchange or "NSE"
+        self.universe_name: str = str(p.get("universe_name", UNIVERSE_KEY))
 
         self._universe: set[InstrumentId] = set()
         self._last_prices: dict[InstrumentId, float] = {}
@@ -68,9 +77,13 @@ class Alpha30EqualWeight(Strategy):
         self._days_since: int = 0
         self._initial_done: bool = False
 
+    @property
+    def universe(self) -> set[InstrumentId]:
+        return self._universe
+
     # ------------------------------------------------------------------
     def on_start(self) -> None:
-        self._universe = _resolve(self.exchange)
+        self._universe = _resolve(self.exchange, self.universe_name)
         if self._universe:
             self.log_event("EVENT_MEMBERSHIP_ADD", symbols=[i.symbol for i in sorted(self._universe, key=lambda x: x.symbol)])
 
@@ -102,7 +115,7 @@ class Alpha30EqualWeight(Strategy):
 
     def _portfolio_value(self) -> float:
         """Cash + mark-to-market of every open position."""
-        value = float(self.ctx.cash())
+        value = self.ctx.cash().to_major()
         for iid, qty in self.ctx.positions().items():
             if qty == 0:
                 continue
@@ -114,7 +127,7 @@ class Alpha30EqualWeight(Strategy):
 
     def _rebalance(self) -> None:
         previous = set(self._universe)
-        self._universe = _resolve(self.exchange)
+        self._universe = _resolve(self.exchange, self.universe_name)
         if not self._universe:
             return
 
@@ -160,6 +173,7 @@ class Alpha30EqualWeight(Strategy):
 
 
 def _bar_day(bar: Bar, now_ns: int) -> date:
+    """UTC calendar day of the bar's event time (never the wall clock)."""
     ts: Any = getattr(bar, "ts", None) or getattr(bar, "ts_event", None)
     if ts is not None and hasattr(ts, "date"):
         return ts.date()
@@ -172,4 +186,4 @@ def _bar_day(bar: Bar, now_ns: int) -> date:
         return datetime.fromtimestamp(v, tz=timezone.utc).date()
     if now_ns > 0:
         return datetime.fromtimestamp(now_ns / 1e9, tz=timezone.utc).date()
-    return date.today()
+    raise ValueError("bar has no event timestamp and the context clock is unset")

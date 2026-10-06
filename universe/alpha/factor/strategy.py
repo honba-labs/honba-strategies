@@ -7,7 +7,6 @@ it can carry its own config / backtest artefacts.
 """
 from __future__ import annotations
 
-import math
 from typing import ClassVar
 
 from honba.strategies.sizing import whole_shares
@@ -49,7 +48,7 @@ class Alpha30Factor(AlphaBase):
                 self.sell(iid, qty)
 
         # 2. Equalise survivors + enter joiners
-        for iid in self._universe:
+        for iid in sorted(self._universe, key=lambda x: x.symbol):
             if self.busy(iid):
                 continue
             px = self._last_prices.get(iid)

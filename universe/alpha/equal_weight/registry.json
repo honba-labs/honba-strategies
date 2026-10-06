@@ -1,10 +1,9 @@
 {
     "name": "alpha30_equal_weight",
-    "category": "alpha_universe",
+    "category": "universe/alpha",
     "path": "universe/alpha/equal_weight",
     "description": "Equal-weight Nifty200 Alpha 30; rebalance every 15 trading days — exit leavers, enter joiners, trim over-performers and top up under-performers.",
     "tags": [
-        "alpha_universe",
         "breadth",
         "statistical"
     ]

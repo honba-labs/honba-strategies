@@ -4,14 +4,19 @@
 from __future__ import annotations
 
 from datetime import date, datetime, timezone
-from typing import Any, ClassVar, Set
+from typing import Any, ClassVar
 
 from honba.domain.bar import Bar
 from honba.domain.instrument import InstrumentId
-from honba.markets.india.universes import resolve_universe, UNIVERSES
+from honba.markets.india.universes import _ALIASES, UNIVERSES, resolve_universe
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig
-from honba.strategies.sizing import whole_shares
+
+
+def _canonical(name: str) -> str:
+    """Canonical universe key for ``name`` (same normalisation as ``resolve_universe``)."""
+    norm = name.lower().replace("-", "_").replace(" ", "_")
+    return _ALIASES.get(norm, norm)
 
 
 class AlphaBase(Strategy):
@@ -38,14 +43,21 @@ class AlphaBase(Strategy):
     # Seed injection – guarantees CI never fails on resolve_universe
     # ------------------------------------------------------------------ #
     @classmethod
-    def _ensure_registered(cls) -> None:
-        if cls.UNIVERSE_KEY not in UNIVERSES:
-            UNIVERSES[cls.UNIVERSE_KEY] = cls._SEED
+    def _resolve(
+        cls, exchange: str = "NSE", universe_name: str | None = None
+    ) -> set[InstrumentId]:
+        """Resolve the configured universe through the engine.
 
-    @classmethod
-    def _resolve(cls, exchange: str = "NSE") -> Set[InstrumentId]:
-        cls._ensure_registered()
-        return set(resolve_universe(cls.UNIVERSE_KEY, exchange=exchange))
+        The seed is injected, under the canonical ``UNIVERSE_KEY``, only when the engine does
+        not know the default universe; an alias can therefore never shadow it."""
+        name = universe_name or cls.UNIVERSE_KEY
+        try:
+            return set(resolve_universe(name, exchange=exchange))
+        except ValueError:
+            if _canonical(name) != cls.UNIVERSE_KEY:
+                raise
+            UNIVERSES[cls.UNIVERSE_KEY] = cls._SEED
+            return set(resolve_universe(cls.UNIVERSE_KEY, exchange=exchange))
 
     # ------------------------------------------------------------------ #
     # Construction – reads the generic config keys that every α‑30 strategy
@@ -61,16 +73,17 @@ class AlphaBase(Strategy):
             p.get("rebalance_days", self.DEFAULT_REBALANCE_DAYS)
         )
         self.exchange: str = config.exchange or "NSE"
+        self.universe_name: str = str(p.get("universe_name", self.UNIVERSE_KEY))
 
         # State managed by the generic logic
-        self._universe: Set[InstrumentId] = self._resolve(self.exchange)
+        self._universe: set[InstrumentId] = self._resolve(self.exchange, self.universe_name)
         self._last_prices: dict[InstrumentId, float] = {}
         self._last_day: date | None = None
         self._days_since: int = 0
         self._initial_done: bool = False
 
     @property
-    def universe(self) -> Set[InstrumentId]:
+    def universe(self) -> set[InstrumentId]:
         return self._universe
 
     @universe.setter
@@ -82,7 +95,7 @@ class AlphaBase(Strategy):
     # ------------------------------------------------------------------ #
     def on_start(self) -> None:
         if not self._universe:
-            self._universe = self._resolve(self.exchange)
+            self._universe = self._resolve(self.exchange, self.universe_name)
         if self._universe:
             self.log_event(
                 "EVENT_MEMBERSHIP_ADD",
@@ -118,7 +131,7 @@ class AlphaBase(Strategy):
     # ------------------------------------------------------------------ #
     def _portfolio_value(self) -> float:
         """Cash + mark‑to‑market of every open position."""
-        value = float(self.ctx.cash()) if self.ctx else 0.0
+        value = self.ctx.cash().to_major() if self.ctx else 0.0
         for iid, qty in self.ctx.positions().items():
             if qty == 0:
                 continue
@@ -146,7 +159,7 @@ class AlphaBase(Strategy):
             return datetime.fromtimestamp(v, tz=timezone.utc).date()
         if now_ns > 0:
             return datetime.fromtimestamp(now_ns / 1e9, tz=timezone.utc).date()
-        return date.today()
+        raise ValueError("bar has no event timestamp and the context clock is unset")
 
     # ------------------------------------------------------------------ #
     # Abstract rebalance – concrete subclasses implement their own logic.

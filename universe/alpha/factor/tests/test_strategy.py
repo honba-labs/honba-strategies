@@ -1,6 +1,6 @@
 from pathlib import Path
-import pytest
 
+import pytest
 from honba.domain.bar import Bar
 from honba.domain.instrument import InstrumentId
 from honba.domain.order import OrderSide
@@ -47,3 +47,44 @@ def test_alpha30_factor_equal_weight_and_rebalance(load_strategy):
     # On day 4 (open-day 4 = 1st day of next 3-day cycle), it rebalances
     day4_fills = [f for f in result.fills if f.ts == 4 * 86_400_000_000_000]
     assert len(day4_fills) > 0
+
+
+def test_universe_is_taken_from_config_alias(load_strategy):
+    mod = load_strategy(HERE)
+    cfg = StrategyConfig.from_toml(HERE / "config.toml")
+    cfg.params["universe_name"] = "nifty50"
+    assert len(mod.Alpha30Factor(cfg).universe) == 50
+
+
+def test_seed_registered_under_canonical_key_when_missing(load_strategy, monkeypatch):
+    from honba.markets.india import universes
+
+    mod = load_strategy(HERE)
+    monkeypatch.delitem(universes.UNIVERSES, "nifty200_alpha30")
+    cfg = StrategyConfig.from_toml(HERE / "config.toml")
+    strat = mod.Alpha30Factor(cfg)
+    assert {i.symbol for i in strat.universe} == set(strat._SEED)
+
+
+def test_bar_day_without_timestamp_raises(load_strategy):
+    mod = load_strategy(HERE)
+
+    with pytest.raises(ValueError, match="timestamp"):
+        mod.Alpha30Factor._bar_day(object(), 0)
+
+
+def test_entries_are_placed_in_symbol_order(load_strategy):
+    from honba.strategies.context import LedgerContext
+
+    mod = load_strategy(HERE)
+    cfg = StrategyConfig.from_toml(HERE / "config.toml")
+    strat = mod.Alpha30Factor(cfg)
+    symbols = ["MCX", "BHEL", "HINDALCO"]
+    strat.universe = [InstrumentId(s, "NSE") for s in symbols]
+    strat.bind(LedgerContext(cash=300_000.0))
+    bars = [
+        Bar(InstrumentId(s, "NSE"), 86_400_000_000_000, 100.0, 100.0, 100.0, 100.0, 1.0)
+        for s in symbols
+    ]
+    result = replay(strat, bars)
+    assert [f.instrument_id.symbol for f in result.fills] == sorted(symbols)

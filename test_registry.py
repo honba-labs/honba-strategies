@@ -4,7 +4,6 @@ import re
 from pathlib import Path
 
 import pytest
-
 from honba.strategies.indicators import FAMILIES
 
 ROOT = Path(__file__).resolve().parent
@@ -13,7 +12,10 @@ ENTRIES = json.loads((ROOT / "registry.json").read_text())["strategies"]
 
 @pytest.mark.parametrize("e", ENTRIES, ids=lambda e: e["name"])
 def test_entry_is_consistent_with_tree(e):
-    assert e["path"] == f'{e["category"]}/{e["name"]}'
+    # path is <category>/<dir>; the name is the dir, or a prefixed form of it (alpha30_factor)
+    leaf = e["path"].rsplit("/", 1)[-1]
+    assert e["path"] == f'{e["category"]}/{leaf}'
+    assert e["name"] == leaf or e["name"].endswith(f"_{leaf}")
     d = ROOT / e["path"]
     for f in ("strategy.py", "config.toml", "README.md", "tests/test_strategy.py"):
         assert (d / f).is_file(), f"{e['path']}/{f} missing"
