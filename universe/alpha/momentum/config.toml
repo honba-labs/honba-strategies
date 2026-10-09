@@ -1,11 +1,10 @@
-name   = "alpha30_momentum"
-symbol = "MULTI"
-exchange  = "NSE"
+name     = "alpha30_momentum"
+symbol   = "MULTI"
+exchange = "NSE"
 
 [params]
-capital        = 1000000  # INR
-allocation     = 0.98
-rebalance_days = 15       # trading days
-mom_window     = 60       # trailing return lookback (trading days)
-skip_days      = 5        # skip recent days to avoid short-term reversal
-top_n          = 10       # number of top-momentum names to hold
+universe   = "nifty200_alpha30"
+select     = "top:10:momentum:60"
+weighting  = "equal"
+schedule   = "every:15d"
+allocation = 0.98

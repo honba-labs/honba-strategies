@@ -1,1 +1,29 @@
-{"status": "pending"}
+{
+  "status": "completed",
+  "strategy": "equal_weight",
+  "test_start": "2026-01-30",
+  "test_end": "2026-05-06",
+  "capital": 1000000.0,
+  "test_sessions": 69,
+  "n_fills": 111,
+  "metrics": {
+    "final_value": 998333.08,
+    "total_return_pct": -0.16669200000000162,
+    "cagr_pct": -0.6327299265760256,
+    "max_drawdown_pct": -0.36779860219945393,
+    "sharpe": -3.107928054323002,
+    "turnover": 1.07346721637033,
+    "avg_cash_pct": 13.811175891186231,
+    "total_fees": 616.45,
+    "n_fills": 111,
+    "n_suppressed_warmup": 60,
+    "n_released_unfunded": 0,
+    "n_released_no_position": 0,
+    "n_unfilled_at_end": 0,
+    "n_rejected_intents": 0,
+    "final_equity": 998333.08,
+    "final_cash": 8623.0,
+    "traded_notional": 1073925.19,
+    "positions_value": 989710.08
+  }
+}

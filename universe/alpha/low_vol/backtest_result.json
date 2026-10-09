@@ -1,1 +1,29 @@
-{"status": "pending"}
+{
+  "status": "completed",
+  "strategy": "alpha30_low_vol",
+  "test_start": "2026-01-30",
+  "test_end": "2026-05-06",
+  "capital": 1000000.0,
+  "test_sessions": 69,
+  "n_fills": 101,
+  "metrics": {
+    "final_value": 993179.77,
+    "total_return_pct": -0.6820229999999983,
+    "cagr_pct": -2.5701677966917025,
+    "max_drawdown_pct": -0.7606215801023386,
+    "sharpe": -4.886294932456233,
+    "turnover": 6.335103693869557,
+    "avg_cash_pct": 24.38786112015266,
+    "total_fees": 5694.3,
+    "n_fills": 101,
+    "n_suppressed_warmup": 1,
+    "n_released_unfunded": 0,
+    "n_released_no_position": 0,
+    "n_unfilled_at_end": 0,
+    "n_rejected_intents": 0,
+    "final_equity": 993179.77,
+    "final_cash": 21138.91,
+    "traded_notional": 6322622.75,
+    "positions_value": 972040.86
+  }
+}
