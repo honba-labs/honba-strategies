@@ -25,5 +25,5 @@ class EqualWeightRebalance(PortfolioStrategy):
             parts.selector,
             allocation=parts.allocation,
             name=self.name,
-            history_len=parts._history.maxlen,
+            history_len=parts.history_len,
         )
