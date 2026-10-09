@@ -1,0 +1,14 @@
+name     = "equal_weight_rebalance"
+symbol   = "MULTI"
+exchange = "NSE"
+
+[params]
+universe   = "nifty200_alpha30"  # engine-known universe (honba.markets.india.universes)
+weighting  = "equal"             # 1/N across the members
+schedule   = "every:15d"         # rebalance every 15 trading days
+allocation = 0.995               # keep a ~0.5 % cash buffer so no buy is rejected for cash
+# point_in_time = true           # use historical membership snapshots; set it for
+#                                # survivorship-bias-free backtests once the engine has the
+#                                # universe history registered (register_universe_history);
+#                                # without it the engine raises rather than guess. Off by
+#                                # default: the engine ships no Alpha 30 history.

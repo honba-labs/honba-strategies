@@ -117,13 +117,21 @@
       ]
     },
     {
-      "name": "alpha30_equal_weight",
-      "category": "universe/alpha",
-      "path": "universe/alpha/equal_weight",
-      "description": "Equal-weight Nifty200 Alpha 30; rebalance every 15 trading days — exit leavers, enter joiners, trim over-performers and top up under-performers.",
+      "name": "equal_weight",
+      "category": "portfolio/rebalancing",
+      "path": "portfolio/rebalancing/equal_weight",
+      "description": "Equal-weight periodic rebalance of a named universe (default Nifty200 Alpha 30, every 15 trading days): exit leavers, enter joiners, trim winners and top up laggards.",
       "tags": [
         "breadth",
         "statistical"
+      ],
+      "keywords": [
+        "alpha30",
+        "nifty200_alpha30",
+        "equal_weight",
+        "rebalancing",
+        "portfolio",
+        "multi_instrument"
       ]
     }
   ]

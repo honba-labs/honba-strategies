@@ -17,7 +17,8 @@ ROOT = Path(__file__).resolve().parent
 DIRS = [
     ROOT / e["path"]
     for e in json.loads((ROOT / "registry.json").read_text())["strategies"]
-    if not e["path"].startswith("universe/alpha")
+    # multi-instrument portfolios (symbol "MULTI") are covered by their own tests
+    if not e["path"].startswith(("universe/alpha", "portfolio/"))
 ]
 
 
