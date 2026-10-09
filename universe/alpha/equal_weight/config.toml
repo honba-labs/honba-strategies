@@ -1,8 +1,0 @@
-name   = "alpha30_equal_weight"
-symbol = "MULTI"
-exchange  = "NSE"
-
-[params]
-capital         = 1000000   # INR
-allocation      = 0.995     # leave 1-2 % cash buffer, no buy is rejected for lack of cash
-rebalance_days  = 15        # trading days

@@ -1,5 +1,12 @@
 # Universe
 
+> **Migration in progress.** The equal-weight Alpha 30 rebalancer moved to
+> [`portfolio/rebalancing/equal_weight`](../portfolio/rebalancing/equal_weight/README.md)
+> (a thin `PortfolioStrategy` configured by `universe = "nifty200_alpha30"`). The remaining
+> strategies under `universe/alpha/` (`factor`, `low_vol`, `mean_reversion`, `momentum`,
+> `quality`) carry selection logic and are pending migration to Selector-based portfolio
+> strategies under `portfolio/`. Until then they keep using `universe/alpha/base.py`.
+
 
 
 ## Understanding the "Alpha" Metric
