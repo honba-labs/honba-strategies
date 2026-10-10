@@ -6,7 +6,7 @@ stamp duty) and slippage are applied by the Honba backtest engine, not here.
 """
 
 from honba.entities.bar import Bar
-from honba.strategies.base import Strategy
+from honba.strategies.base import Parameter, Strategy
 from honba.strategies.config import StrategyConfig
 from honba.strategies.indicators import Sma
 from honba.strategies.sizing import whole_shares
@@ -14,6 +14,8 @@ from honba.strategies.sizing import whole_shares
 
 class SmaCrossover(Strategy):
     name = "sma_crossover"
+    fast = Parameter(10, min=2, max=50, step=1, description="Fast SMA period")
+    slow = Parameter(30, min=5, max=200, step=1, description="Slow SMA period")
 
     def __init__(self, config: StrategyConfig) -> None:
         p = config.params
