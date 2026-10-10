@@ -4,6 +4,7 @@ Buy when RSI(2) <= ``oversold`` while the close is above the trend SMA; exit
 fully once the close is above the short exit SMA. Costs are applied by the
 Honba backtest engine, not here.
 """
+
 from honba.entities.bar import Bar
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig
@@ -28,15 +29,28 @@ class Rsi2Connors(Strategy):
             raise ValueError("oversold must be in (0, 100)")
         if self.trend_sma < 1 or self.exit_sma < 1:
             raise ValueError("trend_sma and exit_sma must be positive")
-        self._rsi, self._trend, self._exit = Rsi(2), Sma(self.trend_sma), Sma(self.exit_sma)
+        self._rsi, self._trend, self._exit = (
+            Rsi(2),
+            Sma(self.trend_sma),
+            Sma(self.exit_sma),
+        )
 
     def on_bar(self, bar: Bar) -> None:
-        rsi, trend, exit_ma = self._rsi.update(bar.close), self._trend.update(bar.close), self._exit.update(bar.close)
+        rsi, trend, exit_ma = (
+            self._rsi.update(bar.close),
+            self._trend.update(bar.close),
+            self._exit.update(bar.close),
+        )
         held = self.position(self.instrument_id)
         if self.busy(self.instrument_id):
             return  # an order is still unfilled
         if held == 0:
-            if rsi is not None and trend is not None and bar.close > trend and rsi <= self.oversold:
+            if (
+                rsi is not None
+                and trend is not None
+                and bar.close > trend
+                and rsi <= self.oversold
+            ):
                 qty = whole_shares(self.capital, self.allocation, bar.close)
                 if qty > 0:
                     self.buy(self.instrument_id, qty)

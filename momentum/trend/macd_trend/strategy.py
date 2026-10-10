@@ -4,6 +4,7 @@ Buy when MACD is above its signal line and the close is above the trend EMA;
 exit fully when MACD is below signal AND the close is below the EMA.
 Costs are applied by the Honba backtest engine, not here.
 """
+
 from honba.entities.bar import Bar
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig
@@ -22,7 +23,11 @@ class MacdTrend(Strategy):
             raise ValueError("capital must be positive")
         if not 0 < self.allocation <= 1:
             raise ValueError("allocation must be in (0, 1]")
-        self.ema_period, self.fast, self.slow = int(p["ema"]), int(p["fastperiod"]), int(p["slowperiod"])
+        self.ema_period, self.fast, self.slow = (
+            int(p["ema"]),
+            int(p["fastperiod"]),
+            int(p["slowperiod"]),
+        )
         self.signal = int(p["signal"])
         if self.ema_period < 1 or self.signal < 1:
             raise ValueError("ema and signal must be positive")

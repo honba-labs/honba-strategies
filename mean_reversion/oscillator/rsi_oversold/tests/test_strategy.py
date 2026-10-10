@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pytest
-
 from honba.entities.bar import Bar
 from honba.entities.instrument import InstrumentId
 from honba.entities.order import OrderSide
@@ -25,7 +24,15 @@ def ohlc(rows, symbol="NIFTY50"):
     return [Bar(iid, i + 1, c, h, l, c, 1000.0) for i, (h, l, c) in enumerate(rows)]
 
 
-SMALL = dict(rsi_period=2, entry=30, exit=60, trend_sma=0, max_hold=10, capital=1000.0, allocation=1.0)
+SMALL = {
+    "rsi_period": 2,
+    "entry": 30,
+    "exit": 60,
+    "trend_sma": 0,
+    "max_hold": 10,
+    "capital": 1000.0,
+    "allocation": 1.0,
+}
 
 
 def test_buys_oversold_and_exits_when_rsi_recovers(load_strategy, make_bars):
@@ -55,8 +62,16 @@ def test_no_trade_before_warmup(load_strategy, make_bars):
     assert result.fills == []
 
 
-@pytest.mark.parametrize("bad", [dict(rsi_period=0), dict(entry=60, exit=50), dict(trend_sma=-1),
-                                 dict(max_hold=0), dict(allocation=0)])
+@pytest.mark.parametrize(
+    "bad",
+    [
+        {"rsi_period": 0},
+        {"entry": 60, "exit": 50},
+        {"trend_sma": -1},
+        {"max_hold": 0},
+        {"allocation": 0},
+    ],
+)
 def test_rejects_bad_params(load_strategy, bad):
     with pytest.raises(ValueError):
         build(load_strategy, **bad)

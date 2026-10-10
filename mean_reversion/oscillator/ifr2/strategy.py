@@ -5,6 +5,7 @@ fully when the close is above the highs of the two previous bars. The cloud is
 the standard displaced Ichimoku (spans computed ``displacement`` bars ago).
 Costs are applied by the Honba backtest engine, not here.
 """
+
 from collections import deque
 
 from honba.entities.bar import Bar
@@ -33,7 +34,9 @@ class Ifr2(Strategy):
         if min(self.tenkan, self.kijun, self.senkou_b, self.displacement) < 1:
             raise ValueError("ichimoku periods and displacement must be positive")
         self._rsi = Rsi(2)
-        self._cloud = Ichimoku(self.tenkan, self.kijun, self.senkou_b, self.displacement)
+        self._cloud = Ichimoku(
+            self.tenkan, self.kijun, self.senkou_b, self.displacement
+        )
         self._highs: deque[float] = deque(maxlen=2)  # highs of the two previous bars
 
     def on_bar(self, bar: Bar) -> None:
@@ -45,7 +48,12 @@ class Ifr2(Strategy):
         if self.busy(self.instrument_id):
             return  # an order is still unfilled
         if held == 0:
-            if rsi is not None and cloud is not None and bar.close > max(cloud) and rsi < self.oversold:
+            if (
+                rsi is not None
+                and cloud is not None
+                and bar.close > max(cloud)
+                and rsi < self.oversold
+            ):
                 qty = whole_shares(self.capital, self.allocation, bar.close)
                 if qty > 0:
                     self.buy(self.instrument_id, qty)

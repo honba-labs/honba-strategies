@@ -31,12 +31,36 @@ class AlphaBase(Strategy):
     DEFAULT_REBALANCE_DAYS: ClassVar[int] = 15
 
     _SEED: ClassVar[tuple[str, ...]] = (
-        "ADANIPOWER", "SHRIRAMFIN", "HINDALCO", "ADANIGREEN", "EICHERMOT",
-        "ADANIENSOL", "IDEA", "BHEL", "CUMMINSIND", "POWERINDIA",
-        "POLYCAB", "MUTHOOTFIN", "PAYTM", "INDIANB", "LAURUSLABS",
-        "VEDL", "BHARATFORG", "NYKAA", "ASHOKLEY", "MCX",
-        "FEDERALBNK", "AUBANK", "LTF", "SAIL", "GLENMARK",
-        "FORTIS", "NATIONALUM", "BSE", "ABCAPITAL", "DIXON",
+        "ADANIPOWER",
+        "SHRIRAMFIN",
+        "HINDALCO",
+        "ADANIGREEN",
+        "EICHERMOT",
+        "ADANIENSOL",
+        "IDEA",
+        "BHEL",
+        "CUMMINSIND",
+        "POWERINDIA",
+        "POLYCAB",
+        "MUTHOOTFIN",
+        "PAYTM",
+        "INDIANB",
+        "LAURUSLABS",
+        "VEDL",
+        "BHARATFORG",
+        "NYKAA",
+        "ASHOKLEY",
+        "MCX",
+        "FEDERALBNK",
+        "AUBANK",
+        "LTF",
+        "SAIL",
+        "GLENMARK",
+        "FORTIS",
+        "NATIONALUM",
+        "BSE",
+        "ABCAPITAL",
+        "DIXON",
     )
 
     # ------------------------------------------------------------------ #
@@ -66,9 +90,7 @@ class AlphaBase(Strategy):
     def __init__(self, config: StrategyConfig) -> None:
         p = config.params
         self.capital: float = float(p.get("capital", self.DEFAULT_CAPITAL))
-        self.allocation: float = float(
-            p.get("allocation", self.DEFAULT_ALLOCATION)
-        )
+        self.allocation: float = float(p.get("allocation", self.DEFAULT_ALLOCATION))
         self.rebalance_days: int = int(
             p.get("rebalance_days", self.DEFAULT_REBALANCE_DAYS)
         )
@@ -76,7 +98,9 @@ class AlphaBase(Strategy):
         self.universe_name: str = str(p.get("universe_name", self.UNIVERSE_KEY))
 
         # State managed by the generic logic
-        self._universe: set[InstrumentId] = self._resolve(self.exchange, self.universe_name)
+        self._universe: set[InstrumentId] = self._resolve(
+            self.exchange, self.universe_name
+        )
         self._last_prices: dict[InstrumentId, float] = {}
         self._last_day: date | None = None
         self._days_since: int = 0
@@ -99,9 +123,10 @@ class AlphaBase(Strategy):
         if self._universe:
             self.log_event(
                 "EVENT_MEMBERSHIP_ADD",
-                symbols=[i.symbol for i in sorted(self._universe, key=lambda x: x.symbol)],
+                symbols=[
+                    i.symbol for i in sorted(self._universe, key=lambda x: x.symbol)
+                ],
             )
-
 
     def on_bar(self, bar: Bar) -> None:
         self._last_prices[bar.instrument_id] = float(bar.close)
@@ -165,6 +190,4 @@ class AlphaBase(Strategy):
     # Abstract rebalance – concrete subclasses implement their own logic.
     # ------------------------------------------------------------------ #
     def _rebalance(self) -> None:
-        raise NotImplementedError(
-            "Sub‑class must implement its own rebalance routine"
-        )
+        raise NotImplementedError("Sub‑class must implement its own rebalance routine")

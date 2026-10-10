@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pytest
-
 from honba.entities.bar import Bar
 from honba.entities.instrument import InstrumentId
 from honba.entities.order import OrderSide
@@ -24,7 +23,7 @@ def ohlc(closes, symbol="NIFTY50"):
     return [Bar(iid, i + 1, c, c + 1, c - 1, c, 1000.0) for i, c in enumerate(closes)]
 
 
-SMALL = dict(atr_period=3, factor=1.5)
+SMALL = {"atr_period": 3, "factor": 1.5}
 UP_THEN_CRASH = [100 + 2 * i for i in range(15)] + [128 - 6 * i for i in range(1, 8)]
 
 
@@ -55,7 +54,9 @@ def test_indicator_parameters_come_from_config(load_strategy):
     bars = ohlc(UP_THEN_CRASH, cfg.symbol)
     sell_fast = replay(fast, bars).fills[-1].ts
     sell_slow = replay(slow, bars).fills
-    assert sell_fast < (sell_slow[-1].ts if len(sell_slow) > 1 else 10**9)  # wider stop exits later or never
+    assert sell_fast < (
+        sell_slow[-1].ts if len(sell_slow) > 1 else 10**9
+    )  # wider stop exits later or never
 
 
 def test_invalid_config(load_strategy):

@@ -6,11 +6,16 @@ position is still open when a new IST session starts (missing bars), it is close
 first bar of that session. VWAP resets each IST session day; the indicator and its
 parameters come from ``[indicators.vwap]``. Costs are applied by the Honba backtest engine.
 """
+
 from honba.entities.bar import Bar
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig
 from honba.strategies.indicators import IndicatorBank
-from honba.strategies.indicators._india import hhmm_to_minutes, ist_minute_of_day, ist_session_day
+from honba.strategies.indicators._india import (
+    hhmm_to_minutes,
+    ist_minute_of_day,
+    ist_session_day,
+)
 from honba.strategies.sizing import whole_shares
 
 

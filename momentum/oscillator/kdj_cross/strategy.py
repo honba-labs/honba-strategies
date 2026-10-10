@@ -4,6 +4,7 @@ Buy when J is above both K and D. Exit fully when in profit and J turns down,
 or when J drops below K or D, or when the bar low touches a protective stop of
 ``atr_mult`` x ATR below the entry. Costs are applied by the Honba engine.
 """
+
 from honba.entities.bar import Bar
 from honba.entities.order import OrderSide
 from honba.entities.trade import Trade
@@ -24,19 +25,32 @@ class KdjCross(Strategy):
             raise ValueError("capital must be positive")
         if not 0 < self.allocation <= 1:
             raise ValueError("allocation must be in (0, 1]")
-        self.fastk, self.slowk, self.slowd = int(p["fastk"]), int(p["slowk"]), int(p["slowd"])
+        self.fastk, self.slowk, self.slowd = (
+            int(p["fastk"]),
+            int(p["slowk"]),
+            int(p["slowd"]),
+        )
         self.atr_period, self.atr_mult = int(p["atr_period"]), float(p["atr_mult"])
         if min(self.fastk, self.slowk, self.slowd, self.atr_period) < 1:
             raise ValueError("fastk, slowk, slowd and atr_period must be positive")
         if not self.atr_mult > 0:
             raise ValueError("atr_mult must be positive")
-        self._kdj = Kdj(self.fastk, self.slowk, self.slowd, str(p.get("slowk_ma", "sma")), str(p.get("slowd_ma", "sma")))
+        self._kdj = Kdj(
+            self.fastk,
+            self.slowk,
+            self.slowd,
+            str(p.get("slowk_ma", "sma")),
+            str(p.get("slowd_ma", "sma")),
+        )
         self._atr = Atr(self.atr_period, bool(p.get("atr_first_bar", False)))
         self._prev_j: float | None = None
         self._entry = self._stop = None
 
     def on_bar(self, bar: Bar) -> None:
-        kdj, atr = self._kdj.update(bar.high, bar.low, bar.close), self._atr.update(bar.high, bar.low, bar.close)
+        kdj, atr = (
+            self._kdj.update(bar.high, bar.low, bar.close),
+            self._atr.update(bar.high, bar.low, bar.close),
+        )
         if kdj is None:
             return
         k, d, j = kdj

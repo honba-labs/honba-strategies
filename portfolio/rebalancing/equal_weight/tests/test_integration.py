@@ -22,7 +22,9 @@ def _bars(symbols, days=60):
     for d in range(days):
         for k, s in enumerate(symbols):
             p = (50.0 + 37.0 * k) * (1 + 0.004 * ((d * (k % 5 + 1)) % 11 - 5))
-            out.append(Bar(InstrumentId(s, "NSE"), (d + 1) * DAY_NS, p, p, p, p, 1000.0))
+            out.append(
+                Bar(InstrumentId(s, "NSE"), (d + 1) * DAY_NS, p, p, p, p, 1000.0)
+            )
     return out
 
 

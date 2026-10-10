@@ -5,6 +5,7 @@ flips to a downtrend. NSE cash equity has no short leg. The indicator and its pa
 come from ``[indicators.trend]`` in ``config.toml``. Costs (STT, GST, stamp duty) and
 slippage are applied by the Honba backtest engine, not here.
 """
+
 from honba.entities.bar import Bar
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig

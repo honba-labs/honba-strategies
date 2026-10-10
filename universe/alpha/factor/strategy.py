@@ -14,7 +14,11 @@ class Alpha30Factor(PortfolioStrategy):
     name = "alpha30_factor"
 
     def __init__(self, config: StrategyConfig) -> None:
-        params = {"universe": "nifty200_alpha30", "exchange": config.exchange, **config.params}
+        params = {
+            "universe": "nifty200_alpha30",
+            "exchange": config.exchange,
+            **config.params,
+        }
         parts = build_portfolio_strategy(params, name=self.name)
         super().__init__(
             parts.universe_source,

@@ -4,6 +4,7 @@ Buy a close above the previous N-bar high while above the trend SMA; exit
 fully on a close below the previous N-bar low. Costs are applied by the Honba
 backtest engine, not here.
 """
+
 from honba.entities.bar import Bar
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig

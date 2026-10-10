@@ -4,6 +4,7 @@ Buy when the fast SMA is above the slow SMA while flat; exit fully when it
 falls below. NSE equity is spot, so there is no short leg. Costs (STT, GST,
 stamp duty) and slippage are applied by the Honba backtest engine, not here.
 """
+
 from honba.entities.bar import Bar
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig

@@ -4,6 +4,7 @@ Buy when RSI is below ``entry`` while the close is above the trend SMA
 (``trend_sma = 0`` disables the filter). Exit fully once RSI is above ``exit``
 or after ``max_hold`` bars. Costs are applied by the Honba engine, not here.
 """
+
 from honba.entities.bar import Bar
 from honba.entities.order import OrderSide
 from honba.entities.trade import Trade
@@ -24,7 +25,11 @@ class RsiOversold(Strategy):
             raise ValueError("capital must be positive")
         if not 0 < self.allocation <= 1:
             raise ValueError("allocation must be in (0, 1]")
-        self.rsi_period, self.entry, self.exit = int(p["rsi_period"]), float(p["entry"]), float(p["exit"])
+        self.rsi_period, self.entry, self.exit = (
+            int(p["rsi_period"]),
+            float(p["entry"]),
+            float(p["exit"]),
+        )
         self.trend_sma, self.max_hold = int(p["trend_sma"]), int(p["max_hold"])
         if self.rsi_period < 1 or self.max_hold < 1 or self.trend_sma < 0:
             raise ValueError("rsi_period and max_hold must be positive, trend_sma >= 0")
@@ -48,7 +53,9 @@ class RsiOversold(Strategy):
             qty = whole_shares(self.capital, self.allocation, bar.close)
             if qty > 0:
                 self.buy(self.instrument_id, qty)
-        elif held > 0 and (rsi > self.exit or self._bars - self._entry_bar >= self.max_hold):
+        elif held > 0 and (
+            rsi > self.exit or self._bars - self._entry_bar >= self.max_hold
+        ):
             self.sell(self.instrument_id, held)
 
     def on_fill(self, fill: Trade) -> None:

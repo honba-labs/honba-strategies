@@ -5,6 +5,7 @@ while above both cloud spans; exit fully on a close below the middle band.
 The cloud is the standard displaced Ichimoku (spans computed ``displacement``
 bars ago). Costs are applied by the Honba backtest engine, not here.
 """
+
 from honba.entities.bar import Bar
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig
@@ -33,7 +34,9 @@ class BollingerBreakout(Strategy):
         if min(self.tenkan, self.kijun, self.senkou_b, self.displacement) < 1:
             raise ValueError("ichimoku periods and displacement must be positive")
         self._bb = Bollinger(self.period, self.mult)
-        self._cloud = Ichimoku(self.tenkan, self.kijun, self.senkou_b, self.displacement)
+        self._cloud = Ichimoku(
+            self.tenkan, self.kijun, self.senkou_b, self.displacement
+        )
 
     def on_bar(self, bar: Bar) -> None:
         bb = self._bb.update((bar.high + bar.low) / 2)

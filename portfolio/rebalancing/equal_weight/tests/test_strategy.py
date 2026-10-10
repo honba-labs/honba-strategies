@@ -104,7 +104,10 @@ def test_weights_are_equal_within_one_share(mod):
     prices = {"A": 50.0, "B": 123.0, "C": 987.0, "D": 4321.0}
     strat = mod.EqualWeightRebalance(_universe_cfg(symbols))
     strat.bind(LedgerContext(cash=1_000_000.0))
-    bars = [Bar(InstrumentId(s, "NSE"), DAY_NS, p, p, p, p, 1000.0) for s, p in prices.items()]
+    bars = [
+        Bar(InstrumentId(s, "NSE"), DAY_NS, p, p, p, p, 1000.0)
+        for s, p in prices.items()
+    ]
     replay(strat, bars)
     target = 1_000_000.0 * 0.995 / len(symbols)
     for s, p in prices.items():
@@ -120,7 +123,9 @@ def test_rebalances_only_on_cadence_days(mod):
     bars = []
     for d, pb in enumerate(b_close):
         for s, p in (("A", 100.0), ("B", pb)):
-            bars.append(Bar(InstrumentId(s, "NSE"), (d + 1) * DAY_NS, p, p, p, p, 1000.0))
+            bars.append(
+                Bar(InstrumentId(s, "NSE"), (d + 1) * DAY_NS, p, p, p, p, 1000.0)
+            )
     result = replay(strat, bars)
     assert sorted({f.ts // DAY_NS for f in result.fills}) == [1, 4, 7]
 

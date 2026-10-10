@@ -4,6 +4,7 @@ Buy a break of the previous ``entry``-bar high; exit on a close below the
 previous ``exit``-bar low, or when the bar low touches a protective stop of
 ``atr_mult`` x ATR below the entry. Costs are applied by the Honba engine.
 """
+
 from honba.entities.bar import Bar
 from honba.entities.order import OrderSide
 from honba.entities.trade import Trade
@@ -36,14 +37,19 @@ class Turtle20(Strategy):
         self._stop: float | None = None
 
     def on_bar(self, bar: Bar) -> None:
-        pe, self._prev_entry = self._prev_entry, self._entry_ch.update(bar.high, bar.low)
+        pe, self._prev_entry = (
+            self._prev_entry,
+            self._entry_ch.update(bar.high, bar.low),
+        )
         px, self._prev_exit = self._prev_exit, self._exit_ch.update(bar.high, bar.low)
         atr = self._atr.update(bar.high, bar.low, bar.close)
         held = self.position(self.instrument_id)
         if self.busy(self.instrument_id):
             return  # an order is still unfilled
         if held > 0:
-            if (self._stop is not None and bar.low <= self._stop) or (px is not None and bar.close < px.lower):
+            if (self._stop is not None and bar.low <= self._stop) or (
+                px is not None and bar.close < px.lower
+            ):
                 self.sell(self.instrument_id, held)
         elif pe is not None and atr is not None and bar.close > pe.upper:
             qty = whole_shares(self.capital, self.allocation, bar.close)
