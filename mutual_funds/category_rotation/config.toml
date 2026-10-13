@@ -1,1 +1,2 @@
 # Strategy configuration
+status = "scaffold"  # placeholder: not implemented, not in registry.json

@@ -117,21 +117,51 @@
       ]
     },
     {
+      "name": "alpha30_low_vol",
+      "category": "universe/alpha",
+      "path": "universe/alpha/low_vol",
+      "description": "Alpha-30 portfolio of the 15 lowest-volatility constituents (20-day), equal-weighted, rebalanced every 15 trading days.",
+      "tags": [
+        "volatility",
+        "statistical"
+      ]
+    },
+    {
+      "name": "alpha30_mean_reversion",
+      "category": "universe/alpha",
+      "path": "universe/alpha/mean_reversion",
+      "description": "Alpha-30 portfolio of the 10 most oversold constituents (lowest 20-day price z-score), equal-weighted, rebalanced periodically.",
+      "tags": [
+        "statistical"
+      ]
+    },
+    {
+      "name": "alpha30_momentum",
+      "category": "universe/alpha",
+      "path": "universe/alpha/momentum",
+      "description": "Alpha-30 portfolio of the 10 highest-momentum constituents over a 60-day window, equal-weighted, rebalanced periodically.",
+      "tags": [
+        "momentum",
+        "statistical"
+      ]
+    },
+    {
+      "name": "alpha30_quality",
+      "category": "universe/alpha",
+      "path": "universe/alpha/quality",
+      "description": "Equal-weight allocation across the quality-screened Nifty200 Alpha 30 universe, rebalanced every 29 days.",
+      "tags": [
+        "statistical"
+      ]
+    },
+    {
       "name": "equal_weight",
       "category": "portfolio/rebalancing",
       "path": "portfolio/rebalancing/equal_weight",
-      "description": "Equal-weight periodic rebalance of a named universe (default Nifty200 Alpha 30, every 15 trading days): exit leavers, enter joiners, trim winners and top up laggards.",
+      "description": "Equal-weight periodic rebalance of a named universe (default Nifty200 Alpha 30, every 15 trading days): exit leavers, enter joiners, trim winners and top up laggards. Keywords: alpha30, nifty200_alpha30, equal_weight, rebalancing, portfolio, multi_instrument.",
       "tags": [
         "breadth",
         "statistical"
-      ],
-      "keywords": [
-        "alpha30",
-        "nifty200_alpha30",
-        "equal_weight",
-        "rebalancing",
-        "portfolio",
-        "multi_instrument"
       ]
     }
   ]
