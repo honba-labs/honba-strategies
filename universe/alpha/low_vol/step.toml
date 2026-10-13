@@ -1,0 +1,82 @@
+schema = 1
+id = "size.alpha30_low_vol"
+kind = "size"
+title = "Alpha 30 low volatility"
+description = "Top 15 Alpha 30 members by lowest 20-bar volatility, equal weight, rebalanced every 15 days."
+tags = ["portfolio", "rebalance", "low_vol"]
+
+# Takes the whole universe and does selection, weighting and scheduling itself, so today it consumes
+# 'universe' and emits orders directly. A future split into select/weight steps would consume 'candidates'.
+# history_bars 64 is the engine minimum; the real figure is the longest lookback in use.
+
+[params.universe]
+type = "symbols"
+default = "nifty200_alpha30"
+description = "Engine-known universe name (honba.markets.india.universes) or a list of 'SYMBOL' / 'SYMBOL:EXCHANGE'."
+sweepable = false
+
+[params.point_in_time]
+type = "bool"
+optional = true
+description = "Use historical membership snapshots (named universes only); needs the engine's universe history, else the engine raises. Omitted means false."
+sweepable = false
+
+[params.weighting]
+type = "str"
+default = "equal"
+pattern = "^(equal|inverse_vol(:([2-9]|[1-9][0-9]+))?)$"
+description = "Weights: 'equal', 'inverse_vol' or 'inverse_vol:<lookback>'."
+sweepable = false
+
+[params.schedule]
+type = "str"
+default = "every:15d"
+pattern = "^(every:[1-9][0-9]*d|monthly:first_session|drift:([0-9]+[.]?[0-9]*|[.][0-9]+))(\\+(every:[1-9][0-9]*d|monthly:first_session|drift:([0-9]+[.]?[0-9]*|[.][0-9]+)))*$"
+description = "Rebalance trigger: 'every:<N>d', 'monthly:first_session' or 'drift:<tolerance>'; join with '+' for any-of."
+sweepable = true
+
+[params.select]
+type = "str"
+default = "top:15:low_vol:20"
+pattern = "^top:[1-9][0-9]*:(momentum|low_vol|mean_reversion):([2-9]|[1-9][0-9]+)$"
+description = "Selection: 'top:<n>:<momentum|low_vol|mean_reversion>:<lookback>'."
+sweepable = true
+
+[params.allocation]
+type = "float"
+default = 0.98
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of portfolio value to deploy; must be in (0, 1]."
+sweepable = false
+
+[params.history_len]
+type = "int"
+optional = true
+min = 1
+max = 2000
+step = 1
+description = "Closes kept per instrument; omitted means max(64, longest lookback in use). Must be >= the longest lookback."
+sweepable = false
+
+[requires]
+bars = ["close"]
+fundamentals = []
+indicators = []
+history_bars = 64
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]

@@ -1,0 +1,65 @@
+schema = 1
+id = "signal.donchian_trend"
+kind = "signal"
+title = "Donchian trend"
+description = "Long-only: buy a close above the previous N-bar high while above a trend SMA; exit on a close below the previous N-bar low."
+tags = ["trend", "breakout", "long_only"]
+
+[params.period]
+type = "int"
+default = 20
+min = 2
+max = 200
+step = 1
+description = "Channel lookback (bars, excludes the current bar). Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.trend_sma]
+type = "int"
+default = 200
+min = 2
+max = 400
+step = 1
+description = "Trend filter SMA period. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy."
+sweepable = false
+
+[params.allocation]
+type = "float"
+default = 0.95
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed per entry; the strategy requires 0 < allocation <= 1."
+sweepable = false
+
+[requires]
+bars = ["high", "low", "close"]
+fundamentals = []
+indicators = [
+  { kind = "donchian", period = "$period", as = "channel" },
+  { kind = "sma", period = "$trend_sma", as = "trend" },
+]
+history_bars = "$trend_sma"
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]

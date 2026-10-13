@@ -1,0 +1,103 @@
+schema = 1
+id = "signal.bollinger_breakout"
+kind = "signal"
+title = "Bollinger breakout"
+description = "Long-only: buy a close above the upper Bollinger band (on hl2) while above the Ichimoku cloud; exit below the middle band."
+tags = ["breakout", "volatility", "long_only"]
+
+# history_bars is approximate: the cloud also needs displacement more bars.
+
+[params.period]
+type = "int"
+default = 20
+min = 2
+max = 200
+step = 1
+description = "Bollinger period (on hl2). Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.mult]
+type = "float"
+default = 2.0
+min = 0.5
+max = 5.0
+step = 0.1
+description = "Band width in standard deviations. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.tenkan]
+type = "int"
+default = 9
+min = 2
+max = 100
+step = 1
+description = "Ichimoku conversion line period. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.kijun]
+type = "int"
+default = 26
+min = 2
+max = 200
+step = 1
+description = "Ichimoku base line period. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.senkou_b]
+type = "int"
+default = 52
+min = 2
+max = 400
+step = 1
+description = "Ichimoku span B period. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.displacement]
+type = "int"
+default = 26
+min = 1
+max = 100
+step = 1
+description = "Cloud displacement (bars). Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy."
+sweepable = false
+
+[params.allocation]
+type = "float"
+default = 0.95
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed per entry; the strategy requires 0 < allocation <= 1."
+sweepable = false
+
+[requires]
+bars = ["high", "low", "close"]
+fundamentals = []
+indicators = [
+  { kind = "bollinger", period = "$period", mult = "$mult", as = "bands" },
+  { kind = "ichimoku", tenkan = "$tenkan", kijun = "$kijun", senkou_b = "$senkou_b", displacement = "$displacement", as = "cloud" },
+]
+history_bars = "$senkou_b"
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]

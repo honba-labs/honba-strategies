@@ -1,0 +1,92 @@
+schema = 1
+id = "signal.macd_trend"
+kind = "signal"
+title = "MACD trend"
+description = "Long-only: buy when MACD is above its signal line and the close is above the trend EMA; exit when both flip."
+tags = ["trend", "long_only"]
+
+# history_bars is approximate: the true warm-up is max(ema, slowperiod + signal - 1).
+
+[params.ema]
+type = "int"
+default = 100
+min = 5
+max = 400
+step = 1
+description = "Trend EMA period (bars). Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.fastperiod]
+type = "int"
+default = 12
+min = 2
+max = 50
+step = 1
+description = "MACD fast EMA period; must be below slowperiod. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.slowperiod]
+type = "int"
+default = 26
+min = 5
+max = 100
+step = 1
+description = "MACD slow EMA period. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.signal]
+type = "int"
+default = 9
+min = 2
+max = 50
+step = 1
+description = "MACD signal EMA period. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.seed]
+type = "enum"
+default = "sma"
+choices = ["sma", "first"]
+description = "EMA seeding: \"sma\" (TA-Lib) or \"first\" (Jesse)."
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy."
+sweepable = false
+
+[params.allocation]
+type = "float"
+default = 0.95
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed per entry; the strategy requires 0 < allocation <= 1."
+sweepable = false
+
+[requires]
+bars = ["close"]
+fundamentals = []
+indicators = [
+  { kind = "ema", period = "$ema", seed = "$seed", as = "trend" },
+  { kind = "macd", fast = "$fastperiod", slow = "$slowperiod", signal = "$signal", seed = "$seed", as = "macd" },
+]
+history_bars = "$ema"
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]

@@ -1,0 +1,94 @@
+schema = 1
+id = "signal.rsi_oversold"
+kind = "signal"
+title = "RSI oversold"
+description = "Long-only dip buying in an uptrend: buy when RSI is below entry above the trend SMA; exit above exit or after max_hold bars."
+tags = ["mean_reversion", "oscillator", "long_only"]
+
+# The trend SMA is only built when trend_sma > 0. entry/exit are floats in the code; the config values are whole numbers.
+
+[params.rsi_period]
+type = "int"
+default = 4
+min = 2
+max = 50
+step = 1
+description = "RSI period. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.entry]
+type = "float"
+default = 25
+min = 1
+max = 50
+step = 1
+description = "Buy when RSI is below this; must be below exit. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.exit]
+type = "float"
+default = 60
+min = 30
+max = 99
+step = 1
+description = "Sell when RSI is above this. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.trend_sma]
+type = "int"
+default = 50
+min = 0
+max = 400
+step = 1
+description = "Only buy above this SMA; 0 disables the filter. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.max_hold]
+type = "int"
+default = 10
+min = 1
+max = 100
+step = 1
+description = "Exit after this many bars in the trade. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy."
+sweepable = false
+
+[params.allocation]
+type = "float"
+default = 0.95
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed per entry; the strategy requires 0 < allocation <= 1."
+sweepable = false
+
+[requires]
+bars = ["close"]
+fundamentals = []
+indicators = [
+  { kind = "rsi", period = "$rsi_period", as = "rsi" },
+  { kind = "sma", period = "$trend_sma", as = "trend" },
+]
+history_bars = "$trend_sma"
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]

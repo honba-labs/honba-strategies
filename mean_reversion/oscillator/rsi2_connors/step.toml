@@ -1,0 +1,75 @@
+schema = 1
+id = "signal.rsi2_connors"
+kind = "signal"
+title = "RSI(2) Connors"
+description = "Long-only RSI(2) mean reversion: buy RSI(2) at or below oversold above the trend SMA; exit above a short SMA."
+tags = ["mean_reversion", "oscillator", "long_only"]
+
+[params.oversold]
+type = "float"
+default = 10
+min = 1
+max = 50
+step = 1
+description = "Buy when RSI(2) is at or below this. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.trend_sma]
+type = "int"
+default = 200
+min = 2
+max = 400
+step = 1
+description = "Only buy above this SMA. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.exit_sma]
+type = "int"
+default = 5
+min = 1
+max = 50
+step = 1
+description = "Sell when the close is above this SMA. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy."
+sweepable = false
+
+[params.allocation]
+type = "float"
+default = 0.95
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed per entry; the strategy requires 0 < allocation <= 1."
+sweepable = false
+
+[requires]
+bars = ["close"]
+fundamentals = []
+indicators = [
+  { kind = "rsi", period = 2, as = "rsi2" },
+  { kind = "sma", period = "$trend_sma", as = "trend" },
+  { kind = "sma", period = "$exit_sma", as = "exit" },
+]
+history_bars = "$trend_sma"
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]

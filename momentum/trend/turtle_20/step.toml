@@ -1,0 +1,90 @@
+schema = 1
+id = "signal.turtle_20"
+kind = "signal"
+title = "Turtle 20"
+description = "Simplified Turtle System 1: N-bar high breakout, shorter low exit, ATR protective stop; long-only, no pyramiding."
+tags = ["trend", "breakout", "long_only", "stop_loss"]
+
+[params.entry]
+type = "int"
+default = 20
+min = 2
+max = 200
+step = 1
+description = "Entry breakout lookback (bars). Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.exit]
+type = "int"
+default = 10
+min = 2
+max = 100
+step = 1
+description = "Exit channel lookback (bars). Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.atr_period]
+type = "int"
+default = 20
+min = 2
+max = 100
+step = 1
+description = "ATR period for the protective stop. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.atr_mult]
+type = "float"
+default = 2.0
+min = 0.5
+max = 10.0
+step = 0.25
+description = "Stop distance in ATRs below entry. Bounds are a catalog choice; the strategy does not enforce them."
+sweepable = true
+
+[params.atr_first_bar]
+type = "bool"
+default = false
+description = "True: the first true range is high-low (Jesse's convention)."
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy."
+sweepable = false
+
+[params.allocation]
+type = "float"
+default = 0.95
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed per entry; the strategy requires 0 < allocation <= 1."
+sweepable = false
+
+[requires]
+bars = ["high", "low", "close"]
+fundamentals = []
+indicators = [
+  { kind = "donchian", period = "$entry", as = "entry_channel" },
+  { kind = "donchian", period = "$exit", as = "exit_channel" },
+  { kind = "atr", period = "$atr_period", include_first_bar = "$atr_first_bar", as = "stop_atr" },
+]
+history_bars = "$entry"
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]

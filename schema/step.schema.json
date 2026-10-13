@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/honba-labs/honba-strategies/schema/step.schema.json",
+  "title": "Honba step manifest",
+  "description": "step.toml: a declarative description of one chainable step (screen, filter, signal, size, risk, execute). Enough for a GUI to render a form for the params and to check that steps can be chained, without importing any Python.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "id", "kind", "title", "params", "requires", "consumes", "emits"],
+  "properties": {
+    "schema": { "const": 1 },
+    "id": {
+      "type": "string",
+      "pattern": "^(screen|filter|signal|size|risk|execute)\\.[a-z][a-z0-9_]*$",
+      "description": "'<kind>.<registry name>'."
+    },
+    "kind": { "enum": ["screen", "filter", "signal", "size", "risk", "execute"] },
+    "title": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "tags": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+      "description": "Semantic tags for search in a GUI (free-form, unlike registry.json tags which are indicator families)."
+    },
+    "params": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z][a-z0-9_]*$" },
+      "additionalProperties": { "$ref": "#/$defs/param" }
+    },
+    "requires": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "What the step LOOKS AT: data it reads or filters on.",
+      "properties": {
+        "bars": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "enum": ["open", "high", "low", "close", "volume", "ts"] }
+        },
+        "fundamentals": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+        },
+        "indicators": { "type": "array", "items": { "$ref": "#/$defs/indicator" } },
+        "history_bars": {
+          "description": "Bars of history needed before the first decision: an integer, or '$param' naming an int param (the default is used).",
+          "anyOf": [
+            { "type": "integer", "minimum": 0 },
+            { "type": "string", "pattern": "^\\$[a-z][a-z0-9_]*$" }
+          ]
+        },
+        "pit": { "type": "boolean", "description": "True when the step needs point-in-time (survivorship-free) data." }
+      }
+    },
+    "consumes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shape"],
+      "properties": {
+        "shape": { "$ref": "#/$defs/shape" },
+        "columns": { "$ref": "#/$defs/columns" }
+      }
+    },
+    "emits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shape"],
+      "properties": {
+        "shape": { "$ref": "#/$defs/shape" },
+        "adds": { "$ref": "#/$defs/columns", "description": "Columns appended to the rows." },
+        "report": {
+          "$ref": "#/$defs/columns",
+          "description": "Columns always reported, even if the step does not filter on them."
+        },
+        "reportable": {
+          "$ref": "#/$defs/columns",
+          "description": "Extra columns a user may ask this step to report."
+        }
+      }
+    },
+    "chain": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "after": { "$ref": "#/$defs/neighbours" },
+        "before": { "$ref": "#/$defs/neighbours" }
+      }
+    }
+  },
+  "$defs": {
+    "shape": { "enum": ["universe", "candidates", "weights", "orders", "none"] },
+    "columns": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+    },
+    "neighbours": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["universe", "screen", "filter", "signal", "size", "risk", "execute"] },
+      "description": "Hints for a GUI palette ('universe' is the starting universe, the others are step kinds). The enforced rule is the kind order, not these lists."
+    },
+    "indicator": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "type": "string", "minLength": 1, "description": "Name in honba.strategies.indicators.list_indicators()." },
+        "as": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+      },
+      "additionalProperties": {
+        "description": "Indicator parameter: a literal, or '$param' to bind it to a step param.",
+        "type": ["number", "string", "boolean"]
+      }
+    },
+    "param": {
+      "type": "object",
+      "required": ["type", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "enum": ["int", "float", "bool", "str", "enum", "date", "symbols", "window"] },
+        "default": {},
+        "optional": { "type": "boolean", "description": "True when the param may be omitted and has no default (then 'default' must be absent)." },
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "step": { "type": "number", "exclusiveMinimum": 0 },
+        "choices": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+        "pattern": { "type": "string", "description": "Regex a str value must match (anchored)." },
+        "description": { "type": "string", "minLength": 1 },
+        "sweepable": { "type": "boolean", "description": "Whether an optimiser may vary this param." }
+      },
+      "allOf": [
+        { "if": { "properties": { "type": { "const": "enum" } } }, "then": { "required": ["choices"] } },
+        { "if": { "required": ["optional"], "properties": { "optional": { "const": true } } },
+          "then": { "not": { "required": ["default"] } },
+          "else": { "required": ["default"] } },
+        { "if": { "properties": { "type": { "const": "int" } } },
+          "then": { "properties": { "default": { "type": "integer" }, "min": { "type": "integer" }, "max": { "type": "integer" } } } },
+        { "if": { "properties": { "type": { "const": "float" } } },
+          "then": { "properties": { "default": { "type": "number" } } } },
+        { "if": { "properties": { "type": { "const": "bool" } } },
+          "then": { "properties": { "default": { "type": "boolean" } } } },
+        { "if": { "properties": { "type": { "enum": ["str", "enum", "date", "window"] } } },
+          "then": { "properties": { "default": { "type": "string" } } } },
+        { "if": { "properties": { "type": { "const": "symbols" } } },
+          "then": { "properties": { "default": { "type": ["string", "array"] } } } }
+      ]
+    }
+  }
+}

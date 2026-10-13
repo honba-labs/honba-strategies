@@ -1,0 +1,68 @@
+schema = 1
+id = "signal.sma_crossover"
+kind = "signal"
+title = "SMA crossover"
+description = "Long-only: buy when the fast SMA is above the slow SMA, exit when it falls below."
+tags = ["trend", "long_only"]
+
+# Defaults follow config.toml (fast 20, slow 50). strategy.py's Parameter() defaults are 10 and 30;
+# test_step_manifests.py records that mismatch explicitly.
+
+[params.fast]
+type = "int"
+default = 20
+min = 2
+max = 50
+step = 1
+description = "Fast SMA period (bars); must be below slow. Bounds mirror Parameter() in strategy.py."
+sweepable = true
+
+[params.slow]
+type = "int"
+default = 50
+min = 5
+max = 200
+step = 1
+description = "Slow SMA period (bars). Bounds mirror Parameter() in strategy.py."
+sweepable = true
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy."
+sweepable = false
+
+[params.allocation]
+type = "float"
+default = 0.95
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed per entry; the strategy requires 0 < allocation <= 1."
+sweepable = false
+
+[requires]
+bars = ["close"]
+fundamentals = []
+indicators = [
+  { kind = "sma", period = "$fast", as = "fast" },
+  { kind = "sma", period = "$slow", as = "slow" },
+]
+history_bars = "$slow"
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]
