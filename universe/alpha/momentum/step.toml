@@ -1,12 +1,12 @@
 schema = 1
-id = "size.alpha30_momentum"
-kind = "size"
+id = "execute.alpha30_momentum"
+kind = "execute"
 title = "Alpha 30 momentum"
 description = "Top 10 Alpha 30 members by 60-bar momentum, equal weight, rebalanced every 15 days."
 tags = ["portfolio", "rebalance", "momentum"]
 
-# Takes the whole universe and does selection, weighting and scheduling itself, so today it consumes
-# 'universe' and emits orders directly. A future split into select/weight steps would consume 'candidates'.
+# A self-contained portfolio strategy: it does selection, weighting and scheduling itself and
+# trades, so it is an 'execute' step, not a sizer (a sizer maps candidates to weights).
 # history_bars 64 is the engine minimum; the real figure is the longest lookback in use.
 
 [params.universe]
@@ -79,4 +79,4 @@ reportable = []
 
 [chain]
 after = ["universe"]
-before = ["risk", "execute"]
+before = []

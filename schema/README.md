@@ -21,23 +21,46 @@ them).
 | `title`, `description`, `tags` | Display text and free-form semantic tags (not the indicator-family tags of `registry.json`). |
 | `[params.<name>]` | One table per parameter: `type` (`int`, `float`, `bool`, `str`, `enum`, `date`, `symbols`, `window`), `default`, `min`/`max`/`step` (numbers), `choices` (enum), `pattern` (str regex), `description`, `sweepable`. `optional = true` means no default and the param may be omitted. |
 | `[requires]` | What it looks at: `bars` (OHLCV columns), `fundamentals`, `indicators` (`kind` from `honba.strategies.indicators.list_indicators()`, its args, optional `as` alias), `history_bars`, `pit` (needs point-in-time data). An indicator arg or `history_bars` may be `"$param"` to bind it to a step param. |
-| `[consumes]` | What it needs from the previous step: `shape` and `columns`. |
+| `[consumes]` | What it needs from the previous step: `shape` (one shape, or a list of accepted shapes) and `columns`. |
 | `[emits]` | `shape`; `adds` (columns appended), `report` (always reported), `reportable` (extra columns a user may ask it to report). |
 | `[chain]` | `after` / `before`: palette hints (kinds or `universe`). The enforced rule is the kind order below. |
 
 Shapes: `universe`, `candidates`, `weights`, `orders`, `none`.
 
+## Stage semantics
+
+A portfolio chain moves data through fixed stages:
+
+```
+universe --screen--> candidates --filter--> candidates --size--> weights --execute--> orders / result
+```
+
+| Kind | Consumes | Emits | Meaning |
+|---|---|---|---|
+| `screen` | `universe` or `none` | `candidates` | Pick instruments from a universe. |
+| `filter` | `candidates` | `candidates` | Narrow or annotate the candidates. |
+| `signal` | `universe` | `orders` | Per-symbol timing: a single-instrument bar strategy (e.g. `signal.sma_crossover`). Standalone. |
+| `size` | `candidates` | `weights` | Turn candidates into target weights. It does not trade. |
+| `risk` | `orders` | `orders` | Adjust orders. |
+| `execute` | `weights` **or** `universe` | `orders` or `result` | Trade. Given `weights` it executes them; given a `universe` it is a self-contained portfolio strategy that selects, weights and schedules itself (the `portfolio/` and `universe/alpha/` strategies). |
+
+`signal` and `size` are both optional, but they are two different kinds of chain: a portfolio chain
+is `screen -> filter -> size -> execute`, and a bar-strategy chain is a lone `signal` (or a lone
+self-contained `execute`). A `signal` cannot feed a `size`: it already emits orders, and a sizer
+needs candidates. The validator says so when you try.
+
 ## Chaining rules
 
 `tools/validate_chain.py::validate_chain(steps)` returns a list of error strings; empty means valid.
 
-1. Shape: the previous step's `emits.shape` must equal the next step's `consumes.shape`. The first
-   step may only consume `universe` (supplied by its params) or `none`.
+1. Shape: the previous step's `emits.shape` must be one of the next step's accepted
+   `consumes.shape` values (a single string, or a list). The first step must accept `universe`
+   (supplied by its params) or `none`.
 2. Columns: every `consumes.columns` entry must be provided by an earlier step's `emits.adds` or
    `emits.report` (or a column the user asked it to report from `reportable`), or be listed in the
    step's own `requires.fundamentals` (fetchable). Every universe row has `symbol`.
 3. Kind order: `screen -> filter -> signal -> size -> risk -> execute`, repeats allowed, never
-   going backwards.
+   going backwards. `signal` and `size` are each optional (see Stage semantics).
 4. Params: values given to a step (`with = {...}`) must match the declared type, `min`/`max`,
    `choices` and `pattern`.
 

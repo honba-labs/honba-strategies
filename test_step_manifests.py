@@ -176,3 +176,39 @@ def test_schema_rejects_bad_manifest(mutate):
     s = copy.deepcopy(_good())
     mutate(s)
     assert validate(s, load_schema()) != []
+
+
+PORTFOLIO = {
+    "equal_weight",
+    "alpha30_factor",
+    "alpha30_low_vol",
+    "alpha30_mean_reversion",
+    "alpha30_momentum",
+    "alpha30_quality",
+}
+
+
+@pytest.mark.parametrize("name", sorted(PORTFOLIO))
+def test_portfolio_strategies_are_execute_steps(name):
+    e = next(x for x in ENTRIES if x["name"] == name)
+    s = _step(e)
+    assert (s["kind"], s["id"]) == ("execute", f"execute.{name}")
+    shapes = s["consumes"]["shape"]
+    assert "universe" in (shapes if isinstance(shapes, list) else [shapes])
+    assert s["emits"]["shape"] == "orders"
+
+
+def test_no_registered_step_is_kind_size():
+    # a sizer consumes candidates and emits weights; none of the catalog strategies is one
+    assert [e["name"] for e in ENTRIES if _step(e)["kind"] == "size"] == []
+
+
+def test_schema_accepts_list_or_string_consumes_shape():
+    s = copy.deepcopy(_good())
+    s["consumes"]["shape"] = ["weights", "universe"]
+    assert schema_errors(s) == []
+    s["consumes"]["shape"] = "universe"
+    assert schema_errors(s) == []
+    for bad in ([], ["rows"], ["universe", "universe"], 3):
+        s["consumes"]["shape"] = bad
+        assert schema_errors(s) != [], bad

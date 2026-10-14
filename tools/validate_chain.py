@@ -87,6 +87,23 @@ def value_errors(spec: dict, value: Any) -> list[str]:
     return errs
 
 
+def accepted_shapes(step: dict) -> list:
+    """The shapes ``step`` accepts: ``consumes.shape`` may be one string or a list of them."""
+    shape = step.get("consumes", {}).get("shape")
+    return list(shape) if isinstance(shape, list) else [shape]
+
+
+def _shape_hint(prev: dict, step: dict, produced: Any) -> str:
+    """Extra guidance for the usual way a chain gets its shapes wrong."""
+    if produced == "orders" and step.get("kind") in ("screen", "filter", "size"):
+        return (
+            f" ({prev.get('id')} already emits orders; a single-instrument signal is a"
+            f" standalone strategy. A '{step.get('kind')}' step needs candidates from a"
+            f" screen/filter chain: screen -> filter -> size -> execute)"
+        )
+    return ""
+
+
 def validate_chain(steps: list[dict]) -> list[str]:
     """Errors for running ``steps`` in order; an empty list means the chain is valid."""
     errs: list[str] = []
@@ -109,17 +126,19 @@ def validate_chain(steps: list[dict]) -> list[str]:
                     f"(order is {' -> '.join(KIND_ORDER)})"
                 )
         consumes = step.get("consumes", {})
-        shape = consumes.get("shape")
+        shapes = accepted_shapes(step)
+        shape = shapes[0] if len(shapes) == 1 else shapes
         if prev is None:
-            if shape not in FIRST_SHAPES:
+            if not set(shapes) & set(FIRST_SHAPES):
                 errs.append(
                     f"{sid}: first step must consume one of {FIRST_SHAPES}, not {shape!r}"
                 )
         else:
             produced = prev.get("emits", {}).get("shape")
-            if produced != shape:
+            if produced not in shapes:
                 errs.append(
                     f"{sid}: consumes shape {shape!r} but {prev.get('id')} emits {produced!r}"
+                    + _shape_hint(prev, step, produced)
                 )
         fetchable = set(step.get("requires", {}).get("fundamentals", []))
         for col in consumes.get("columns", []):

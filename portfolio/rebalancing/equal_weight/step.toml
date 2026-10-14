@@ -1,12 +1,12 @@
 schema = 1
-id = "size.equal_weight"
-kind = "size"
+id = "execute.equal_weight"
+kind = "execute"
 title = "Equal-weight rebalance"
 description = "Every schedule, re-read the universe, drop leavers, add joiners and return each member to 1/N."
 tags = ["portfolio", "rebalance", "equal_weight"]
 
-# Takes the whole universe and does selection, weighting and scheduling itself, so today it consumes
-# 'universe' and emits orders directly. A future split into select/weight steps would consume 'candidates'.
+# A self-contained portfolio strategy: it does selection, weighting and scheduling itself and
+# trades, so it is an 'execute' step, not a sizer (a sizer maps candidates to weights).
 # history_bars 64 is the engine minimum; the real figure is the longest lookback in use.
 
 [params.universe]
@@ -68,7 +68,8 @@ history_bars = 64
 pit = false
 
 [consumes]
-shape = "universe"
+# also accepts the weights of a size step in a screen -> filter -> size -> execute chain
+shape = ["weights", "universe"]
 columns = ["symbol"]
 
 [emits]
@@ -78,5 +79,5 @@ report = []
 reportable = []
 
 [chain]
-after = ["universe"]
-before = ["risk", "execute"]
+after = ["universe", "size"]
+before = []

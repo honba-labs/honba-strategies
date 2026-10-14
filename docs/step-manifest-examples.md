@@ -26,11 +26,12 @@ with = { min_roe = 15.0, ema_period = 200 }
 report = ["market_cap", "dividend_yield_pct"]
 
 [[steps]]
-id = "size.equal_weight_candidates"  # future: a sizer that consumes 'candidates'
+id = "size.equal_weight"             # future here: a sizer, candidates -> weights (honba-examples has one)
 with = { allocation = 0.95 }
 
 [[steps]]
-id = "execute.paper"                 # future
+id = "execute.equal_weight"          # exists: portfolio/rebalancing/equal_weight/step.toml
+# consumes weights (or a bare universe) and emits orders
 ```
 
 The manifest behind `filter.fundamental_trend` would declare the looked-at and reported data
@@ -82,19 +83,20 @@ before = ["signal", "size"]
 ```
 
 Compatibility: `screen` emits `universe`, `filter` consumes `universe` and emits `candidates`,
-the sizer consumes `candidates` and emits `orders`, `execute` consumes `orders`. Kinds run
+the sizer consumes `candidates` and emits `weights`, `execute.equal_weight` accepts `weights`
+(its `consumes.shape` is the list `["weights", "universe"]`) and emits `orders`. Kinds run
 screen, filter, size, execute, which is in order. The `report` list is accepted because both
 columns are in `reportable`; asking for a column outside it is an error.
 
-Exists today: the schema, `tools/validate_chain.py` and its rules. Future: every id above.
-Today's `size.*` steps consume `universe`, not `candidates` (see example 2), so this chain needs
-a `candidates`-consuming sizer.
+Exists today: the schema, `tools/validate_chain.py`, its rules and `execute.equal_weight`.
+Future: the screen, filter and size ids above (no sizer is registered in this catalog; none of the
+catalog strategies is a sizer).
 
 ## 2. Real registered ids (exists today)
 
 Every registered step is self-contained: it takes a universe or symbol from its params and emits
 orders (`side`, `quantity`). Today a chain is therefore a single trading step; screens, filters,
-risk and execution do not exist yet as steps.
+sizers and risk do not exist in this catalog yet.
 
 ```toml
 [[steps]]
@@ -102,15 +104,17 @@ id = "signal.sma_crossover"          # exists: momentum/trend/sma_crossover/step
 with = { fast = 10, slow = 30, allocation = 0.5 }
 ```
 
-Portfolio form (exists):
+Portfolio form (exists). The six portfolio strategies are `execute` steps: they consume a
+`universe` and do selection, weighting and scheduling themselves.
 
 ```toml
 [[steps]]
-id = "size.alpha30_momentum"         # exists: universe/alpha/momentum/step.toml
+id = "execute.alpha30_momentum"      # exists: universe/alpha/momentum/step.toml
 with = { select = "top:5:momentum:60", schedule = "monthly:first_session" }
 ```
 
-Not valid today (shape mismatch: `orders` is not a `universe`); the validator reports it:
+Not valid (a signal already emits `orders`, and a sizer consumes `candidates`); the validator
+reports it and explains that sizing belongs in a screen -> filter -> size -> execute chain:
 
 ```toml
 [[steps]]

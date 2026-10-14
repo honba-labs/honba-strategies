@@ -129,3 +129,49 @@ def test_real_registered_steps_chain():
     sma = load_step(ROOT / "momentum/trend/sma_crossover/step.toml")
     assert validate_chain([sma]) == []
     assert validate_chain([sma, sma]) != []  # orders are not a universe
+
+
+# --- canonical stage semantics: screen -> filter -> size -> execute -------------------------
+
+SIZE = step("size.eq", "size", "candidates", "weights", adds=["weight"])
+
+
+def test_consumes_shape_may_be_a_list():
+    ex = step("execute.pf", "execute", ["weights", "universe"], "orders")
+    assert validate_chain([SCREEN, FILTER, SIZE, ex]) == []  # weights is in the list
+    assert validate_chain([SCREEN, ex]) == []  # so is universe
+    errs = validate_chain([SCREEN, FILTER, ex])  # candidates is not
+    assert len(errs) == 1 and "candidates" in errs[0] and "weights" in errs[0]
+
+
+def test_first_step_may_consume_a_list_containing_universe():
+    ex = step("execute.pf", "execute", ["weights", "universe"], "orders")
+    assert validate_chain([ex]) == []
+    only_weights = step("execute.w", "execute", ["weights"], "orders")
+    assert any("first step" in e for e in validate_chain([only_weights]))
+
+
+def test_portfolio_execute_after_size_from_a_chain():
+    eq = load_step(ROOT / "portfolio/rebalancing/equal_weight/step.toml")
+    assert validate_chain([SCREEN, FILTER, SIZE, eq]) == []
+
+
+def test_portfolio_execute_straight_from_universe():
+    mom = load_step(ROOT / "universe/alpha/momentum/step.toml")
+    assert validate_chain([mom]) == []
+    assert validate_chain([SCREEN, mom]) == []
+
+
+def test_signal_then_size_is_rejected_with_a_helpful_message():
+    sma = load_step(ROOT / "momentum/trend/sma_crossover/step.toml")
+    eq = step("size.equal_weight", "size", "candidates", "weights")
+    errs = validate_chain([sma, eq])
+    assert len(errs) == 1
+    assert "emits 'orders'" in errs[0] and "consumes shape 'candidates'" in errs[0]
+    assert "signal" in errs[0] and "screen" in errs[0] and "filter" in errs[0]
+
+
+def test_signal_then_portfolio_execute_is_rejected():
+    sma = load_step(ROOT / "momentum/trend/sma_crossover/step.toml")
+    eq = load_step(ROOT / "portfolio/rebalancing/equal_weight/step.toml")
+    assert validate_chain([sma, eq]) != []

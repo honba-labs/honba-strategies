@@ -58,7 +58,13 @@
       "additionalProperties": false,
       "required": ["shape"],
       "properties": {
-        "shape": { "$ref": "#/$defs/shape" },
+        "shape": {
+          "description": "One shape, or a list of shapes the step accepts (e.g. an execute step taking 'weights' from a sizer or a bare 'universe').",
+          "anyOf": [
+            { "$ref": "#/$defs/shape" },
+            { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/shape" } }
+          ]
+        },
         "columns": { "$ref": "#/$defs/columns" }
       }
     },
