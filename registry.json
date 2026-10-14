@@ -149,7 +149,7 @@
       "name": "alpha30_quality",
       "category": "universe/alpha",
       "path": "universe/alpha/quality",
-      "description": "Equal-weight allocation across the quality-screened Nifty200 Alpha 30 universe, rebalanced every 29 days.",
+      "description": "Equal-weight allocation across the whole Nifty200 Alpha 30 universe (no quality screening is applied), rebalanced every 29 days.",
       "tags": [
         "statistical"
       ]
