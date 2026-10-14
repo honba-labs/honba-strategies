@@ -65,7 +65,7 @@ To change parameters, update `cs.config.indicators["trend"]` (for example `cs.co
 
 ```toml
 [[steps]]
-uses = "signal.supertrend_follow"
+id = "signal.supertrend_follow"
 with = { atr_period = 10, factor = 3.0 }
 ```
 

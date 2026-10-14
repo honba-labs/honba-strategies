@@ -65,7 +65,7 @@ To change parameters, update `cs.config.params` (for example `cs.config.params.u
 
 ```toml
 [[steps]]
-uses = "signal.turtle_20"
+id = "signal.turtle_20"
 with = { entry = 20, exit = 10, atr_period = 20, atr_mult = 2.0 }
 ```
 

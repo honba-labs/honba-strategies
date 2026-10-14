@@ -65,7 +65,7 @@ To change parameters, update `cs.config.params` (for example `cs.config.params.u
 
 ```toml
 [[steps]]
-uses = "signal.sma_crossover"
+id = "signal.sma_crossover"
 with = { fast = 20, slow = 50 }
 ```
 

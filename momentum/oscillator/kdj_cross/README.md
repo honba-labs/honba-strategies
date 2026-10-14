@@ -68,7 +68,7 @@ To change parameters, update `cs.config.params` (for example `cs.config.params.u
 
 ```toml
 [[steps]]
-uses = "signal.kdj_cross"
+id = "signal.kdj_cross"
 with = { fastk = 9, slowk = 3, slowd = 3, atr_period = 14, atr_mult = 2.0 }
 ```
 

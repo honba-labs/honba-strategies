@@ -65,7 +65,7 @@ To change parameters, update `cs.config.params` (for example `cs.config.params.u
 
 ```toml
 [[steps]]
-uses = "signal.ifr2"
+id = "signal.ifr2"
 with = { oversold = 10, tenkan = 9, kijun = 26, senkou_b = 52, displacement = 26 }
 ```
 

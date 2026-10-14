@@ -65,7 +65,7 @@ To change parameters, update `cs.config.params` (for example `cs.config.params.u
 
 ```toml
 [[steps]]
-uses = "signal.macd_trend"
+id = "signal.macd_trend"
 with = { ema = 100, fastperiod = 12, slowperiod = 26, signal = 9 }
 ```
 

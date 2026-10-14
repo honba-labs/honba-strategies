@@ -68,7 +68,7 @@ To change parameters, update `cs.config.params` (for example `cs.config.params.u
 
 ```toml
 [[steps]]
-uses = "signal.bollinger_breakout"
+id = "signal.bollinger_breakout"
 with = { period = 20, mult = 2.0, tenkan = 9, kijun = 26, senkou_b = 52, displacement = 26 }
 ```
 

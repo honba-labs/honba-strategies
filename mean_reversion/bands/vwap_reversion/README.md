@@ -63,7 +63,7 @@ This strategy needs **intraday bars with real volume** (the VWAP is volume weigh
 
 ```toml
 [[steps]]
-uses = "signal.vwap_reversion"
+id = "signal.vwap_reversion"
 with = { band_mult = 2.0, entry_cutoff = "14:30", squareoff = "15:15" }
 ```
 

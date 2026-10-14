@@ -65,7 +65,7 @@ To change parameters, update `cs.config.params` (for example `cs.config.params.u
 
 ```toml
 [[steps]]
-uses = "signal.rsi2_connors"
+id = "signal.rsi2_connors"
 with = { oversold = 10, trend_sma = 200, exit_sma = 5 }
 ```
 

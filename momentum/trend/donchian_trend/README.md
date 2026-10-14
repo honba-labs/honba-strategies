@@ -64,7 +64,7 @@ To change parameters, update `cs.config.params` (for example `cs.config.params.u
 
 ```toml
 [[steps]]
-uses = "signal.donchian_trend"
+id = "signal.donchian_trend"
 with = { period = 20, trend_sma = 200 }
 ```
 

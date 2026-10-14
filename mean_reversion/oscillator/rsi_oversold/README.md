@@ -67,7 +67,7 @@ To change parameters, update `cs.config.params` (for example `cs.config.params.u
 
 ```toml
 [[steps]]
-uses = "signal.rsi_oversold"
+id = "signal.rsi_oversold"
 with = { rsi_period = 4, entry = 25, exit = 60, trend_sma = 50, max_hold = 10 }
 ```
 
