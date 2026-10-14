@@ -70,3 +70,30 @@ def test_step_toml_pitfalls_are_short_strings(e):
     pitfalls = step.get("pitfalls")
     assert isinstance(pitfalls, list) and 2 <= len(pitfalls) <= 4, e["name"]
     assert all(isinstance(p, str) and 10 <= len(p) <= 160 for p in pitfalls)
+
+
+# Scaffolds (config.toml has status = "scaffold") are not registered, but their README must say
+# so plainly and keep the same three headings, with 3 generic pitfalls and no runnable snippet.
+SCAFFOLDS = sorted(
+    p.parent
+    for p in ROOT.rglob("config.toml")
+    if tomllib.loads(p.read_text()).get("status") == "scaffold"
+)
+SCAFFOLD_IDS = [str(p.relative_to(ROOT)) for p in SCAFFOLDS]
+
+
+def test_scaffolds_were_found():
+    assert SCAFFOLDS, "no scaffold strategies found: did the status marker change?"
+
+
+@pytest.mark.parametrize("d", SCAFFOLDS, ids=SCAFFOLD_IDS)
+def test_scaffold_readme_is_an_honest_stub(d):
+    text = (d / "README.md").read_text()
+    assert "Status: scaffold" in text, f"{d.name}: README must say 'Status: scaffold'"
+    sections = _sections(text)
+    for heading in REQUIRED_HEADINGS:
+        assert heading in sections, f"{d.name}: README lacks '{heading}'"
+    bullets = [ln for ln in sections["## Pitfalls"] if re.match(r"\s*[-*] \S", ln)]
+    assert len(bullets) == MIN_PITFALLS, (
+        f"{d.name}: Pitfalls needs exactly {MIN_PITFALLS} bullets"
+    )
