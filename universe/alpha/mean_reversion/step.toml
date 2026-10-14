@@ -4,6 +4,12 @@ kind = "execute"
 title = "Alpha 30 mean reversion"
 description = "Top 10 Alpha 30 members by 20-bar mean-reversion score, equal weight, rebalanced every 5 days."
 tags = ["portfolio", "rebalance", "mean_reversion"]
+pitfalls = [
+  "Buys the biggest recent losers every 5 days with no stop; turnover and costs dominate.",
+  "First rebalance can rank one name and put nearly all cash in it (seen in replay).",
+  "Universe is today's Alpha 30 applied to the past; the index is itself selected on past alpha.",
+  "Recorded run lost 11.6% in 69 sessions; one window, not evidence either way.",
+]
 
 # A self-contained portfolio strategy: it does selection, weighting and scheduling itself and
 # trades, so it is an 'execute' step, not a sizer (a sizer maps candidates to weights).

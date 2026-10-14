@@ -4,6 +4,12 @@ kind = "execute"
 title = "Alpha 30 low volatility"
 description = "Top 15 Alpha 30 members by lowest 20-bar volatility, equal weight, rebalanced every 15 days."
 tags = ["portfolio", "rebalance", "low_vol"]
+pitfalls = [
+  "A 20-close volatility rank is noisy and churns the book (recorded turnover 6.3).",
+  "First rebalance can rank one name and put nearly all cash in it (seen in replay).",
+  "Universe is today's Alpha 30 applied to the past; the index is itself selected on past alpha.",
+  "Costs, impact and tax are missing from replay; the 69-session backtest proves little.",
+]
 
 # A self-contained portfolio strategy: it does selection, weighting and scheduling itself and
 # trades, so it is an 'execute' step, not a sizer (a sizer maps candidates to weights).

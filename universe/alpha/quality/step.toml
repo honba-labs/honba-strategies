@@ -4,6 +4,11 @@ kind = "execute"
 title = "Alpha 30 quality"
 description = "Equal-weight allocation across the Alpha 30 universe, rebalanced every 29 days (no ranking: keeps every member)."
 tags = ["portfolio", "rebalance", "equal_weight"]
+pitfalls = [
+  "Named quality but no screen or fundamentals: it holds all 30 names equal-weight.",
+  "Universe is today's Alpha 30 applied to the past: survivorship and hindsight bias.",
+  "Recorded backtest is 69 sessions; its annualised CAGR and Sharpe are not evidence.",
+]
 
 # A self-contained portfolio strategy: it does selection, weighting and scheduling itself and
 # trades, so it is an 'execute' step, not a sizer (a sizer maps candidates to weights).

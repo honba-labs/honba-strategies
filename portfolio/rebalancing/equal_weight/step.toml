@@ -4,6 +4,11 @@ kind = "execute"
 title = "Equal-weight rebalance"
 description = "Every schedule, re-read the universe, drop leavers, add joiners and return each member to 1/N."
 tags = ["portfolio", "rebalance", "equal_weight"]
+pitfalls = [
+  "Universe is today's 30 names for every date; point_in_time=true uses a flat 2005 placeholder history.",
+  "Rebalancing sells winners and buys laggards on every cadence; costs, impact and tax are not in the replay.",
+  "Rebalance dates follow the start date; test several start offsets, not one number.",
+]
 
 # A self-contained portfolio strategy: it does selection, weighting and scheduling itself and
 # trades, so it is an 'execute' step, not a sizer (a sizer maps candidates to weights).

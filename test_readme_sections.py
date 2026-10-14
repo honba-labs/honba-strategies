@@ -10,16 +10,7 @@ import tomllib
 ROOT = Path(__file__).resolve().parent
 ENTRIES = json.loads((ROOT / "registry.json").read_text())["strategies"]
 
-# Rollout in chunks: chunk A covered the 11 single-instrument strategies; chunk B must cover the
-# portfolio ones and then EMPTY this set, so the rule applies to all registered strategies.
-PENDING_README_SECTIONS = {
-    "alpha30_factor",
-    "alpha30_low_vol",
-    "alpha30_mean_reversion",
-    "alpha30_momentum",
-    "alpha30_quality",
-    "equal_weight",
-}
+PENDING_README_SECTIONS: set[str] = set()  # every registered strategy README is checked
 # READMES_REQUIRED = all registered except PENDING_README_SECTIONS
 READMES_REQUIRED = [e for e in ENTRIES if e["name"] not in PENDING_README_SECTIONS]
 REQUIRED_HEADINGS = ("## Usage", "## Possible output", "## Pitfalls")
