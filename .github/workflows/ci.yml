@@ -5,6 +5,12 @@ on:
     branches: [main]
   pull_request:
 
+env:
+  # The honba core ref these strategies are tested against. The strategies depend on
+  # bare "honba" (unpinned, not on PyPI), so CI builds the core from this ref.
+  # Bump deliberately when the core API changes.
+  HONBA_REF: main
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -17,6 +23,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: honba-labs/honba
+          ref: ${{ env.HONBA_REF }}
           path: honba
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
@@ -34,7 +41,9 @@ jobs:
         working-directory: honba/python
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt maturin pytest ruff
+          # honba/python/requirements.txt omits some runtime imports of the core
+          # (yfinance, duckdb, cryptography), so list them explicitly.
+          pip install -r requirements.txt maturin yfinance duckdb cryptography pytest ruff
           maturin develop
       - name: lint
         working-directory: honba-strategies

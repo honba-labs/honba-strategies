@@ -27,4 +27,5 @@ rendered by a GUI from data alone. See `schema/README.md` for the schema and cha
 `tools/validate_chain.py` for the validator, and `docs/step-manifest-examples.md` for worked chains.
 `test_step_manifests.py` keeps each manifest in step with its `config.toml` and code.
 
-Run the tests with `pytest` (needs `honba` importable, e.g. `pip install -e ../honba/python`).
+Run the tests with `pytest` (needs `honba` importable, e.g. `pip install -e ../honba/python`). 
+In CI, `.github/workflows/ci.yml` checks out the `honba` core (pinned to `HONBA_REF: main` in the workflow) and builds it via `maturin develop`, ensuring all strategies test against a known honba version.
