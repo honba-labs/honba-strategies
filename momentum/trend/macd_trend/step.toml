@@ -4,6 +4,11 @@ kind = "signal"
 title = "MACD trend"
 description = "Long-only: buy when MACD is above its signal line and the close is above the trend EMA; exit when both flip."
 tags = ["trend", "long_only"]
+pitfalls = [
+  "Four sweepable params (ema, MACD periods): easy to overfit; validate walk-forward.",
+  "Exit needs both MACD and EMA to flip, so it gives back much of a move; no stop.",
+  "Decides on the bar close; fill at the next open, not the same close.",
+]
 
 # history_bars is approximate: the true warm-up is max(ema, slowperiod + signal - 1).
 

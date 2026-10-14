@@ -4,6 +4,11 @@ kind = "signal"
 title = "Donchian trend"
 description = "Long-only: buy a close above the previous N-bar high while above a trend SMA; exit on a close below the previous N-bar low."
 tags = ["trend", "breakout", "long_only"]
+pitfalls = [
+  "Wide sweep space (79,401 pairs on full bounds); tuning overfits.",
+  "Few trades per year: results rest on a handful of trends.",
+  "Decides on the bar close; fill at the next open, not the same close.",
+]
 
 [params.period]
 type = "int"

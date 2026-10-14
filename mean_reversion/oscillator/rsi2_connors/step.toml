@@ -4,6 +4,12 @@ kind = "signal"
 title = "RSI(2) Connors"
 description = "Long-only RSI(2) mean reversion: buy RSI(2) at or below oversold above the trend SMA; exit above a short SMA."
 tags = ["mean_reversion", "oscillator", "long_only"]
+pitfalls = [
+  "No stop and no time exit: a falling dip is held until the close clears the short SMA.",
+  "High win rate can hide rare large losses; check worst trade and drawdown.",
+  "Short holds: round-trip costs are a large share of the edge.",
+  "Decides on the bar close; fill at the next open, not the same close.",
+]
 
 [params.oversold]
 type = "float"

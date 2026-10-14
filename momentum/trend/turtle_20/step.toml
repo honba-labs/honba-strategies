@@ -4,6 +4,12 @@ kind = "signal"
 title = "Turtle 20"
 description = "Simplified Turtle System 1: N-bar high breakout, shorter low exit, ATR protective stop; long-only, no pyramiding."
 tags = ["trend", "breakout", "long_only", "stop_loss"]
+pitfalls = [
+  "Four sweepable params (entry, exit, ATR period and multiple): overfits easily.",
+  "ATR stop is checked after the bar and sold at close/next open, so gaps blow through it.",
+  "Simplified Turtle: no volatility sizing or pyramiding; fixed 95% allocation.",
+  "Decides on the bar close; fill at the next open, not the same close.",
+]
 
 [params.entry]
 type = "int"

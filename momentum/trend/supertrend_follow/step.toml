@@ -4,6 +4,11 @@ kind = "signal"
 title = "Supertrend follow"
 description = "Long-only: buy while Supertrend is in an uptrend, exit when it flips to a downtrend."
 tags = ["trend", "volatility", "long_only"]
+pitfalls = [
+  "Whipsaws in sideways markets; the flip is evaluated only at the bar close.",
+  "Enters on the first warmed-up up-state bar, so the start date changes results.",
+  "Decides on the bar close; fill at the next open, not the same close.",
+]
 
 # atr_period and factor live under [indicators.trend] in config.toml, not [params].
 

@@ -4,6 +4,12 @@ kind = "signal"
 title = "IFR2"
 description = "Long-only RSI(2) dip buying above the Ichimoku cloud; exit when the close is above the highs of the two previous bars."
 tags = ["mean_reversion", "oscillator", "long_only"]
+pitfalls = [
+  "No stop: the cloud only filters entries, so a dip that breaks down is held.",
+  "Hilbert trend-mode filter of the source is dropped; not a faithful port.",
+  "Short holds: round-trip costs are a large share of the edge.",
+  "Decides on the bar close; fill at the next open, not the same close.",
+]
 
 # history_bars is approximate: the cloud also needs displacement more bars.
 

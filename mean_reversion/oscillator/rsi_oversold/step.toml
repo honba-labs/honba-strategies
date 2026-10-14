@@ -4,6 +4,12 @@ kind = "signal"
 title = "RSI oversold"
 description = "Long-only dip buying in an uptrend: buy when RSI is below entry above the trend SMA; exit above exit or after max_hold bars."
 tags = ["mean_reversion", "oscillator", "long_only"]
+pitfalls = [
+  "Five sweepable params; RSI thresholds are classic over-optimisation targets.",
+  "No price stop (RSI and time exits only): a falling market keeps hurting.",
+  "Short holds: round-trip costs are a large share of the edge.",
+  "Decides on the bar close; fill at the next open, not the same close.",
+]
 
 # The trend SMA is only built when trend_sma > 0. entry/exit are floats in the code; the config values are whole numbers.
 

@@ -4,6 +4,12 @@ kind = "signal"
 title = "VWAP reversion"
 description = "Intraday long-only: buy below the lower VWAP band before the entry cutoff; exit at VWAP or at square-off (IST)."
 tags = ["mean_reversion", "intraday", "volume", "long_only"]
+pitfalls = [
+  "Intraday bars with real volume only; useless on daily bars or an index.",
+  "Almost no band width at the session open: noise entries in the first bars.",
+  "No stop and no daily trade cap; trend days can lose all day.",
+  "Costs paid daily on a small edge; check net results.",
+]
 
 # band_mult lives under [indicators.vwap] in config.toml, not [params]. VWAP resets each IST session, so
 # history_bars is 1.

@@ -4,6 +4,11 @@ kind = "signal"
 title = "SMA crossover"
 description = "Long-only: buy when the fast SMA is above the slow SMA, exit when it falls below."
 tags = ["trend", "long_only"]
+pitfalls = [
+  "Tuned fast/slow pairs overfit; validate walk-forward or out-of-sample.",
+  "Decides on the bar close; fill at the next open, not the same close.",
+  "Whipsaws in sideways markets; lags trend turns.",
+]
 
 # Defaults follow config.toml (fast 20, slow 50). strategy.py's Parameter() defaults are 10 and 30;
 # test_step_manifests.py records that mismatch explicitly.
