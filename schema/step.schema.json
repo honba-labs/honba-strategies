@@ -22,6 +22,12 @@
       "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
       "description": "Semantic tags for search in a GUI (free-form, unlike registry.json tags which are indicator families)."
     },
+    "pitfalls": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Optional short one-line warnings (overfitting, lookahead, cost sensitivity...) a GUI can show when this step is added to a chain. The long form lives in the strategy README's Pitfalls section."
+    },
     "params": {
       "type": "object",
       "propertyNames": { "pattern": "^[a-z][a-z0-9_]*$" },

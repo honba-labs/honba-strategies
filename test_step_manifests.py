@@ -212,3 +212,14 @@ def test_schema_accepts_list_or_string_consumes_shape():
     for bad in ([], ["rows"], ["universe", "universe"], 3):
         s["consumes"]["shape"] = bad
         assert schema_errors(s) != [], bad
+
+
+def test_schema_pitfalls_are_optional_and_must_be_unique_strings():
+    s = copy.deepcopy(_good())
+    s.pop("pitfalls", None)
+    assert schema_errors(s) == []
+    s["pitfalls"] = ["Parameter sweeps overfit; validate walk-forward."]
+    assert schema_errors(s) == []
+    for bad in ("one string", [3], [""], ["a", "a"]):
+        s["pitfalls"] = bad
+        assert schema_errors(s) != [], bad

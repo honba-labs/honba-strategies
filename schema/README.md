@@ -20,6 +20,7 @@ them).
 | `kind` | `screen`, `filter`, `signal`, `size`, `risk` or `execute`. |
 | `title`, `description`, `tags` | Display text and free-form semantic tags (not the indicator-family tags of `registry.json`). |
 | `[params.<name>]` | One table per parameter: `type` (`int`, `float`, `bool`, `str`, `enum`, `date`, `symbols`, `window`), `default`, `min`/`max`/`step` (numbers), `choices` (enum), `pattern` (str regex), `description`, `sweepable`. `optional = true` means no default and the param may be omitted. |
+| `pitfalls` | Optional array of short one-line warnings (2-4 per step) a GUI can show when the step is added to a chain, e.g. "Tuned fast/slow pairs overfit; validate walk-forward". The long form is the `## Pitfalls` section of the strategy README, which must also link the [avoiding backtest biases](https://honba-labs.github.io/honba/book/backtesting/avoiding_backtest_biases.html) page. `test_readme_sections.py` enforces both for registered strategies. |
 | `[requires]` | What it looks at: `bars` (OHLCV columns), `fundamentals`, `indicators` (`kind` from `honba.strategies.indicators.list_indicators()`, its args, optional `as` alias), `history_bars`, `pit` (needs point-in-time data). An indicator arg or `history_bars` may be `"$param"` to bind it to a step param. |
 | `[consumes]` | What it needs from the previous step: `shape` (one shape, or a list of accepted shapes) and `columns`. |
 | `[emits]` | `shape`; `adds` (columns appended), `report` (always reported), `reportable` (extra columns a user may ask it to report). |
