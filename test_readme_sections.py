@@ -2,10 +2,10 @@
 
 import json
 import re
+import tomllib
 from pathlib import Path
 
 import pytest
-import tomllib
 
 ROOT = Path(__file__).resolve().parent
 ENTRIES = json.loads((ROOT / "registry.json").read_text())["strategies"]

@@ -3,10 +3,10 @@
 import ast
 import json
 import re
+import tomllib
 from pathlib import Path
 
 import pytest
-import tomllib
 from honba.strategies.indicators import FAMILIES
 
 ROOT = Path(__file__).resolve().parent

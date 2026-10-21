@@ -3,10 +3,10 @@
 import copy
 import re
 import sys
+import tomllib
 from pathlib import Path
 
 import pytest
-import tomllib
 from honba.strategies.base import Parameter
 from honba.strategies.indicators import indicator_spec, list_indicators
 
