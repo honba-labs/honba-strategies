@@ -1,9 +1,7 @@
 from pathlib import Path
 
 import pytest
-from honba.entities.bar import Bar
-from honba.entities.instrument import InstrumentId
-from honba.entities.order import OrderSide
+from honba.domain import Bar, InstrumentId, OrderSide
 from honba.strategies.config import StrategyConfig
 from honba.strategies.indicators import build_indicator
 from honba.strategies.testing import replay

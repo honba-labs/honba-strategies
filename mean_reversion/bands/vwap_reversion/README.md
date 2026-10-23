@@ -20,8 +20,7 @@ Load it by registry name with `honba.strategies.loader` (`find_catalog` locates 
 import math
 from datetime import datetime, timedelta, timezone
 
-from honba.entities.bar import Bar
-from honba.entities.instrument import InstrumentId
+from honba.domain import Bar, InstrumentId
 from honba.strategies.loader import find_catalog, load_catalog_strategy
 from honba.strategies.testing import replay
 

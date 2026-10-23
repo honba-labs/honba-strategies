@@ -7,8 +7,7 @@ import importlib.util
 from pathlib import Path
 
 import pytest
-from honba.entities.bar import Bar
-from honba.entities.instrument import InstrumentId
+from honba.domain import Bar, InstrumentId
 
 
 @pytest.fixture

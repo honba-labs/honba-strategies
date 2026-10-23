@@ -7,7 +7,7 @@ first bar of that session. VWAP resets each IST session day; the indicator and i
 parameters come from ``[indicators.vwap]``. Costs are applied by the Honba backtest engine.
 """
 
-from honba.entities.bar import Bar
+from honba.domain import Bar
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig
 from honba.strategies.indicators import IndicatorBank

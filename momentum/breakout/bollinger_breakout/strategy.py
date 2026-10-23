@@ -6,7 +6,7 @@ The cloud is the standard displaced Ichimoku (spans computed ``displacement``
 bars ago). Costs are applied by the Honba backtest engine, not here.
 """
 
-from honba.entities.bar import Bar
+from honba.domain import Bar
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig
 from honba.strategies.indicators import Bollinger, Ichimoku

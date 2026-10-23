@@ -5,9 +5,7 @@ Buy when RSI is below ``entry`` while the close is above the trend SMA
 or after ``max_hold`` bars. Costs are applied by the Honba engine, not here.
 """
 
-from honba.entities.bar import Bar
-from honba.entities.order import OrderSide
-from honba.entities.trade import Trade
+from honba.domain import Bar, OrderSide, Trade
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig
 from honba.strategies.indicators import Rsi, Sma

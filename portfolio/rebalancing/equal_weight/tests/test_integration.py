@@ -3,8 +3,7 @@
 import json
 from pathlib import Path
 
-from honba.entities.bar import Bar
-from honba.entities.instrument import InstrumentId
+from honba.domain import Bar, InstrumentId
 from honba.markets.india.universes import resolve_universe
 from honba.strategies.config import StrategyConfig
 from honba.strategies.context import LedgerContext

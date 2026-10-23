@@ -5,9 +5,7 @@ previous ``exit``-bar low, or when the bar low touches a protective stop of
 ``atr_mult`` x ATR below the entry. Costs are applied by the Honba engine.
 """
 
-from honba.entities.bar import Bar
-from honba.entities.order import OrderSide
-from honba.entities.trade import Trade
+from honba.domain import Bar, OrderSide, Trade
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig
 from honba.strategies.indicators import Atr, Donchian

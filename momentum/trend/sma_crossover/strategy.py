@@ -5,7 +5,7 @@ falls below. NSE equity is spot, so there is no short leg. Costs (STT, GST,
 stamp duty) and slippage are applied by the Honba backtest engine, not here.
 """
 
-from honba.entities.bar import Bar
+from honba.domain import Bar
 from honba.strategies.base import Parameter, Strategy
 from honba.strategies.config import StrategyConfig
 from honba.strategies.indicators import Sma

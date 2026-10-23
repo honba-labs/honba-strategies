@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from honba.entities.order import OrderSide
+from honba.domain import OrderSide
 from honba.strategies.config import StrategyConfig
 from honba.strategies.testing import replay
 

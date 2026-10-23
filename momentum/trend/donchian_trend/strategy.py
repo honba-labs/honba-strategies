@@ -5,7 +5,7 @@ fully on a close below the previous N-bar low. Costs are applied by the Honba
 backtest engine, not here.
 """
 
-from honba.entities.bar import Bar
+from honba.domain import Bar
 from honba.strategies.base import Strategy
 from honba.strategies.config import StrategyConfig
 from honba.strategies.indicators import Donchian, Sma

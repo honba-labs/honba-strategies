@@ -28,7 +28,7 @@ Load it by registry name with `honba.strategies.loader` (`find_catalog` locates 
 ```python
 import math
 
-from honba.entities.bar import Bar
+from honba.domain import Bar
 from honba.markets.india.universes import resolve_universe
 from honba.strategies.context import LedgerContext
 from honba.strategies.loader import find_catalog, load_catalog_strategy
