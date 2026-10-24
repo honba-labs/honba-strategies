@@ -45,6 +45,37 @@ Every file in the repository must reside in one of four strictly segregated zone
  └────────────────────────────────────────────────────────────────────────┘
 ```
 
+### 0.3 Problem Diagnosis: The Position Sizing Deficit ("What" vs "How Much")
+Position sizing is currently not a first-class, reusable component in the repository. The only sizing information appears as fixed parameters inside individual strategies. For instance:
+- `AvellanedaStoikovConfig` includes a static `quote_quantity = Decimal("100")`.
+- `TurtleStrategy` uses fixed lot units.
+- Momentum and mean reversion stubs default to arbitrary fixed share counts.
+
+There is no built-in mechanism for:
+1. **Volatility-Adjusted Sizing**: Sizing inversely to recent market volatility (e.g. 20-day ATR or standard deviation).
+2. **Risk-Per-Trade Sizing**: Risking a fixed percentage of equity per trade (e.g. 1% of account equity) divided by the stop-loss distance.
+3. **Kelly Criterion or Optimal-f**: Capital allocation based on estimated statistical edge and payoff odds.
+4. **Portfolio-Level Allocation**: Dynamic risk parity and equal risk contribution across concurrent trading signals.
+
+In short: **the catalog gives you the "what" (signals) but not the "how much" (position sizing).**
+
+#### The Solution: First-Class Position Sizing via `step.toml` Chaining Architecture
+To solve this without rewriting the strategies, `honba-strategies` establishes a **first-class dynamic position sizing architecture** leveraging the repository's `step.toml` chaining engine. Sizing is factored into a dedicated "position sizing step" that consumes signal outputs and emits order sizes:
+
+```text
+┌─────────────────┐       ┌─────────────────┐       ┌──────────────────────┐       ┌─────────────────┐       ┌─────────────────┐
+│ Universe/Screen │ ───▶  │ Signal Strategy │ ───▶  │ Position Sizing Step │ ───▶  │ Risk Guards     │ ───▶  │ Execution Step  │
+│ [screen.*]      │       │ [signal.*]      │       │ [size.*]             │       │ [risk.*]        │       │ [execute.*]     │
+│ emits: universe │       │ emits:candidates│       │ emits: weights/adds  │       │ emits: verified │       │ emits: orders   │
+└─────────────────┘       └─────────────────┘       └──────────────────────┘       └─────────────────┘       └─────────────────┘
+```
+
+This multi-tiered architecture spans:
+1. **Rust Core (`honba-core`)**: Canonical wire contracts (`PositionSizingRequest`, `PositionSizingResult`, `RiskBudget`, `SizingMethod`), stop distance calculations, and zero-float 128-bit decimal arithmetic.
+2. **Native PyO3 Soul (`honba-tamashii`)**: Compiled high-speed C-FFI sizing kernels (`honba.sizing`), GIL release during batch universe allocation, and live `honba-kokoro` portfolio equity queries.
+3. **Python Extended SDK (`honba_strategies.components.sizers`)**: Reusable Python sizing classes (`FixedFractionalSizer`, `AtrVolatilitySizer`, `KellySizer`, `EqualRiskSizer`, `FixedNotionalSizer`).
+4. **Declarative Step Catalog (`catalog/size/*`)**: Declarative `step.toml` manifests allowing visual workflow tools (`honba-kao`) and execution engines (`honba-ya`) to chain signals into sizers and slicers seamlessly.
+
 ---
 
 ## 1. Architectural Invariants & Deduplication (Separation of Concerns)
@@ -52,7 +83,7 @@ Every file in the repository must reside in one of four strictly segregated zone
 To avoid code duplication and architectural drift across the Honba workspace, the division of responsibilities is strictly enforced:
 
 ### 1.1 Strict Deduplication with `honba` Core (`honba-tamashii`)
-- **`honba` (`honba-tamashii`)**: Owns the core runtime engine, execution ports (`ExecutionPort`), ledger context (`StrategyContext`, `LedgerContext`), runner harnesses (`runner.py`, `replay`), basic parameter descriptors (`Parameter`), base strategy lifecycle ABCs (`Strategy`, `SlicingStrategy`, `QuotingStrategy`, `ArbitrageStrategy`, `RebalancingStrategy`, `PortfolioStrategy`), and vectorized indicator math (`honba.strategies.indicators`).
+- **`honba` (`honba-tamashii`)**: Owns the core runtime engine, execution ports (`ExecutionPort`), ledger context (`StrategyContext`, `LedgerContext`), runner harnesses (`runner.py`, `replay`), basic parameter descriptors (`Parameter`), base strategy lifecycle ABCs (`Strategy`, `SlicingStrategy`, `QuotingStrategy`, `ArbitrageStrategy`, `RebalancingStrategy`, `PortfolioStrategy`), native sizing contracts (`honba.sizing`), and vectorized indicator math (`honba.strategies.indicators`).
 - **`honba-strategies` (This SDK)**:
   - **Does NOT** define low-level strategy ABCs or re-implement indicator calculation kernels.
   - **Directly subclasses** `honba.strategies.base.*` primitives to build concrete, production-ready, hyperparameterized trading strategies.
@@ -69,6 +100,11 @@ To avoid code duplication and architectural drift across the Honba workspace, th
 ### 1.3 First-Class Indian Market Microstructure
 - **SEBI & Exchange Conformance**: Dynamic single-order freeze limit slicing (e.g. NIFTY 1,800 contracts), Order-to-Trade Ratio (OTR) safety margins, mandatory SEBI Algo ID tagging, and scrip operational circuit bands.
 - **Intraday & Settlement Realities**: Automatic MIS 15:20 IST square-off enforcement, T+1 Demat settlement calendar awareness, and statutory cost accounting (STT, GST, Stamp Duty, Exchange Turnover fees).
+
+### 1.4 First-Class Position Sizing & Pipeline Chaining Invariants
+- **Step Kind `size` Specification**: Sizing manifests declare `kind = "size"`, `consumes.shape = "candidates"` (or `["candidates", "weights"]`), and `emits.shape = "weights"` or `emits.adds = ["quantity", "notional", "risk_amount"]`.
+- **Exact 128-Bit Decimal Risk Accounting**: Equity, risk percentages, stop distances, and notionals are computed with zero floating-point drift using `Decimal` / `rust_decimal`. Share/contract counts are strictly discretized to exchange lot sizes (e.g. 25 for NIFTY, 15 for BANKNIFTY) and bounded by exchange freeze limits.
+- **Decoupled Strategy & Sizer Interface**: Strategies can run standalone with fallback static sizes or act as pure signal generators in a composed pipeline. Sizers are pure transformers mapping `(Signal, RiskBudget, Equity) -> PositionSizingResult`.
 
 ---
 
@@ -170,7 +206,14 @@ honba-strategies/ (CLEAN RESTRUCTURED TARGET)
 │       └── components/                # Reusable Strategy Building Blocks
 │           ├── __init__.py
 │           ├── signals/               # Alpha & technical signals (OU-fit, cointegration, z-scores)
-│           ├── sizers/                # Position sizers (ATR volatility sizing, Kelly, target risk)
+│           ├── sizers/                # First-Class Dynamic Position Sizing Engines
+│           │   ├── __init__.py        # FixedFractional, Volatility, Kelly, EqualRisk, FixedNotional
+│           │   ├── base.py            # BasePositionSizer, SizingContext, SizingResult
+│           │   ├── fixed_fractional.py# Risk % of equity per trade vs stop-loss distance
+│           │   ├── volatility.py      # ATR-normalized volatility sizing and volatility targeting
+│           │   ├── kelly.py           # Kelly criterion & fractional Kelly (half-Kelly)
+│           │   ├── equal_risk.py      # Equal risk contribution / risk parity across candidates
+│           │   └── fixed_notional.py  # Fixed cash notional with lot-size rounding
 │           └── risk/                  # Indian risk guards (OTR monitor, drawdown halt, MIS 15:20)
 │
 ├── catalog/                           # ZONE 2: Declarative Strategy Catalog (Visual Chaining)
@@ -182,14 +225,19 @@ honba-strategies/ (CLEAN RESTRUCTURED TARGET)
 │   ├── portfolio/                     # Rebalancing steps (equal_weight, risk_parity, markowitz)
 │   ├── options/                       # Options steps (short_straddle, iron_condor, covered_call)
 │   ├── etf_funds/                     # ETF rotation steps (gold_equity, sector_rotation)
-│   └── intraday/                      # Intraday steps (gap_fill, orb, pivot_bounce)
-│       └── <strategy_name>/
+│   ├── intraday/                      # Intraday steps (gap_fill, orb, pivot_bounce)
+│   └── size/                          # First-Class Dynamic Position Sizing Steps
+│       ├── fixed_fractional/          # Risk-per-trade % of equity step
+│       ├── atr_volatility/            # Volatility-adjusted ATR sizing step
+│       ├── kelly_criterion/           # Kelly criterion optimal fraction step
+│       ├── equal_risk/                # Equal risk contribution portfolio sizing step
+│       └── fixed_notional/            # Fixed cash notional sizing step
 │           ├── step.toml              # Declarative step manifest (contracts, bounds, types)
 │           ├── config.toml            # Default execution configuration
 │           ├── README.md              # Mathematical formulas, parameter table, benchmarks
-│           ├── strategy.py            # Thin catalog entry importing from honba_strategies
+│           ├── sizer.py               # Thin catalog entry importing from honba_strategies
 │           └── tests/
-│               └── test_strategy.py   # Catalog parameter instantiation and contract verification
+│               └── test_sizer.py      # Catalog parameter instantiation and contract verification
 │
 ├── tests/                             # ZONE 3: Centralized Test Suite (Zero Root Pollution)
 │   ├── conftest.py                    # Centralized pytest fixtures & test harness environment
@@ -202,12 +250,14 @@ honba-strategies/ (CLEAN RESTRUCTURED TARGET)
 │   │   ├── portfolio/                 # Unit tests for Equal Weight, Risk Parity, MVO
 │   │   ├── options/                   # Unit tests for Straddles, Condors, Calendars
 │   │   └── components/                # Unit tests for Signals, Sizers, Risk Guards
+│   │       ├── test_sizers.py         # ATR, Fixed-Fractional, Kelly, EqualRisk precision tests
+│   │       └── test_risk_guards.py    # OTR and drawdown risk guard tests
 │   ├── integration/                   # Lifecycle & delayed fill simulated execution tests
 │   ├── parity/                        # Golden vector numerical parity vs StockSharp C#
 │   └── catalog/                       # Centralized Catalog & Manifest Verification Tests
 │       ├── test_registry.py           # Validates registry.json consistency against catalog/
 │       ├── test_step_manifests.py     # Validates all step.toml files against step.schema.json
-│       ├── test_step_chain.py         # Validates pipeline chaining compatibility rules
+│       ├── test_step_chain.py         # Validates pipeline chaining (Signal -> Sizer -> Execution)
 │       ├── test_catalog_fills.py      # Simulates execution fills across all catalog entries
 │       └── test_readme_sections.py    # Ensures every strategy README has required sections
 │
@@ -222,6 +272,8 @@ honba-strategies/ (CLEAN RESTRUCTURED TARGET)
 │   └── README.md                      # Schema documentation & type contract rules
 │
 └── docs/                              # Architecture & Reference Documentation
+    ├── step-manifest-examples.md      # Illustrative chains (Signal -> Size -> Execute)
+    └── position-sizing-guide.md       # Comprehensive mathematical guide to dynamic sizing
 ```
 
 ### 2.3 Strict Root Cleanliness Rules
@@ -296,6 +348,12 @@ Every single legacy file currently dumped in the repository has been audited and
 | `swing/earnings_momentum` | 37-byte scaffold stub | `honba_strategies.trend.earnings` | `catalog/trend/earnings_momentum` | `tests/unit/trend/test_earnings.py` | Port to SDK class; generate `catalog/` entry; delete root dump |
 | `swing/relative_strength` | 37-byte scaffold stub | `honba_strategies.trend.relative_strength` | `catalog/trend/relative_strength` | `tests/unit/trend/test_rs.py` | Port to SDK class; generate `catalog/` entry; delete root dump |
 | `swing/sector_leadership` | 37-byte scaffold stub | `honba_strategies.trend.sector_leadership` | `catalog/trend/sector_leadership` | `tests/unit/trend/test_sector.py` | Port to SDK class; generate `catalog/` entry; delete root dump |
+| **`components/sizers/` (NEW)** | | | | | |
+| `components/sizers/fixed_fractional` | Dynamic Risk % of Equity Sizer | `honba_strategies.components.sizers.fixed_fractional` | `catalog/size/fixed_fractional` | `tests/unit/components/test_sizers.py` | Implement SDK class; create `step.toml`; register in catalog |
+| `components/sizers/atr_volatility` | ATR Volatility-Targeted Sizer | `honba_strategies.components.sizers.volatility` | `catalog/size/atr_volatility` | `tests/unit/components/test_sizers.py` | Implement SDK class; create `step.toml`; register in catalog |
+| `components/sizers/kelly_criterion` | Kelly Optimal Fraction Sizer | `honba_strategies.components.sizers.kelly` | `catalog/size/kelly_criterion` | `tests/unit/components/test_sizers.py` | Implement SDK class; create `step.toml`; register in catalog |
+| `components/sizers/equal_risk` | Equal Risk Contribution Sizer | `honba_strategies.components.sizers.equal_risk` | `catalog/size/equal_risk` | `tests/unit/components/test_sizers.py` | Implement SDK class; create `step.toml`; register in catalog |
+| `components/sizers/fixed_notional` | Fixed Cash Notional Sizer | `honba_strategies.components.sizers.fixed_notional` | `catalog/size/fixed_notional` | `tests/unit/components/test_sizers.py` | Implement SDK class; create `step.toml`; register in catalog |
 | **`ai_generated/`** | Obsolete empty directory | Purged | Purged | Purged | Delete entirely from repository |
 
 ---
@@ -305,7 +363,7 @@ Every single legacy file currently dumped in the repository has been audited and
 ### 4.1 Direct Programmatic SDK Usage
 ```python
 from decimal import Decimal
-from honba_strategies.execution import TwapStrategy, TwapConfig
+from honba_strategies.execution import TwapConfig, TwapStrategy
 
 config = TwapConfig(
     symbol="RELIANCE",
@@ -321,7 +379,7 @@ strategy = TwapStrategy(config)
 ### 4.2 Statistical Arbitrage SDK Usage
 ```python
 from decimal import Decimal
-from honba_strategies.arbitrage import PairsTradingStrategy, PairsTradingConfig
+from honba_strategies.arbitrage import PairsTradingConfig, PairsTradingStrategy
 
 config = PairsTradingConfig(
     symbol_a="HDFCBANK",
@@ -335,45 +393,90 @@ config = PairsTradingConfig(
 strategy = PairsTradingStrategy(config)
 ```
 
-### 4.3 Composable Strategy Pipeline
+### 4.3 Composable Dynamic Position Sizing Pipelines
+Strategies generate signals (direction and stop-loss levels), while dynamic sizers calculate the exact trade quantity based on live account equity and risk parameters:
+
 ```python
 from decimal import Decimal
-from honba_strategies.trend import TrendStrategy
-from honba_strategies.components.signals import DonchianBreakoutSignal
-from honba_strategies.components.sizers import AtrVolatilitySizer
 from honba_strategies.components.risk import MisIntradayRiskGuard
+from honba_strategies.components.signals import DonchianBreakoutSignal
+from honba_strategies.components.sizers import (
+    AtrVolatilitySizer,
+    FixedFractionalSizer,
+)
+from honba_strategies.trend import TrendStrategy
 
+# 1. Fixed Fractional Sizing: Risk exactly 1% of account equity per trade
+fixed_fractional_sizer = FixedFractionalSizer(
+    risk_pct=Decimal("0.01"),  # 1% equity risk
+    max_position_cap=Decimal("500000"),  # ₹5,00,000 max exposure
+    lot_size=Decimal("25"),  # NSE NIFTY lot step
+)
+
+# 2. ATR Volatility Targeting: Size inversely to 20-day ATR volatility
+atr_sizer = AtrVolatilitySizer(
+    target_risk_pct=Decimal("0.015"),
+    atr_multiplier=Decimal("2.0"),
+    max_position_cap=Decimal("1000000"),
+)
+
+# 3. Composed execution pipeline
 strategy = TrendStrategy(
     signal=DonchianBreakoutSignal(period=20),
-    sizer=AtrVolatilitySizer(risk_fraction=Decimal("0.02")),
+    sizer=fixed_fractional_sizer,
     risk=MisIntradayRiskGuard(square_off_time="15:20:00"),
 )
 ```
 
-### 4.4 Dynamic Strategy Discovery & Catalog Bridge
+### 4.4 Declarative Pipeline Chaining (`step.toml`)
+Users compose trading systems declaratively without modifying underlying Python strategies:
+
+```toml
+# chain.toml: End-to-end signal -> size -> execute pipeline
+[[steps]]
+id = "signal.donchian_breakout"
+with = { period = 20, stop_loss_atr = 2.0 }
+
+[[steps]]
+id = "size.fixed_fractional"
+with = { risk_pct = 0.01, max_position_notional = 500000.0 }
+
+[[steps]]
+id = "risk.indian_market_guard"
+with = { enforce_freeze_limit = true, mis_square_off = "15:20:00" }
+
+[[steps]]
+id = "execute.twap"
+with = { duration_minutes = 15, slices = 5 }
+```
+
+### 4.5 Dynamic Strategy Discovery & Catalog Bridge
 ```python
 import honba_strategies as hs
 
-# Introspect available SDK strategies
+# Introspect available SDK strategies and sizers
 arbitrage_algos = hs.list_strategies(category="arbitrage")
+sizers = hs.list_strategies(category="size")
 
 # Instantiate by registry name with type-validated parameters
-strategy = hs.create_strategy("pairs_trading", leg_a="HDFCBANK", leg_b="ICICIBANK", z_score=2.0)
+strategy = hs.create_strategy(
+    "pairs_trading", leg_a="HDFCBANK", leg_b="ICICIBANK", z_score=2.0
+)
 ```
 
-### 4.5 CLI Experience
+### 4.6 CLI Experience
 ```bash
-# List all registered production strategies
+# List all registered production strategies and sizing modules
 honba-strategies list
 
 # List strategies filtered by category
-honba-strategies list --category execution
+honba-strategies list --category size
 
 # Validate catalog step manifests and chaining rules
 honba-strategies catalog validate
 
 # Inspect strategy parameter bounds and metadata
-honba-strategies info twap
+honba-strategies info fixed_fractional
 ```
 
 ---
@@ -387,13 +490,13 @@ honba-strategies info twap
  │ Phase 0: Python SDK Packaging & Core Framework       │ ✅ COMPLETED    │
  │ Phase 1: Smart Execution & Slicing SDK (TWAP, VWAP)  │ ✅ COMPLETED    │
  │ Phase 2: Arbitrage & Relative Value SDK (Pairs, etc) │ ✅ COMPLETED    │
- │ Phase R: Source Code Restructure & Dump Elimination  │ 🚀 ACTIVE       │
- │ Phase 3: High-Frequency Market Making & Quoting SDK  │ ⏳ PLANNED      │
- │ Phase 4: Trend Following & Breakout SDK              │ ⏳ PLANNED      │
+ │ Phase R: Source Code Restructure & Dump Elimination  │ ✅ COMPLETED    │
+ │ Phase 3: High-Frequency Market Making & Quoting SDK  │ ✅ COMPLETED    │
+ │ Phase 4: Trend Following & Breakout SDK              │ ✅ COMPLETED    │
  │ Phase 5: Mean Reversion & Statistical Physics SDK    │ ⏳ PLANNED      │
  │ Phase 6: Portfolio Allocation & Dynamic Rebalancing  │ ⏳ PLANNED      │
  │ Phase 7: Options & Volatility Trading SDK            │ ⏳ PLANNED      │
- │ Phase 8: Composable Building Blocks (Signals/Sizers) │ ⏳ PLANNED      │
+ │ Phase 8: Composable Blocks (Signals, Sizers, Risk)   │ ⏳ PLANNED      │
  │ Phase 9: Verification, StockSharp Parity & Benchmarks│ ⏳ PLANNED      │
  └────────────────────────────────────────────────────────────────────────┘
 ```
@@ -412,7 +515,7 @@ honba-strategies info twap
   - [x] Define structured exception hierarchy: `HonbaStrategyError`, `ConfigValidationError`, `RiskLimitExceededError`, `RegimeNotSupportedError`.
 - [x] **0.3 Strategy Registry & Discovery Engine (`honba_strategies.core.registry`)**
   - [x] Implement `StrategyRegistry` with `@register_strategy` decorator.
-  - [x] Provide factory methods `hs.get_strategy(name)` and `hs.list_strategies()`.\
+  - [x] Provide factory methods `hs.get_strategy(name)` and `hs.list_strategies()`.
   - [x] Build bridge between `registry.json` / `step.toml` and SDK classes to eliminate dual-source drift.
 - [x] **0.4 Deduplication & Contract Verification with `honba` Core**
   - [x] Verify clean inheritance from `honba.strategies.base` (`SlicingStrategy`, `QuotingStrategy`, `ArbitrageStrategy`, `RebalancingStrategy`).
@@ -474,14 +577,7 @@ honba-strategies info twap
   - [x] Delete `pytest.ini` at repository root; consolidate all pytest configurations into `pyproject.toml` under `[tool.pytest.ini_options]` (`testpaths = ["tests"]`).
   - [x] Validate `pytest` execution runs cleanly from root with zero collection errors.
 - [x] **R.2 Catalog Migration & Registry Normalization**
-  - [x] Move all viable `step.toml`, `config.toml`, `README.md` manifests from root dump folders into their canonical `catalog/<category>/<strategy_name>/` paths:
-    - `momentum/trend/*` -> `catalog/trend/*` (removed, not yet implemented)
-    - `momentum/breakout/*` -> `catalog/trend/*` (removed, not yet implemented)
-    - `momentum/oscillator/*` -> `catalog/trend/*` (removed, not yet implemented)
-    - `mean_reversion/bands/*` -> `catalog/mean_reversion/*` (removed, not yet implemented)
-    - `mean_reversion/oscillator/*` -> `catalog/mean_reversion/*` (removed, not yet implemented)
-    - `portfolio/rebalancing/*` -> `catalog/portfolio/*` (removed, not yet implemented)
-    - `universe/alpha/*` -> `catalog/portfolio/*` (removed, not yet implemented)
+  - [x] Move all viable `step.toml`, `config.toml`, `README.md` manifests from root dump folders into their canonical `catalog/<category>/<strategy_name>/` paths.
   - [x] Standardize catalog wrappers: create minimal `strategy.py` files in each catalog folder importing from `honba_strategies`.
   - [x] Update `registry.json` so 100% of strategy paths point strictly to `catalog/...` (eliminating all legacy root paths).
   - [x] Update catalog test assertions to validate solely against `catalog/`.
@@ -498,13 +594,13 @@ honba-strategies info twap
     - `execution/` (TWAP, VWAP, POV, Iceberg)
     - `arbitrage/` (Pairs, Cash-and-Carry, Basket Arbitrage)
     - `market_making/` (Avellaneda-Stoikov, Spread Quoting, Ladder)
-    - `trend/` (Turtle, KAMA, Supertrend, Breakout) - placeholder
-    - `mean_reversion/` (Bollinger-RSI, VWAP Bands, Ornstein-Uhlenbeck) - placeholder
-    - `portfolio/` (Equal Weight, Risk Parity, Markowitz, Alpha Factors) - placeholder
-    - `options/` (Short Straddle, Iron Condor, Covered Call, Calendar) - placeholder
-    - `etf_funds/` (Asset Rotation, Tracking Error Arbitrage) - placeholder
-    - `intraday/` (Gap Fill, ORB, Pivot Bounce) - placeholder
-    - `components/` (`signals/`, `sizers/`, `risk/`) - placeholder
+    - `trend/` (Turtle, KAMA, Supertrend, Breakout)
+    - `mean_reversion/` (Bollinger-RSI, VWAP Bands, Ornstein-Uhlenbeck)
+    - `portfolio/` (Equal Weight, Risk Parity, Markowitz, Alpha Factors)
+    - `options/` (Short Straddle, Iron Condor, Covered Call, Calendar)
+    - `etf_funds/` (Asset Rotation, Tracking Error Arbitrage)
+    - `intraday/` (Gap Fill, ORB, Pivot Bounce)
+    - `components/` (`signals/`, `sizers/`, `risk/`)
     - `cli.py`
   - [x] Update top-level `src/honba_strategies/__init__.py` to export all canonical classes and version metadata.
 - [x] **R.5 Verification Gates**
@@ -624,18 +720,58 @@ honba-strategies info twap
 
 ---
 
-### Phase 8: Composable Building Blocks (Signals, Sizers, Risk Guards) (M8) — Week 15
-> Breaking strategies into modular, reusable components for flexible quantitative research.
+### Phase 8: Composable Building Blocks & Dynamic Position Sizing (M8) — Week 15
+> Breaking strategies into modular, reusable components and establishing first-class dynamic position sizing.
 
 - [ ] **8.1 Reusable Alpha Signal Generators (`honba_strategies.components.signals`)**
   - [ ] Cointegration spread signal (`CointegrationSignal`).
   - [ ] Ornstein-Uhlenbeck stochastic fit signal (`OrnsteinUhlenbeckSignal`).
   - [ ] Donchian channel breakout signal (`DonchianBreakoutSignal`).
-- [ ] **8.2 Reusable Position Sizing Engines (`honba_strategies.components.sizers`)**
-  - [ ] ATR-normalized volatility sizer (`AtrVolatilitySizer`).
-  - [ ] Kelly Criterion optimal fraction sizer (`KellySizer`).
-  - [ ] Equal risk contribution sizer (`EqualRiskSizer`).
-- [ ] **8.3 Indian Regulatory & Microstructure Risk Guards (`honba_strategies.components.risk`)**
+  - [ ] Enrich all signal outputs with `direction`, `entry_price`, `stop_loss`, and `volatility_atr` attributes.
+- [ ] **8.2 First-Class Dynamic Position Sizing Engines (`honba_strategies.components.sizers`)**
+  - [ ] **8.2.1 Sizing Base Architecture (`base.py`)**:
+    - Define `BasePositionSizer` ABC with standard interface:
+      `calculate_size(signal: Signal, equity: Decimal, **kwargs) -> PositionSizingResult`.
+    - Provide `SizingContext` capturing account equity, cash balance, margin requirements, and active portfolio positions.
+    - Return structured `PositionSizingResult` with `quantity: Decimal`, `notional: Decimal`, `risk_at_stake: Decimal`, and `capped_by_limit: bool`.
+  - [ ] **8.2.2 Fixed Fractional Sizer (`fixed_fractional.py`)**:
+    - Risk a fixed percentage of equity per trade (e.g. 1%):
+      $$Q = \left\lfloor \frac{\text{Equity} \times \text{RiskPct}}{|P_{\text{entry}} - P_{\text{stop}}| \times \text{LotSize}} \right\rfloor \times \text{LotSize}$$
+    - Support fallback stop-loss distance when signal lacks explicit stop level.
+    - Apply hard max position notional cap ($\text{Notional} \le \text{MaxPositionCap}$).
+  - [ ] **8.2.3 ATR Volatility-Targeted Sizer (`volatility.py`)**:
+    - Inverse volatility allocation based on 20-day ATR ($N$):
+      $$Q = \left\lfloor \frac{\text{Equity} \times \text{TargetRisk}}{N \times \text{AtrMultiplier} \times \text{LotSize}} \right\rfloor \times \text{LotSize}$$
+    - Volatility targeting mode: scale position sizes so total portfolio annualized volatility targets $\sigma_{\text{target}}$ (e.g. 15%).
+  - [ ] **8.2.4 Kelly Criterion & Optimal-f Sizer (`kelly.py`)**:
+    - Compute optimal capital allocation fraction from win-rate $p$ and win/loss ratio $b$:
+      $$f^* = p - \frac{1 - p}{b}$$
+    - Implement fractional Kelly damping (e.g. Half-Kelly $0.5 \times f^*$ or Quarter-Kelly $0.25 \times f^*$) to minimize drawdown risk.
+  - [ ] **8.2.5 Equal Risk Contribution Sizer (`equal_risk.py`)**:
+    - Multi-signal simultaneous sizer: allocates risk budget equally across $K$ active candidate signals.
+    - Resolves cross-asset correlation adjustments using `honba-core` Decimal linear algebra routines.
+  - [ ] **8.2.6 Fixed Notional Sizer (`fixed_notional.py`)**:
+    - Target INR/USD fixed cash allocation: $Q = \lfloor \frac{\text{Notional}}{P_{\text{entry}} \times \text{LotSize}} \rfloor \times \text{LotSize}$.
+- [ ] **8.3 Indian Regulatory & Microstructure Risk Controls in Sizing**
+  - [ ] **Stop-Loss Integration**: Direct extraction of stop levels from strategy descriptors (`stoploss_zscore`, `trailing_stop_pct`, or ATR stop bands).
+  - [ ] **Exchange Freeze Limit Slicing**: Ensure sized quantities exceeding exchange freeze limits (e.g. NIFTY 1,800 contracts) trigger automatic downstream slicing alerts.
+  - [ ] **Lot Size Discretization**: Enforce exact exchange lot multiples (NSE equity lot = 1; index/stock derivatives = contract lot size).
+  - [ ] **Aggregate Portfolio Risk Ceiling**: Halt sizing if total open risk at stake across all strategies exceeds maximum risk ceiling (e.g. 5% of equity).
+- [ ] **8.4 Declarative Position Sizing Catalog (`catalog/size/`) & Step Chaining**
+  - [ ] Author declarative `step.toml` manifests for each sizing step:
+    - `catalog/size/fixed_fractional/step.toml` (`kind = "size"`, `consumes.shape = "candidates"`, `adds = ["quantity", "notional", "risk_amount"]`)
+    - `catalog/size/atr_volatility/step.toml`
+    - `catalog/size/kelly_criterion/step.toml`
+    - `catalog/size/equal_risk/step.toml`
+    - `catalog/size/fixed_notional/step.toml`
+  - [ ] Implement catalog entry wrappers (`sizer.py`) importing from `honba_strategies.components.sizers`.
+  - [ ] Verify chaining compatibility using `tools/validate_chain.py`:
+    `[signal.turtle_20] -> [size.fixed_fractional] -> [execute.twap]`.
+  - [ ] Add integration chain tests in `tests/catalog/test_step_chain.py`.
+- [ ] **8.5 Dynamic Strategy Retrofit (Signal-Sizer Decoupling)**
+  - [ ] Retrofit `AvellanedaStoikovStrategy` to allow pluggable dynamic sizing (inventory-risk reservation price determines spread; sizer determines quote quantity).
+  - [ ] Retrofit `TurtleStrategy`, `KamaCrossoverStrategy`, and `SupertrendStrategy` to optionally emit pure signals with stop levels for downstream sizing.
+- [ ] **8.6 Indian Regulatory & Microstructure Risk Guards (`honba_strategies.components.risk`)**
   - [ ] SEBI Algo ID enforcement guard (`SebiAlgoIdGuard`).
   - [ ] Order-to-Trade Ratio (OTR) throttling guard (`OtrThrottleGuard`).
   - [ ] Intraday MIS 15:20 IST square-off guard (`MisSquareOffGuard`).
@@ -647,11 +783,12 @@ honba-strategies info twap
 > Ensuring institutional fidelity, numeric accuracy, and complete clean repository status.
 
 - [ ] **9.1 Test Suite & Coverage**
-  - [ ] 100% pass rate across `pytest tests/` for SDK modules, components, and catalog entries.
+  - [ ] 100% pass rate across `pytest tests/` for SDK modules, components, sizing engines, and catalog entries.
+  - [ ] Sizer invariant tests: verify no sizing result risks $> \text{equity} \times \text{risk\_pct}$ or breaches max position cap.
   - [ ] Delayed fill tests (`tests/catalog/test_catalog_fills.py`) ensuring zero duplicate orders across all execution modes.
 - [ ] **9.2 Golden Vector Parity against StockSharp C#**
-  - [ ] Benchmark trade signals, reservation prices, and slicing schedules against StockSharp C# reference implementations.
+  - [ ] Benchmark trade signals, reservation prices, sizing allocations, and slicing schedules against StockSharp C# reference implementations.
   - [ ] Zero decimal discrepancy on accounting calculations.
 - [ ] **9.3 Indian Market Stress Testing in `honba-ya-backtest`**
-  - [ ] 5-year historical backtesting across NSE/NFO universe with exact statutory taxes and slippage models.
-  - [ ] Verification of DSR (Deflated Sharpe Ratio) and PBO (Probability of Backtest Overfitting).
+  - [ ] 5-year historical backtesting across NSE/NFO universe with dynamic position sizing, statutory taxes, and slippage models.
+  - [ ] Comparative benchmark: static sizing vs ATR volatility sizing vs Fixed Fractional sizing (evaluating CAGR, Max Drawdown, Calmar, and DSR).
