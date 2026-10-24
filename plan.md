@@ -514,26 +514,26 @@ honba-strategies info twap
 
 ---
 
-### Phase 3: High-Frequency Market Making & Quoting SDK (StockSharp Port) (M3) — Week 6–7
+### Phase 3: High-Frequency Market Making & Quoting SDK (StockSharp Port) (M3) — Week 6–7 ✅ COMPLETED
 > Porting StockSharp quoting algorithms for automated liquidity provision.
 
-- [ ] **3.1 Passive Spread Quoting (`SpreadQuotingStrategy`)**
-  - [ ] Implement in `src/honba_strategies/market_making/spread.py`, inheriting from `honba.strategies.base.QuotingStrategy`.
-  - [ ] Place continuous bid at Best Bid and ask at Best Ask with automated cancel-replace on price drift.
-  - [ ] Guard against adverse selection using Order Book Imbalance (OBI) indicator from `honba-me`.
-  - [ ] Add catalog entry in `catalog/market_making/spread_quoting/` and unit tests in `tests/unit/market_making/test_spread.py`.
-- [ ] **3.2 Avellaneda-Stoikov Market Maker (`AvellanedaStoikovStrategy`)**
-  - [ ] Implement in `src/honba_strategies/market_making/avellaneda_stoikov.py`.
-  - [ ] Compute reservation price based on inventory risk aversion parameter $\gamma$:
+- [x] **3.1 Passive Spread Quoting (`SpreadQuotingStrategy`)**
+  - [x] Implement in `src/honba_strategies/market_making/spread.py`, inheriting from `honba.strategies.base.QuotingStrategy`.
+  - [x] Place continuous bid at Best Bid and ask at Best Ask with automated cancel-replace on price drift.
+  - [x] Guard against adverse selection using Order Book Imbalance (OBI) indicator from `honba-me`.
+  - [x] Add catalog entry in `catalog/market_making/spread_quoting/` and unit tests in `tests/unit/market_making/test_spread.py`.
+- [x] **3.2 Avellaneda-Stoikov Market Maker (`AvellanedaStoikovStrategy`)**
+  - [x] Implement in `src/honba_strategies/market_making/avellaneda_stoikov.py`.
+  - [x] Compute reservation price based on inventory risk aversion parameter $\gamma$:
     $$R(s, q, t) = s - q \gamma \sigma^2 (T - t)$$
-  - [ ] Dynamic asymmetric quoting: lower bid and widen ask when net long; raise bid and tighten ask when short.
-  - [ ] Dynamic half-spread calculation: $r(s, q, t) + \frac{1}{\gamma} \ln(1 + \frac{\gamma}{\kappa})$.
-  - [ ] Add catalog entry in `catalog/market_making/avellaneda_stoikov/` and unit tests.
-- [ ] **3.3 Multi-Level Ladder Quoting (`LadderQuotingStrategy`)**
-  - [ ] Implement in `src/honba_strategies/market_making/ladder.py`.
-  - [ ] Multi-tier grid quoting across $L$ depth levels with geometric size decay.
-  - [ ] Inventory-aware queue position tracking and layer rebalancing.
-  - [ ] Add catalog entry in `catalog/market_making/ladder_quoting/` and unit tests.
+  - [x] Dynamic asymmetric quoting: lower bid and widen ask when net long; raise bid and tighten ask when short.
+  - [x] Dynamic half-spread calculation: $r(s, q, t) + \frac{1}{\gamma} \ln(1 + \frac{\gamma}{\kappa})$.
+  - [x] Add catalog entry in `catalog/market_making/avellaneda_stoikov/` and unit tests.
+- [x] **3.3 Multi-Level Ladder Quoting (`LadderQuotingStrategy`)**
+  - [x] Implement in `src/honba_strategies/market_making/ladder.py`.
+  - [x] Multi-tier grid quoting across $L$ depth levels with geometric size decay.
+  - [x] Inventory-aware queue position tracking and layer rebalancing.
+  - [x] Add catalog entry in `catalog/market_making/ladder_quoting/` and unit tests.
 
 ---
 
