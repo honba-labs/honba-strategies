@@ -1,0 +1,14 @@
+name = "ornstein_uhlenbeck"
+symbol = ""
+exchange = ""
+
+[params]
+lookback_window = 60
+entry_zscore = 2.0
+exit_zscore = 0.0
+stoploss_zscore = 3.0
+max_half_life_days = 5
+max_position_pct = 0.10
+freeze_limit = 1800
+max_allocation = 1.0
+capital = 1000000

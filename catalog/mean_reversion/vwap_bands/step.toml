@@ -1,0 +1,89 @@
+schema = 1
+id = "signal.vwap_bands"
+kind = "signal"
+title = "VWAP Band Reversion"
+description = "Intraday mean reversion to session VWAP with entry cutoff and 15:20 square-off"
+tags = ["mean_reversion", "vwap", "bands", "intraday"]
+pitfalls = [
+  "VWAP bands can widen in low volume periods; false signals increase",
+  "Entry cutoff at 15:00 may miss late-day reversals",
+  "Strict 15:20 square-off may exit prematurely in strong trends",
+  "See [avoiding backtest biases](https://honba-labs.github.io/honba/book/backtesting/avoiding_backtest_biases.html) for general pitfalls."
+]
+
+[params.std_dev_mult]
+type = "float"
+default = 2.5
+min = 1.0
+max = 5.0
+step = 0.25
+description = "Standard deviation multiplier for VWAP bands"
+sweepable = true
+
+[params.entry_cutoff]
+type = "str"
+default = "15:00"
+description = "IST entry cutoff time (no new entries after)"
+sweepable = false
+
+[params.square_off]
+type = "str"
+default = "15:20"
+description = "IST auto square-off time"
+sweepable = false
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit"
+sweepable = false
+
+[params.max_position_pct]
+type = "float"
+default = 0.10
+min = 0.01
+max = 0.2
+step = 0.01
+description = "Maximum position as fraction of capital"
+sweepable = false
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)"
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy"
+sweepable = false
+
+[requires]
+bars = ["high", "low", "close", "volume"]
+fundamentals = []
+indicators = []
+history_bars = 0
+pit = true
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]

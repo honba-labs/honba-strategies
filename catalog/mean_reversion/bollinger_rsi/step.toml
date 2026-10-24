@@ -1,0 +1,113 @@
+schema = 1
+id = "signal.bollinger_rsi"
+kind = "signal"
+title = "Bollinger Band + RSI Exhaustion"
+description = "Long entry when price < Lower Bollinger Band (2σ) and RSI < 25; exit at middle band or upper band."
+tags = ["mean_reversion", "bollinger", "rsi", "exhaustion"]
+pitfalls = [
+  "Bollinger bands widen in volatile markets; false signals increase",
+  "RSI can remain oversold in strong trends; confirm with price action",
+  "Mean reversion strategies can suffer in strong trending markets",
+  "See [avoiding backtest biases](https://honba-labs.github.io/honba/book/backtesting/avoiding_backtest_biases.html) for general pitfalls."
+]
+
+[params.bb_period]
+type = "int"
+default = 20
+min = 10
+max = 50
+step = 1
+description = "Bollinger Band period (also used for middle band SMA)"
+sweepable = true
+
+[params.bb_std_dev]
+type = "float"
+default = 2.0
+min = 1.0
+max = 3.0
+step = 0.25
+description = "Bollinger Band standard deviation multiplier"
+sweepable = true
+
+[params.rsi_period]
+type = "int"
+default = 14
+min = 2
+max = 30
+step = 1
+description = "RSI period"
+sweepable = true
+
+[params.rsi_oversold]
+type = "float"
+default = 25
+min = 10
+max = 40
+step = 1
+description = "RSI oversold threshold"
+sweepable = true
+
+[params.rsi_overbought]
+type = "float"
+default = 75
+min = 60
+max = 90
+step = 1
+description = "RSI overbought threshold"
+sweepable = true
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit"
+sweepable = false
+
+[params.max_position_pct]
+type = "float"
+default = 0.10
+min = 0.01
+max = 0.2
+step = 0.01
+description = "Maximum position as fraction of capital"
+sweepable = false
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)"
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy"
+sweepable = false
+
+[requires]
+bars = ["close"]
+fundamentals = []
+indicators = []
+history_bars = 20
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]

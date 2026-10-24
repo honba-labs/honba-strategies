@@ -1,0 +1,113 @@
+schema = 1
+id = "signal.ornstein_uhlenbeck"
+kind = "signal"
+title = "Ornstein-Uhlenbeck Mean Reversion"
+description = "OU process fit with half-life filtering: trades only when half-life < 5 days"
+tags = ["mean_reversion", "ornstein_uhlenbeck", "stochastic", "half_life"]
+pitfalls = [
+  "OU model assumes mean-reverting process; breaks down in trending regimes",
+  "Half-life estimation can be noisy; requires sufficient lookback window",
+  "Parameter estimation is sensitive to lookback window choice",
+  "See [avoiding backtest biases](https://honba-labs.github.io/honba/book/backtesting/avoiding_backtest_biases.html) for general pitfalls."
+]
+
+[params.lookback_window]
+type = "int"
+default = 60
+min = 30
+max = 252
+step = 10
+description = "Lookback window for OU parameter estimation (trading days)"
+sweepable = true
+
+[params.entry_zscore]
+type = "float"
+default = 2.0
+min = 1.0
+max = 3.5
+step = 0.25
+description = "Z-score threshold for entry"
+sweepable = true
+
+[params.exit_zscore]
+type = "float"
+default = 0.0
+min = -1.0
+max = 1.0
+step = 0.25
+description = "Z-score threshold for exit (mean reversion)"
+sweepable = true
+
+[params.stoploss_zscore]
+type = "float"
+default = 3.0
+min = 2.0
+max = 5.0
+step = 0.25
+description = "Z-score threshold for stop-loss"
+sweepable = true
+
+[params.max_half_life_days]
+type = "int"
+default = 5
+min = 1
+max = 20
+step = 1
+description = "Maximum half-life in days for trade eligibility"
+sweepable = true
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit"
+sweepable = false
+
+[params.max_position_pct]
+type = "float"
+default = 0.10
+min = 0.01
+max = 0.2
+step = 0.01
+description = "Maximum position as fraction of capital"
+sweepable = false
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)"
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy"
+sweepable = false
+
+[requires]
+bars = ["close"]
+fundamentals = []
+indicators = []
+history_bars = 60
+pit = true
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]

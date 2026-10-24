@@ -786,6 +786,9 @@ honba-strategies info fixed_fractional
   - [ ] 100% pass rate across `pytest tests/` for SDK modules, components, sizing engines, and catalog entries.
   - [ ] Sizer invariant tests: verify no sizing result risks $> \text{equity} \times \text{risk\_pct}$ or breaches max position cap.
   - [ ] Delayed fill tests (`tests/catalog/test_catalog_fills.py`) ensuring zero duplicate orders across all execution modes.
+  - [ ] Property-based testing with Hypothesis (`tests/unit/components/test_sizers_property.py`) fuzzing sizing inputs across random market regimes.
+  - [ ] Mutation testing with `mutmut` across `src/honba_strategies/components/sizers/` ensuring $\ge 85\%$ mutation kill rate.
+  - [ ] SDK backward compatibility contract test suite verifying strategies written against previous release execute unchanged.
 - [ ] **9.2 Golden Vector Parity against StockSharp C#**
   - [ ] Benchmark trade signals, reservation prices, sizing allocations, and slicing schedules against StockSharp C# reference implementations.
   - [ ] Zero decimal discrepancy on accounting calculations.

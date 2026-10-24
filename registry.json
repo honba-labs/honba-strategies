@@ -128,6 +128,35 @@
         "volatility",
         "statistical"
       ]
+    },
+    {
+      "name": "bollinger_rsi",
+      "category": "catalog/mean_reversion",
+      "path": "catalog/mean_reversion/bollinger_rsi",
+      "description": "Bollinger Band + RSI Exhaustion - Long when price < Lower Band and RSI < 25",
+      "tags": [
+        "statistical",
+        "volatility"
+      ]
+    },
+    {
+      "name": "vwap_bands",
+      "category": "catalog/mean_reversion",
+      "path": "catalog/mean_reversion/vwap_bands",
+      "description": "Intraday mean reversion to session VWAP with entry cutoff and 15:20 square-off",
+      "tags": [
+        "statistical",
+        "volume"
+      ]
+    },
+    {
+      "name": "ornstein_uhlenbeck",
+      "category": "catalog/mean_reversion",
+      "path": "catalog/mean_reversion/ornstein_uhlenbeck",
+      "description": "Ornstein-Uhlenbeck Mean Reversion - OU process fit with half-life filtering",
+      "tags": [
+        "statistical"
+      ]
     }
   ]
 }
