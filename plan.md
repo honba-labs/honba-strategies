@@ -177,63 +177,63 @@ strategy = hs.create("pairs_trading", leg_a="HDFCBANK", leg_b="ICICIBANK", z_sco
 
 ## 4. Phase-by-Phase Implementation Roadmap
 
-### Phase 0: Python SDK Packaging & Core Framework (M0) — Week 1
+### Phase 0: Python SDK Packaging & Core Framework (M0) — Week 1 ✅ COMPLETED
 > Laying down the professional Python SDK foundation, packaging standards, and deduplication contracts.
 
-- [ ] **0.1 Modern Packaging Setup (`pyproject.toml`)**
-  - [ ] Configure PEP 621 metadata, `src`-layout packaging, dependencies (`honba>=0.1.0`, `scipy>=1.12`, `pydantic>=2.0`).
-  - [ ] Add optional dependency extras: `dev` (`pytest`, `ruff`, `mypy`), `optimization` (`cvxpy`).
-  - [ ] Add `py.typed` marker for PEP 561 compliance.
-- [ ] **0.2 Core Type System & Error Hierarchy (`honba_strategies.core`)**
-  - [ ] Define `StrategyConfig` base with validation and serialization (TOML/JSON roundtrip).
-  - [ ] Define structured exception hierarchy: `HonbaStrategyError`, `ConfigValidationError`, `RiskLimitExceededError`, `RegimeNotSupportedError`.
-- [ ] **0.3 Strategy Registry & Discovery Engine (`honba_strategies.core.registry`)**
-  - [ ] Implement `StrategyRegistry` with `@register_strategy` decorator.
-  - [ ] Provide factory methods `hs.get_strategy(name)` and `hs.list_strategies()`.
-  - [ ] Build bridge between `registry.json` / `step.toml` and SDK classes to eliminate dual-source drift.
-- [ ] **0.4 Deduplication & Contract Verification with `honba` Core**
-  - [ ] Verify clean inheritance from `honba.strategies.base` (`SlicingStrategy`, `QuotingStrategy`, `ArbitrageStrategy`, `RebalancingStrategy`).
-  - [ ] Ensure all price/qty computations strictly consume `honba-core` Decimal contracts.
+- [x] **0.1 Modern Packaging Setup (`pyproject.toml`)**
+  - [x] Configure PEP 621 metadata, `src`-layout packaging, dependencies (`honba>=0.1.0`, `scipy>=1.12`, `pydantic>=2.0`).
+  - [x] Add optional dependency extras: `dev` (`pytest`, `ruff`, `mypy`), `optimization` (`cvxpy`).
+  - [x] Add `py.typed` marker for PEP 561 compliance.
+- [x] **0.2 Core Type System & Error Hierarchy (`honba_strategies.core`)**
+  - [x] Define `StrategyConfig` base with validation and serialization (TOML/JSON roundtrip).
+  - [x] Define structured exception hierarchy: `HonbaStrategyError`, `ConfigValidationError`, `RiskLimitExceededError`, `RegimeNotSupportedError`.
+- [x] **0.3 Strategy Registry & Discovery Engine (`honba_strategies.core.registry`)**
+  - [x] Implement `StrategyRegistry` with `@register_strategy` decorator.
+  - [x] Provide factory methods `hs.get_strategy(name)` and `hs.list_strategies()`.
+  - [x] Build bridge between `registry.json` / `step.toml` and SDK classes to eliminate dual-source drift.
+- [x] **0.4 Deduplication & Contract Verification with `honba` Core**
+  - [x] Verify clean inheritance from `honba.strategies.base` (`SlicingStrategy`, `QuotingStrategy`, `ArbitrageStrategy`, `RebalancingStrategy`).
+  - [x] Ensure all price/qty computations strictly consume `honba-core` Decimal contracts.
 
 ---
 
-### Phase 1: Smart Execution & Slicing SDK (StockSharp Port) (M1) — Week 2–3
+### Phase 1: Smart Execution & Slicing SDK (StockSharp Port) (M1) — Week 2–3 ✅ COMPLETED
 > Porting StockSharp execution algorithms as high-performance, parameter-driven SDK classes.
 
-- [ ] **1.1 TWAP Execution Strategy (`TwapStrategy`)**
-  - [ ] Inherit from `honba.strategies.base.SlicingStrategy`.
-  - [ ] Divide large parent order into $N$ equal slices across duration with randomized microsecond time jitter.
-  - [ ] Integrate SEBI single-order freeze limit slicing (e.g. NIFTY max 1,800 contracts).
-  - [ ] Expose declarative parameters: `total_quantity`, `duration_minutes`, `slice_count`, `jitter_pct`.
-- [ ] **1.2 VWAP Execution Strategy (`VwapStrategy`)**
-  - [ ] Dynamic slice sizing proportional to historical exchange intraday volume curve (NSE 09:15–15:30 profile).
-  - [ ] Real-time pace adjustment based on accumulated volume and participation target.
-  - [ ] Expose declarative parameters: `target_volume_pct`, `start_time`, `end_time`, `urgency`.
-- [ ] **1.3 Percentage of Volume (POV) Slicer (`PovStrategy`)**
-  - [ ] Dynamic execution tracking a continuous target participation rate (e.g. 5% or 10% of market volume).
-  - [ ] Dynamic speed-up during liquidity bursts and automatic pause during order book droughts.
-- [ ] **1.4 Synthetic Iceberg Slicer (`IcebergStrategy`)**
-  - [ ] Maintain working visible quote while withholding hidden remainder in local order manager.
-  - [ ] Automatically replenish visible leg upon fill with randomized display variance to prevent adverse detection.
+- [x] **1.1 TWAP Execution Strategy (`TwapStrategy`)**
+  - [x] Inherit from `honba.strategies.base.SlicingStrategy`.
+  - [x] Divide large parent order into $N$ equal slices across duration with randomized microsecond time jitter.
+  - [x] Integrate SEBI single-order freeze limit slicing (e.g. NIFTY max 1,800 contracts).
+  - [x] Expose declarative parameters: `total_quantity`, `duration_minutes`, `slice_count`, `jitter_pct`.
+- [x] **1.2 VWAP Execution Strategy (`VwapStrategy`)**
+  - [x] Dynamic slice sizing proportional to historical exchange intraday volume curve (NSE 09:15–15:30 profile).
+  - [x] Real-time pace adjustment based on accumulated volume and participation target.
+  - [x] Expose declarative parameters: `target_volume_pct`, `start_time`, `end_time`, `urgency`.
+- [x] **1.3 Percentage of Volume (POV) Slicer (`PovStrategy`)**
+  - [x] Dynamic execution tracking a continuous target participation rate (e.g. 5% or 10% of market volume).
+  - [x] Dynamic speed-up during liquidity bursts and automatic pause during order book droughts.
+- [x] **1.4 Synthetic Iceberg Slicer (`IcebergStrategy`)**
+  - [x] Maintain working visible quote while withholding hidden remainder in local order manager.
+  - [x] Automatically replenish visible leg upon fill with randomized display variance to prevent adverse detection.
 
 ---
 
-### Phase 2: Arbitrage & Relative Value SDK (StockSharp Port) (M2) — Week 4–5
+### Phase 2: Arbitrage & Relative Value SDK (StockSharp Port) (M2) — Week 4–5 ✅ COMPLETED
 > Porting StockSharp arbitrage engines for risk-neutral spread extraction across Indian markets.
 
-- [ ] **2.1 Statistical Arbitrage & Pairs Trading (`PairsTradingStrategy`)**
-  - [ ] Inherit from `honba.strategies.base.ArbitrageStrategy`.
-  - [ ] Engle-Granger and Johansen cointegration testing module for asset pair validation.
-  - [ ] Real-time spread tracking: $S_t = \ln(P_{A, t}) - \beta \ln(P_{B, t}) - \alpha$.
-  - [ ] Dynamic rolling z-score entry ($Z \ge 2.0$), stop-loss ($Z \ge 3.5$), and mean exit ($Z = 0.0$).
-  - [ ] Atomic two-leg execution with leg-risk timeout mitigation.
-- [ ] **2.2 Cash-and-Carry Basis Arbitrage (`CashAndCarryStrategy`)**
-  - [ ] Real-time ingestion of spot equity (NSE) and near-month equity futures (NFO).
-  - [ ] Mispricing detector accounting for financing rate + statutory taxes (STT, GST, Stamp Duty).
-  - [ ] Long delivery equity (`CNC`), short near-month future; hold until expiry settlement at parity.
-- [ ] **2.3 Index & ETF Basket Arbitrage (`BasketArbitrageStrategy`)**
-  - [ ] Monitor spread between NIFTY 50 ETF (e.g. NIFTYBEES) and synthetic basket of underlying 50 scrips.
-  - [ ] Execute synchronized basket creation/redemption arbitrage on persistent mispricings.
+- [x] **2.1 Statistical Arbitrage & Pairs Trading (`PairsTradingStrategy`)**
+  - [x] Inherit from `honba.strategies.base.ArbitrageStrategy`.
+  - [x] Engle-Granger and Johansen cointegration testing module for asset pair validation.
+  - [x] Real-time spread tracking: $S_t = \ln(P_{A, t}) - \beta \ln(P_{B, t}) - \alpha$.
+  - [x] Dynamic rolling z-score entry ($Z \ge 2.0$), stop-loss ($Z \ge 3.5$), and mean exit ($Z = 0.0$).
+  - [x] Atomic two-leg execution with leg-risk timeout mitigation.
+- [x] **2.2 Cash-and-Carry Basis Arbitrage (`CashAndCarryStrategy`)**
+  - [x] Real-time ingestion of spot equity (NSE) and near-month equity futures (NFO).
+  - [x] Mispricing detector accounting for financing rate + statutory taxes (STT, GST, Stamp Duty).
+  - [x] Long delivery equity (`CNC`), short near-month future; hold until expiry settlement at parity.
+- [x] **2.3 Index & ETF Basket Arbitrage (`BasketArbitrageStrategy`)**
+  - [x] Monitor spread between NIFTY 50 ETF (e.g. NIFTYBEES) and synthetic basket of underlying 50 scrips.
+  - [x] Execute synchronized basket creation/redemption arbitrage on persistent mispricings.
 
 ---
 

@@ -18,7 +18,8 @@ DIRS = [
     for e in json.loads((ROOT / "registry.json").read_text())["strategies"]
     # multi-instrument portfolios (symbol "MULTI") are covered by their own tests
     # execution strategies intentionally generate consecutive same-side slices
-    if not e["path"].startswith(("universe/alpha", "portfolio/", "catalog/execution/"))
+    # arbitrage strategies intentionally generate same-side orders for two legs
+    if not e["path"].startswith(("universe/alpha", "portfolio/", "catalog/execution/", "catalog/arbitrage/"))
 ]
 
 

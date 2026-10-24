@@ -1,0 +1,170 @@
+schema = 1
+id = "execute.cash_and_carry"
+kind = "execute"
+title = "Cash-and-Carry Basis Arbitrage"
+description = "Long spot equity (CNC), short near-month futures; hold until expiry settlement at parity."
+tags = ["arbitrage", "cash_and_carry", "basis", "futures"]
+pitfalls = [
+  "Futures expiry mismatch can leave unwanted directional exposure.",
+  "Corporate actions (dividends, splits) affect fair basis calculation.",
+  "Liquidity drought in near-month futures can widen basis unpredictably.",
+  "See [avoiding backtest biases](https://honba-labs.github.io/honba/book/backtesting/avoiding_backtest_biases.html) for general pitfalls."
+]
+
+[params.spot_symbol]
+type = "str"
+default = ""
+description = "Spot equity symbol."
+sweepable = false
+
+[params.spot_exchange]
+type = "str"
+default = ""
+description = "Spot exchange."
+sweepable = false
+
+[params.futures_symbol]
+type = "str"
+default = ""
+description = "Futures symbol (same underlying)."
+sweepable = false
+
+[params.futures_exchange]
+type = "str"
+default = ""
+description = "Futures exchange."
+sweepable = false
+
+[params.futures_expiry]
+type = "str"
+default = ""
+description = "Futures expiry date (YYYY-MM-DD). Must be set per contract."
+sweepable = false
+
+[params.risk_free_rate]
+type = "float"
+default = 0.065
+min = 0.0
+max = 0.2
+step = 0.001
+description = "Annualized risk-free rate for cost of carry."
+sweepable = true
+
+[params.stt_rate]
+type = "float"
+default = 0.001
+min = 0.0
+max = 0.01
+step = 0.0001
+description = "STT rate on delivery equity (0.1% = 0.001)."
+sweepable = true
+
+[params.gst_rate]
+type = "float"
+default = 0.18
+min = 0.0
+max = 0.3
+step = 0.01
+description = "GST rate on brokerage."
+sweepable = true
+
+[params.stamp_duty_rate]
+type = "float"
+default = 0.00015
+min = 0.0
+max = 0.01
+step = 0.00001
+description = "Stamp duty rate."
+sweepable = true
+
+[params.min_basis_bps]
+type = "float"
+default = 50
+min = 5
+max = 500
+step = 5
+description = "Minimum basis in bps to enter trade."
+sweepable = true
+
+[params.lot_size]
+type = "int"
+default = 250
+min = 1
+max = 10000
+step = 1
+description = "Futures lot size (contracts per order)."
+sweepable = true
+
+[params.max_positions]
+type = "int"
+default = 5
+min = 1
+max = 20
+step = 1
+description = "Maximum concurrent positions."
+sweepable = true
+
+[params.max_holding_days]
+type = "int"
+default = 90
+min = 1
+max = 365
+step = 1
+description = "Maximum days to hold before forced exit."
+sweepable = true
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit (lots per order)."
+sweepable = false
+
+[params.max_position_pct]
+type = "float"
+default = 0.05
+min = 0.01
+max = 0.2
+step = 0.01
+description = "Maximum position as fraction of capital."
+sweepable = false
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)."
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy."
+sweepable = false
+
+[requires]
+bars = ["close"]
+fundamentals = []
+indicators = []
+history_bars = 0
+pit = true
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price", "leg"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]

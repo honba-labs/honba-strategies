@@ -1,0 +1,22 @@
+name = "cash_and_carry"
+symbol = ""
+exchange = ""
+
+[params]
+spot_symbol = ""
+spot_exchange = ""
+futures_symbol = ""
+futures_exchange = ""
+futures_expiry = ""
+risk_free_rate = 0.065
+stt_rate = 0.001
+gst_rate = 0.18
+stamp_duty_rate = 0.00015
+min_basis_bps = 50
+lot_size = 250
+max_positions = 5
+max_holding_days = 90
+freeze_limit = 1800
+max_position_pct = 0.05
+max_allocation = 1.0
+capital = 1000000

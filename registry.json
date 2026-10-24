@@ -203,6 +203,33 @@
         "volume",
         "statistical"
       ]
+    },
+    {
+      "name": "pairs",
+      "category": "catalog/arbitrage",
+      "path": "catalog/arbitrage/pairs",
+      "description": "Statistical pairs trading with Engle-Granger cointegration and z-score signals.",
+      "tags": [
+        "statistical"
+      ]
+    },
+    {
+      "name": "cash_and_carry",
+      "category": "catalog/arbitrage",
+      "path": "catalog/arbitrage/cash_and_carry",
+      "description": "Cash-and-carry basis arbitrage: long spot equity, short near-month futures.",
+      "tags": [
+        "statistical"
+      ]
+    },
+    {
+      "name": "basket",
+      "category": "catalog/arbitrage",
+      "path": "catalog/arbitrage/basket",
+      "description": "Index ETF vs synthetic basket creation/redemption arbitrage.",
+      "tags": [
+        "statistical"
+      ]
     }
   ]
 }

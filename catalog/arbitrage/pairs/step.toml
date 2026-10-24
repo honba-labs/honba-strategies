@@ -1,0 +1,154 @@
+schema = 1
+id = "execute.pairs"
+kind = "execute"
+title = "Statistical Pairs Trading"
+description = "Engle-Granger cointegration with z-score signals: long spread when cheap, short when rich."
+tags = ["arbitrage", "pairs", "cointegration", "statistical"]
+pitfalls = [
+  "Cointegration can break down during regime changes; validate out-of-sample.",
+  "Z-score thresholds are sensitive; optimize walk-forward.",
+  "Leg execution risk: if one leg fills and the other doesn't, directional exposure remains.",
+]
+
+[params.leg_a_symbol]
+type = "str"
+default = ""
+description = "Primary leg symbol (long leg when spread is cheap)."
+sweepable = false
+
+[params.leg_a_exchange]
+type = "str"
+default = ""
+description = "Primary leg exchange."
+sweepable = false
+
+[params.leg_b_symbol]
+type = "str"
+default = ""
+description = "Hedge leg symbol (short leg when spread is cheap)."
+sweepable = false
+
+[params.leg_b_exchange]
+type = "str"
+default = ""
+description = "Hedge leg exchange."
+sweepable = false
+
+[params.lookback_window]
+type = "int"
+default = 252
+min = 60
+max = 756
+step = 21
+description = "Trading days for cointegration estimation (min 60, max 3 years)."
+sweepable = true
+
+[params.entry_zscore]
+type = "float"
+default = 2.0
+min = 1.0
+max = 3.5
+step = 0.25
+description = "Z-score threshold to enter position."
+sweepable = true
+
+[params.exit_zscore]
+type = "float"
+default = 0.0
+min = -1.0
+max = 1.0
+step = 0.25
+description = "Z-score threshold to exit position (mean reversion)."
+sweepable = true
+
+[params.stoploss_zscore]
+type = "float"
+default = 3.5
+min = 2.5
+max = 5.0
+step = 0.25
+description = "Z-score threshold for stop-loss."
+sweepable = true
+
+[params.leg_quantity]
+type = "float"
+default = 1
+min = 1
+max = 100
+step = 1
+description = "Base quantity per leg (shares/contracts)."
+sweepable = true
+
+[params.hedge_ratio]
+type = "float"
+default = 1.0
+min = 0.1
+max = 3.0
+step = 0.1
+description = "Hedge ratio (beta from cointegration)."
+sweepable = true
+
+[params.max_holding_days]
+type = "int"
+default = 20
+min = 1
+max = 60
+step = 1
+description = "Maximum days to hold position before forced exit."
+sweepable = true
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit (lots per order)."
+sweepable = false
+
+[params.max_position_pct]
+type = "float"
+default = 0.05
+min = 0.01
+max = 0.2
+step = 0.01
+description = "Maximum position as fraction of capital."
+sweepable = true
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)."
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy."
+sweepable = false
+
+[requires]
+bars = ["close"]
+fundamentals = []
+indicators = []
+history_bars = "$lookback_window"
+pit = true
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price", "leg"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]

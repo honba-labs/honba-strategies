@@ -56,6 +56,10 @@ class BaseStrategyConfig(ABC):
     symbol: str
     exchange: str = "NSE"
 
+    # Currency & broker (common across all strategies)
+    currency: str = "INR"
+    broker: str | None = None
+
     # Capital management
     capital: Decimal = Decimal("1000000")
     max_allocation: Decimal = Decimal("1.0")
@@ -64,6 +68,9 @@ class BaseStrategyConfig(ABC):
     max_position_pct: Decimal = Decimal("0.10")
     stop_loss_pct: Decimal | None = None
     max_daily_loss_pct: Decimal | None = None
+
+    # Exchange limits
+    freeze_limit: int = 1800
 
     # Execution defaults
     order_type: str = "MARKET"

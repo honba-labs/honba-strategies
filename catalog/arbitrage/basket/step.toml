@@ -1,0 +1,140 @@
+schema = 1
+id = "execute.basket"
+kind = "execute"
+title = "Index ETF vs Synthetic Basket Arbitrage"
+description = "Monitors NIFTYBEES vs synthetic NIFTY 50 basket; executes creation/redemption on mispricing."
+tags = ["arbitrage", "basket", "etf", "index"]
+pitfalls = [
+  "ETF tracking error and NAV discount/premium can create persistent basis.",
+  "Constituent liquidity varies; illiquid names create execution risk.",
+  "Corporate actions (index rebalancing) require weight updates.",
+  "See [avoiding backtest biases](https://honba-labs.github.io/honba/book/backtesting/avoiding_backtest_biases.html) for general pitfalls."
+]
+
+[params.etf_symbol]
+type = "str"
+default = ""
+description = "ETF symbol (e.g., NIFTYBEES)."
+sweepable = false
+
+[params.etf_exchange]
+type = "str"
+default = ""
+description = "ETF exchange."
+sweepable = false
+
+[params.constituents]
+type = "symbols"
+default = []
+description = "Constituent symbols for synthetic basket."
+sweepable = false
+
+[params.min_basis_bps]
+type = "float"
+default = 10
+min = 1
+max = 50
+step = 1
+description = "Minimum basis in bps to enter arbitrage."
+sweepable = true
+
+[params.max_basis_bps]
+type = "float"
+default = 100
+min = 20
+max = 500
+step = 10
+description = "Maximum expected basis (sanity check)."
+sweepable = true
+
+[params.rebalance_threshold_bps]
+type = "float"
+default = 5
+min = 1
+max = 20
+step = 1
+description = "Basis reversion threshold for exit."
+sweepable = true
+
+[params.etf_lot_size]
+type = "int"
+default = 1
+min = 1
+max = 1000
+step = 1
+description = "ETF units per arbitrage unit."
+sweepable = true
+
+[params.max_positions]
+type = "int"
+default = 3
+min = 1
+max = 10
+step = 1
+description = "Maximum concurrent arbitrage positions."
+sweepable = true
+
+[params.max_holding_days]
+type = "int"
+default = 30
+min = 1
+max = 90
+step = 1
+description = "Maximum days to hold before forced unwind."
+sweepable = true
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit (lots per order)."
+sweepable = false
+
+[params.max_position_pct]
+type = "float"
+default = 0.05
+min = 0.01
+max = 0.2
+step = 0.01
+description = "Maximum position as fraction of capital."
+sweepable = false
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)."
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy."
+sweepable = false
+
+[requires]
+bars = ["close"]
+fundamentals = []
+indicators = []
+history_bars = 0
+pit = true
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price", "leg"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]

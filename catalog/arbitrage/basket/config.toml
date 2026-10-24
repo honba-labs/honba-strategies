@@ -1,0 +1,18 @@
+name = "basket_arbitrage"
+symbol = ""
+exchange = ""
+
+[params]
+etf_symbol = ""
+etf_exchange = ""
+constituents = []
+min_basis_bps = 10
+max_basis_bps = 100
+rebalance_threshold_bps = 5
+etf_lot_size = 1
+max_positions = 3
+max_holding_days = 30
+freeze_limit = 1800
+max_position_pct = 0.05
+max_allocation = 1.0
+capital = 1000000
