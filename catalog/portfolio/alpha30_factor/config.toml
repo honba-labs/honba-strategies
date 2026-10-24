@@ -1,0 +1,16 @@
+name = "alpha30_factor"
+symbol = ""
+exchange = ""
+
+[params]
+momentum_weight = 0.25
+low_vol_weight = 0.25
+quality_weight = 0.25
+value_weight = 0.25
+lookback_window = 252
+rebalance_frequency = "monthly"
+top_n = 30
+max_weight = 0.10
+freeze_limit = 1800
+max_allocation = 1.0
+capital = 10000000

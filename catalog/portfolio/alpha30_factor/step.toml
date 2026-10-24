@@ -1,0 +1,128 @@
+schema = 1
+id = "signal.alpha30_factor"
+kind = "signal"
+title = "Alpha Factor Portfolio (Top 30)"
+description = "Multi-factor portfolio (Momentum, Low Vol, Quality, Value) selecting top N stocks"
+tags = ["momentum", "statistical", "breadth"]
+pitfalls = [
+  "Factor premia can be cyclical",
+  "Requires quality fundamental data",
+  "See [avoiding backtest biases](https://honba-labs.github.io/honba/book/backtesting/avoiding_backtest_biases.html) for general pitfalls."
+]
+
+[params.momentum_weight]
+type = "float"
+default = 0.25
+min = 0.0
+max = 1.0
+step = 0.05
+description = "Momentum factor weight"
+sweepable = true
+
+[params.low_vol_weight]
+type = "float"
+default = 0.25
+min = 0.0
+max = 1.0
+step = 0.05
+description = "Low volatility factor weight"
+sweepable = true
+
+[params.quality_weight]
+type = "float"
+default = 0.25
+min = 0.0
+max = 1.0
+step = 0.05
+description = "Quality factor weight"
+sweepable = true
+
+[params.value_weight]
+type = "float"
+default = 0.25
+min = 0.0
+max = 1.0
+step = 0.05
+description = "Value factor weight"
+sweepable = true
+
+[params.lookback_window]
+type = "int"
+default = 252
+min = 60
+max = 504
+step = 12
+description = "Lookback window"
+sweepable = true
+
+[params.rebalance_frequency]
+type = "enum"
+choices = ["weekly", "monthly", "quarterly"]
+default = "monthly"
+description = "Rebalancing frequency"
+sweepable = false
+
+[params.top_n]
+type = "int"
+default = 30
+min = 10
+max = 100
+step = 10
+description = "Number of stocks to hold"
+sweepable = true
+
+[params.max_weight]
+type = "float"
+default = 0.10
+min = 0.05
+max = 0.20
+step = 0.01
+description = "Maximum weight per stock"
+sweepable = true
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit"
+sweepable = false
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)"
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 10000000
+min = 1000
+max = 100000000000
+description = "INR available to the strategy"
+sweepable = false
+
+[requires]
+bars = ["close"]
+fundamentals = []
+indicators = []
+history_bars = 252
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]

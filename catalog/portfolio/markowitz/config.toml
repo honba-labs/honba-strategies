@@ -1,0 +1,13 @@
+name = "markowitz"
+symbol = ""
+exchange = ""
+
+[params]
+lookback_window = 252
+rebalance_frequency = "monthly"
+risk_free_rate = 0.06
+max_weight = 0.20
+min_weight = 0.00
+freeze_limit = 1800
+max_allocation = 1.0
+capital = 10000000

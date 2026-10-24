@@ -14,6 +14,14 @@ config = EqualWeightConfig(
 strategy = EqualWeightRebalancer(config)
 ```
 
+## Possible output
+
+```
+Running Equal Weight Rebalancer...
+Rebalanced portfolio to equal weights across 10 positions
+Drift threshold exceeded, executing rebalancing trades
+```
+
 ## Pitfalls
 
 - Frequent rebalancing increases transaction costs in illiquid markets

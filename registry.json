@@ -157,6 +157,46 @@
       "tags": [
         "statistical"
       ]
+    },
+    {
+      "name": "equal_weight",
+      "category": "catalog/portfolio",
+      "path": "catalog/portfolio/equal_weight",
+      "description": "Equal weight portfolio with periodic rebalancing and drift threshold bands",
+      "tags": [
+        "statistical",
+        "breadth"
+      ]
+    },
+    {
+      "name": "risk_parity",
+      "category": "catalog/portfolio",
+      "path": "catalog/portfolio/risk_parity",
+      "description": "Risk parity allocation weighting inversely proportional to volatility",
+      "tags": [
+        "statistical",
+        "volatility"
+      ]
+    },
+    {
+      "name": "markowitz",
+      "category": "catalog/portfolio",
+      "path": "catalog/portfolio/markowitz",
+      "description": "Mean-variance optimization maximizing Sharpe ratio with constraints",
+      "tags": [
+        "statistical"
+      ]
+    },
+    {
+      "name": "alpha30_factor",
+      "category": "catalog/portfolio",
+      "path": "catalog/portfolio/alpha30_factor",
+      "description": "Multi-factor portfolio (Momentum, Low Vol, Quality, Value) selecting top N stocks",
+      "tags": [
+        "momentum",
+        "statistical",
+        "breadth"
+      ]
     }
   ]
 }
