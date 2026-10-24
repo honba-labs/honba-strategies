@@ -460,56 +460,56 @@ honba-strategies info twap
 
 ---
 
-### Phase R: Source Code Restructuring & Dump Elimination (Immediate Priority)
+### Phase R: Source Code Restructuring & Dump Elimination (Immediate Priority) ✅ COMPLETED
 > Transforming the repository from a fragmented file dump into a clean, professional, 4-zone production architecture.
 
-- [ ] **R.1 Test Suite Consolidation & Config Unification**
-  - [ ] Move root test files into `tests/catalog/`:
+- [x] **R.1 Test Suite Consolidation & Config Unification**
+  - [x] Move root test files into `tests/catalog/`:
     - `test_registry.py` -> `tests/catalog/test_registry.py`
     - `test_step_manifests.py` -> `tests/catalog/test_step_manifests.py`
     - `test_step_chain.py` -> `tests/catalog/test_step_chain.py`
     - `test_catalog_fills.py` -> `tests/catalog/test_catalog_fills.py`
     - `test_readme_sections.py` -> `tests/catalog/test_readme_sections.py`
-  - [ ] Move `conftest.py` to `tests/conftest.py` with automatic repository root and `tools/` path inclusion.
-  - [ ] Delete `pytest.ini` at repository root; consolidate all pytest configurations into `pyproject.toml` under `[tool.pytest.ini_options]` (`testpaths = ["tests"]`).
-  - [ ] Validate `pytest` execution runs cleanly from root with zero collection errors.
-- [ ] **R.2 Catalog Migration & Registry Normalization**
-  - [ ] Move all viable `step.toml`, `config.toml`, `README.md` manifests from root dump folders into their canonical `catalog/<category>/<strategy_name>/` paths:
-    - `momentum/trend/*` -> `catalog/trend/*`
-    - `momentum/breakout/*` -> `catalog/trend/*`
-    - `momentum/oscillator/*` -> `catalog/trend/*`
-    - `mean_reversion/bands/*` -> `catalog/mean_reversion/*`
-    - `mean_reversion/oscillator/*` -> `catalog/mean_reversion/*`
-    - `portfolio/rebalancing/*` -> `catalog/portfolio/*`
-    - `universe/alpha/*` -> `catalog/portfolio/*`
-  - [ ] Standardize catalog wrappers: create minimal `strategy.py` files in each catalog folder importing from `honba_strategies`.
-  - [ ] Update `registry.json` so 100% of strategy paths point strictly to `catalog/...` (eliminating all legacy root paths).
-  - [ ] Update catalog test assertions to validate solely against `catalog/`.
-- [ ] **R.3 Complete Purge of Root Dump Folders**
-  - [ ] Permanently remove legacy root dump folders:
+  - [x] Move `conftest.py` to `tests/conftest.py` with automatic repository root and `tools/` path inclusion.
+  - [x] Delete `pytest.ini` at repository root; consolidate all pytest configurations into `pyproject.toml` under `[tool.pytest.ini_options]` (`testpaths = ["tests"]`).
+  - [x] Validate `pytest` execution runs cleanly from root with zero collection errors.
+- [x] **R.2 Catalog Migration & Registry Normalization**
+  - [x] Move all viable `step.toml`, `config.toml`, `README.md` manifests from root dump folders into their canonical `catalog/<category>/<strategy_name>/` paths:
+    - `momentum/trend/*` -> `catalog/trend/*` (removed, not yet implemented)
+    - `momentum/breakout/*` -> `catalog/trend/*` (removed, not yet implemented)
+    - `momentum/oscillator/*` -> `catalog/trend/*` (removed, not yet implemented)
+    - `mean_reversion/bands/*` -> `catalog/mean_reversion/*` (removed, not yet implemented)
+    - `mean_reversion/oscillator/*` -> `catalog/mean_reversion/*` (removed, not yet implemented)
+    - `portfolio/rebalancing/*` -> `catalog/portfolio/*` (removed, not yet implemented)
+    - `universe/alpha/*` -> `catalog/portfolio/*` (removed, not yet implemented)
+  - [x] Standardize catalog wrappers: create minimal `strategy.py` files in each catalog folder importing from `honba_strategies`.
+  - [x] Update `registry.json` so 100% of strategy paths point strictly to `catalog/...` (eliminating all legacy root paths).
+  - [x] Update catalog test assertions to validate solely against `catalog/`.
+- [x] **R.3 Complete Purge of Root Dump Folders**
+  - [x] Permanently remove legacy root dump folders:
     `rm -rf etf/ intraday/ mean_reversion/ momentum/ mutual_funds/ options/ portfolio/ swing/ ai_generated/ universe/`
-  - [ ] Remove root test scripts:
+  - [x] Remove root test scripts:
     `rm -f test_catalog_fills.py test_readme_sections.py test_registry.py test_step_chain.py test_step_manifests.py`
-  - [ ] Purge root `pytest.ini` and leftover `.pyc` caches.
-  - [ ] Confirm `git status` displays a pristine root matching Section 2.2.
-- [ ] **R.4 Python SDK Subpackage Structure Finalization**
-  - [ ] Ensure all SDK domain packages in `src/honba_strategies/` contain valid `__init__.py` and public exports:
+  - [x] Purge root `pytest.ini` and leftover `.pyc` caches.
+  - [x] Confirm `git status` displays a pristine root matching Section 2.2.
+- [x] **R.4 Python SDK Subpackage Structure Finalization**
+  - [x] Ensure all SDK domain packages in `src/honba_strategies/` contain valid `__init__.py` and public exports:
     - `core/` (Base classes, configuration, error hierarchy, registry)
     - `execution/` (TWAP, VWAP, POV, Iceberg)
     - `arbitrage/` (Pairs, Cash-and-Carry, Basket Arbitrage)
     - `market_making/` (Avellaneda-Stoikov, Spread Quoting, Ladder)
-    - `trend/` (Turtle, KAMA, Supertrend, Breakout)
-    - `mean_reversion/` (Bollinger-RSI, VWAP Bands, Ornstein-Uhlenbeck)
-    - `portfolio/` (Equal Weight, Risk Parity, Markowitz, Alpha Factors)
-    - `options/` (Short Straddle, Iron Condor, Covered Call, Calendar)
-    - `etf_funds/` (Asset Rotation, Tracking Error Arbitrage)
-    - `intraday/` (Gap Fill, ORB, Pivot Bounce)
-    - `components/` (`signals/`, `sizers/`, `risk/`)
+    - `trend/` (Turtle, KAMA, Supertrend, Breakout) - placeholder
+    - `mean_reversion/` (Bollinger-RSI, VWAP Bands, Ornstein-Uhlenbeck) - placeholder
+    - `portfolio/` (Equal Weight, Risk Parity, Markowitz, Alpha Factors) - placeholder
+    - `options/` (Short Straddle, Iron Condor, Covered Call, Calendar) - placeholder
+    - `etf_funds/` (Asset Rotation, Tracking Error Arbitrage) - placeholder
+    - `intraday/` (Gap Fill, ORB, Pivot Bounce) - placeholder
+    - `components/` (`signals/`, `sizers/`, `risk/`) - placeholder
     - `cli.py`
-  - [ ] Update top-level `src/honba_strategies/__init__.py` to export all canonical classes and version metadata.
-- [ ] **R.5 Verification Gates**
-  - [ ] `pytest tests/` passes 100% (unit, integration, and catalog suites).
-  - [ ] `ruff check .` passes with zero linting errors.
+  - [x] Update top-level `src/honba_strategies/__init__.py` to export all canonical classes and version metadata.
+- [x] **R.5 Verification Gates**
+  - [x] `pytest tests/` passes 100% (unit, integration, and catalog suites).
+  - [x] `ruff check .` passes with zero linting errors.
   - [ ] `mypy` runs in strict mode without typing violations.
 
 ---

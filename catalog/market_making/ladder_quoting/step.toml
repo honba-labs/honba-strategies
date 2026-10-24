@@ -1,0 +1,131 @@
+schema = 1
+id = "execute.ladder_quoting"
+kind = "execute"
+title = "Ladder Quoting Strategy"
+description = "Multi-level ladder quoting with geometric size decay and inventory awareness"
+tags = ["market_making", "ladder", "grid"]
+pitfalls = [
+  "Inventory can accumulate rapidly in trending markets",
+  "Geometric decay may not match optimal inventory distribution",
+  "Requires frequent rebalancing in volatile markets",
+  "See [avoiding backtest biases](https://honba-labs.github.io/honba/book/backtesting/avoiding_backtest_biases.html) for general pitfalls."
+]
+
+[params.num_levels]
+type = "int"
+default = 5
+min = 1
+max = 20
+step = 1
+description = "Number of price levels on each side"
+sweepable = true
+
+[params.level_spread_bps]
+type = "float"
+default = 5
+min = 1
+max = 50
+step = 1
+description = "Spread between levels (bps)"
+sweepable = true
+
+[params.base_quantity]
+type = "float"
+default = 100
+min = 1
+max = 10000
+step = 1
+description = "Quantity at level 0"
+sweepable = true
+
+[params.quantity_decay]
+type = "float"
+default = 0.5
+min = 0.1
+max = 1.0
+step = 0.05
+description = "Geometric decay factor per level"
+sweepable = true
+
+[params.max_total_inventory]
+type = "float"
+default = 5000
+min = 1
+max = 100000
+step = 1
+description = "Maximum net inventory before pulling quotes"
+sweepable = true
+
+[params.rebalance_threshold_bps]
+type = "float"
+default = 10
+min = 1
+max = 100
+step = 1
+description = "Price move threshold for rebalancing (bps)"
+sweepable = true
+
+[params.max_levels_active]
+type = "int"
+default = 3
+min = 1
+max = 10
+step = 1
+description = "Max active levels per side"
+sweepable = true
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit (lots per order)"
+sweepable = false
+
+[params.max_position_pct]
+type = "float"
+default = 0.05
+min = 0.01
+max = 0.2
+step = 0.01
+description = "Maximum position as fraction of capital"
+sweepable = false
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)"
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy"
+sweepable = false
+
+[requires]
+bars = []
+fundamentals = []
+indicators = []
+history_bars = 0
+pit = true
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk"]

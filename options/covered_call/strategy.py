@@ -1,1 +1,0 @@
-"""Strategy: covered_call"""

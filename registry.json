@@ -1,170 +1,6 @@
 {
   "strategies": [
     {
-      "name": "sma_crossover",
-      "category": "momentum/trend",
-      "path": "momentum/trend/sma_crossover",
-      "description": "Long-only SMA crossover: buy when the fast SMA is above the slow SMA, exit when it falls below.",
-      "tags": [
-        "moving_average"
-      ]
-    },
-    {
-      "name": "macd_trend",
-      "category": "momentum/trend",
-      "path": "momentum/trend/macd_trend",
-      "description": "MACD/EMA trend follower: buy MACD above signal and close above trend EMA; exit when both flip.",
-      "tags": [
-        "trend",
-        "moving_average"
-      ]
-    },
-    {
-      "name": "donchian_trend",
-      "category": "momentum/trend",
-      "path": "momentum/trend/donchian_trend",
-      "description": "Donchian channel breakout above a trend SMA; exit on a close below the channel low.",
-      "tags": [
-        "volatility"
-      ]
-    },
-    {
-      "name": "turtle_20",
-      "category": "momentum/trend",
-      "path": "momentum/trend/turtle_20",
-      "description": "Simplified Turtle System 1: N-bar high breakout, shorter low exit, ATR protective stop.",
-      "tags": [
-        "volatility"
-      ]
-    },
-    {
-      "name": "bollinger_breakout",
-      "category": "momentum/breakout",
-      "path": "momentum/breakout/bollinger_breakout",
-      "description": "Upper Bollinger band breakout above the Ichimoku cloud; exit below the middle band.",
-      "tags": [
-        "volatility",
-        "trend"
-      ]
-    },
-    {
-      "name": "kdj_cross",
-      "category": "momentum/oscillator",
-      "path": "momentum/oscillator/kdj_cross",
-      "description": "KDJ momentum: buy when J is above K and D; exit on J turning down, J below K or D, or an ATR stop.",
-      "tags": [
-        "momentum",
-        "volatility"
-      ]
-    },
-    {
-      "name": "rsi_oversold",
-      "category": "mean_reversion/oscillator",
-      "path": "mean_reversion/oscillator/rsi_oversold",
-      "description": "RSI oversold dip buying above a trend SMA; exit on RSI recovery or max holding period.",
-      "tags": [
-        "momentum",
-        "moving_average"
-      ]
-    },
-    {
-      "name": "rsi2_connors",
-      "category": "mean_reversion/oscillator",
-      "path": "mean_reversion/oscillator/rsi2_connors",
-      "description": "RSI(2) oversold dip buying above a long SMA; exit above a short SMA.",
-      "tags": [
-        "momentum",
-        "moving_average"
-      ]
-    },
-    {
-      "name": "ifr2",
-      "category": "mean_reversion/oscillator",
-      "path": "mean_reversion/oscillator/ifr2",
-      "description": "RSI(2) dip buying above the Ichimoku cloud; exit above the prior two highs.",
-      "tags": [
-        "momentum",
-        "trend"
-      ]
-    },
-    {
-      "name": "supertrend_follow",
-      "category": "momentum/trend",
-      "path": "momentum/trend/supertrend_follow",
-      "description": "Long-only Supertrend trend follower; indicator and parameters come from [indicators.trend] in config.toml.",
-      "tags": [
-        "trend",
-        "volatility"
-      ]
-    },
-    {
-      "name": "vwap_reversion",
-      "category": "mean_reversion/bands",
-      "path": "mean_reversion/bands/vwap_reversion",
-      "description": "Intraday long-only reversion to the IST-session VWAP with entry cutoff and 15:15 square-off.",
-      "tags": [
-        "volume",
-        "volatility"
-      ]
-    },
-    {
-      "name": "alpha30_factor",
-      "category": "universe/alpha",
-      "path": "universe/alpha/factor",
-      "description": "Equal-weight 30 equities portfolio from NSE NIFTY200 ALPHA 30 rebalancing every 15 open trading days.",
-      "tags": [
-        "statistical"
-      ]
-    },
-    {
-      "name": "alpha30_low_vol",
-      "category": "universe/alpha",
-      "path": "universe/alpha/low_vol",
-      "description": "Alpha-30 portfolio of the 15 lowest-volatility constituents (20-day), equal-weighted, rebalanced every 15 trading days.",
-      "tags": [
-        "volatility",
-        "statistical"
-      ]
-    },
-    {
-      "name": "alpha30_mean_reversion",
-      "category": "universe/alpha",
-      "path": "universe/alpha/mean_reversion",
-      "description": "Alpha-30 portfolio of the 10 most oversold constituents (lowest 20-day price z-score), equal-weighted, rebalanced periodically.",
-      "tags": [
-        "statistical"
-      ]
-    },
-    {
-      "name": "alpha30_momentum",
-      "category": "universe/alpha",
-      "path": "universe/alpha/momentum",
-      "description": "Alpha-30 portfolio of the 10 highest-momentum constituents over a 60-day window, equal-weighted, rebalanced periodically.",
-      "tags": [
-        "momentum",
-        "statistical"
-      ]
-    },
-    {
-      "name": "alpha30_quality",
-      "category": "universe/alpha",
-      "path": "universe/alpha/quality",
-      "description": "Equal-weight allocation across the whole Nifty200 Alpha 30 universe (no quality screening is applied), rebalanced every 29 days.",
-      "tags": [
-        "statistical"
-      ]
-    },
-    {
-      "name": "equal_weight",
-      "category": "portfolio/rebalancing",
-      "path": "portfolio/rebalancing/equal_weight",
-      "description": "Equal-weight periodic rebalance of a named universe (default Nifty200 Alpha 30, every 15 trading days): exit leavers, enter joiners, trim winners and top up laggards. Keywords: alpha30, nifty200_alpha30, equal_weight, rebalancing, portfolio, multi_instrument.",
-      "tags": [
-        "breadth",
-        "statistical"
-      ]
-    },
-    {
       "name": "twap",
       "category": "catalog/execution",
       "path": "catalog/execution/twap",
@@ -228,6 +64,35 @@
       "path": "catalog/arbitrage/basket",
       "description": "Index ETF vs synthetic basket creation/redemption arbitrage.",
       "tags": [
+        "statistical"
+      ]
+    },
+    {
+      "name": "spread_quoting",
+      "category": "catalog/market_making",
+      "path": "catalog/market_making/spread_quoting",
+      "description": "Passive spread quoting with OBI adverse selection guard",
+      "tags": [
+        "volume",
+        "statistical"
+      ]
+    },
+    {
+      "name": "avellaneda_stoikov",
+      "category": "catalog/market_making",
+      "path": "catalog/market_making/avellaneda_stoikov",
+      "description": "Avellaneda-Stoikov inventory-aware market making with dynamic skew",
+      "tags": [
+        "statistical"
+      ]
+    },
+    {
+      "name": "ladder_quoting",
+      "category": "catalog/market_making",
+      "path": "catalog/market_making/ladder_quoting",
+      "description": "Multi-level ladder quoting with geometric size decay",
+      "tags": [
+        "volume",
         "statistical"
       ]
     }

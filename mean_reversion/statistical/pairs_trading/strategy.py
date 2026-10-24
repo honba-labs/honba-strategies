@@ -1,1 +1,0 @@
-"""Strategy: pairs_trading"""

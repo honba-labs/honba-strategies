@@ -1,0 +1,15 @@
+name = "spread_quoting"
+symbol = ""
+exchange = ""
+
+[params]
+spread_bps = 10
+quote_quantity = 100
+max_inventory = 1000
+obi_threshold = 0.3
+price_tolerance = 0.5
+requote_interval_sec = 1
+max_position_pct = 0.05
+freeze_limit = 1800
+max_allocation = 1.0
+capital = 1000000

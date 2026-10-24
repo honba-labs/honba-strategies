@@ -1,9 +1,0 @@
-name     = "alpha30_quality"
-symbol   = "MULTI"
-exchange = "NSE"
-
-[params]
-universe   = "nifty200_alpha30"
-weighting  = "equal"
-schedule   = "every:29d"
-allocation = 0.98

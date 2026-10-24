@@ -1,0 +1,122 @@
+schema = 1
+id = "execute.spread_quoting"
+kind = "execute"
+title = "Passive Spread Quoting"
+description = "Places continuous bid/ask at best bid/ask with OBI adverse selection guard"
+tags = ["market_making", "quoting", "spread"]
+pitfalls = [
+  "Adverse selection risk when OBI signal is weak or delayed",
+  "Inventory can accumulate rapidly in trending markets",
+  "Requires low-latency market data feed for effective quoting",
+  "See [avoiding backtest biases](https://honba-labs.github.io/honba/book/backtesting/avoiding_backtest_biases.html) for general pitfalls."
+]
+
+[params.spread_bps]
+type = "float"
+default = 10
+min = 1
+max = 100
+step = 1
+description = "Target spread in basis points"
+sweepable = true
+
+[params.quote_quantity]
+type = "float"
+default = 100
+min = 1
+max = 10000
+step = 1
+description = "Quantity per quote (per side)"
+sweepable = true
+
+[params.max_inventory]
+type = "float"
+default = 1000
+min = 1
+max = 100000
+step = 1
+description = "Maximum net inventory before pulling quotes"
+sweepable = true
+
+[params.obi_threshold]
+type = "float"
+default = 0.3
+min = 0.0
+max = 1.0
+step = 0.05
+description = "OBI threshold for adverse selection guard"
+sweepable = true
+
+[params.price_tolerance]
+type = "float"
+default = 0.5
+min = 0.01
+max = 10.0
+step = 0.01
+description = "Max price drift before requote"
+sweepable = true
+
+[params.requote_interval_sec]
+type = "int"
+default = 1
+min = 0
+max = 60
+step = 1
+description = "Minimum seconds between requotes"
+sweepable = true
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit (lots per order)"
+sweepable = false
+
+[params.max_position_pct]
+type = "float"
+default = 0.05
+min = 0.01
+max = 0.2
+step = 0.01
+description = "Maximum position as fraction of capital"
+sweepable = false
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)"
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy"
+sweepable = false
+
+[requires]
+bars = []
+fundamentals = []
+indicators = []
+history_bars = 0
+pit = true
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk"]

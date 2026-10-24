@@ -1,0 +1,140 @@
+schema = 1
+id = "execute.avellaneda_stoikov"
+kind = "execute"
+title = "Avellaneda-Stoikov Market Maker"
+description = "Inventory-aware market making with dynamic reservation price and skew"
+tags = ["market_making", "avellaneda_stoikov", "inventory"]
+pitfalls = [
+  "Model assumes Brownian motion; real markets have jumps and fat tails",
+  "Requires accurate volatility estimation; wrong sigma leads to adverse skew",
+  "Inventory risk accumulates in trending markets; hard stops needed",
+  "See [avoiding backtest biases](https://honba-labs.github.io/honba/book/backtesting/avoiding_backtest_biases.html) for general pitfalls."
+]
+
+[params.gamma]
+type = "float"
+default = 0.1
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Risk aversion parameter (gamma)"
+sweepable = true
+
+[params.sigma]
+type = "float"
+default = 0.02
+min = 0.001
+max = 0.5
+step = 0.001
+description = "Volatility estimate (daily)"
+sweepable = true
+
+[params.kappa]
+type = "float"
+default = 1.5
+min = 0.1
+max = 10.0
+step = 0.1
+description = "Arrival rate sensitivity (kappa)"
+sweepable = true
+
+[params.time_horizon_days]
+type = "int"
+default = 1
+min = 1
+max = 30
+step = 1
+description = "Trading horizon in days"
+sweepable = true
+
+[params.current_time_days]
+type = "float"
+default = 0.0
+min = 0.0
+max = 30.0
+step = 0.01
+description = "Current time within horizon (days)"
+sweepable = true
+
+[params.quote_quantity]
+type = "float"
+default = 100
+min = 1
+max = 10000
+step = 1
+description = "Base quote size per side"
+sweepable = true
+
+[params.max_inventory]
+type = "float"
+default = 1000
+min = 1
+max = 100000
+step = 1
+description = "Maximum net inventory before pulling quotes"
+sweepable = true
+
+[params.skew_scale]
+type = "float"
+default = 1.0
+min = 0.0
+max = 10.0
+step = 0.1
+description = "Inventory skew scaling factor"
+sweepable = true
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit (lots per order)"
+sweepable = false
+
+[params.max_position_pct]
+type = "float"
+default = 0.05
+min = 0.01
+max = 0.2
+step = 0.01
+description = "Maximum position as fraction of capital"
+sweepable = false
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)"
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy"
+sweepable = false
+
+[requires]
+bars = ["close"]
+fundamentals = []
+indicators = []
+history_bars = 0
+pit = true
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk"]

@@ -1,1 +1,0 @@
-"""Strategy: pivot_bounce"""

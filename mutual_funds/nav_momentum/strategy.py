@@ -1,1 +1,0 @@
-"""Strategy: nav_momentum"""

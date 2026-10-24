@@ -1,1 +1,0 @@
-"""Strategy: earnings_momentum"""

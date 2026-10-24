@@ -1,1 +1,0 @@
-"""Strategy: sip_optimizer"""

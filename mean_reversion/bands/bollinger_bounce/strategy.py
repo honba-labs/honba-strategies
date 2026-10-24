@@ -1,1 +1,0 @@
-"""Strategy: bollinger_bounce"""

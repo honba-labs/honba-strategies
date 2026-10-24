@@ -1,0 +1,16 @@
+name = "ladder_quoting"
+symbol = ""
+exchange = ""
+
+[params]
+num_levels = 5
+level_spread_bps = 5
+base_quantity = 100
+quantity_decay = 0.5
+max_total_inventory = 5000
+rebalance_threshold_bps = 10
+max_levels_active = 3
+freeze_limit = 1800
+max_position_pct = 0.05
+max_allocation = 1.0
+capital = 1000000

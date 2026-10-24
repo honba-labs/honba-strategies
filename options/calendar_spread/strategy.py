@@ -1,1 +1,0 @@
-"""Strategy: calendar_spread"""

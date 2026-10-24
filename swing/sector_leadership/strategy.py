@@ -1,1 +1,0 @@
-"""Strategy: sector_leadership"""
