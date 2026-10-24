@@ -1,0 +1,13 @@
+name = "equal_weight"
+symbol = ""
+exchange = ""
+
+[params]
+rebalance_frequency = "daily"
+drift_threshold = 0.05
+transaction_cost_bps = 5
+min_rebalance_value = 10000
+max_positions = 10
+freeze_limit = 1800
+max_allocation = 1.0
+capital = 10000000

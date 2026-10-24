@@ -1,0 +1,100 @@
+schema = 1
+id = "signal.equal_weight"
+kind = "signal"
+title = "Equal Weight Rebalancer"
+description = "Equal weight portfolio with periodic rebalancing and drift threshold bands"
+tags = ["statistical", "breadth"]
+pitfalls = [
+  "Frequent rebalancing increases transaction costs in illiquid markets",
+  "Equal weighting ignores diversification benefits across asset classes",
+  "See [avoiding backtest biases](https://honba-labs.github.io/honba/book/backtesting/avoiding_backtest_biases.html) for general pitfalls."
+]
+
+[params.rebalance_frequency]
+type = "enum"
+choices = ["daily", "weekly", "monthly"]
+default = "daily"
+description = "Rebalancing frequency"
+sweepable = false
+
+[params.drift_threshold]
+type = "float"
+default = 0.05
+min = 0.01
+max = 0.20
+step = 0.01
+description = "Drift threshold for rebalancing (fraction)"
+sweepable = true
+
+[params.transaction_cost_bps]
+type = "float"
+default = 5
+min = 0
+max = 50
+step = 1
+description = "Transaction cost in basis points"
+sweepable = false
+
+[params.min_rebalance_value]
+type = "float"
+default = 10000
+min = 1000
+max = 100000
+description = "Minimum trade value to rebalance (INR)"
+sweepable = false
+
+[params.max_positions]
+type = "int"
+default = 10
+min = 2
+max = 100
+step = 1
+description = "Maximum number of positions"
+sweepable = true
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit"
+sweepable = false
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)"
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 10000000
+min = 1000
+max = 100000000000
+description = "INR available to the strategy"
+sweepable = false
+
+[requires]
+bars = ["close"]
+fundamentals = []
+indicators = []
+history_bars = 0
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]
