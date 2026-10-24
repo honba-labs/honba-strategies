@@ -1,0 +1,104 @@
+schema = 1
+id = "signal.kama_crossover"
+kind = "signal"
+title = "KAMA Crossover"
+description = "Dual KAMA crossover with Efficiency Ratio adaptation for whipsaw suppression"
+tags = ["trend", "kama", "adaptive", "crossover"]
+pitfalls = [
+  "KAMA can lag during strong trends; fast/slow period choice is critical",
+  "Efficiency Ratio can be noisy on short timeframes; use appropriate ER period",
+  "Crossover signals can be late in fast-moving markets",
+  "See [avoiding backtest biases](https://honba-labs.github.io/honba/book/backtesting/avoiding_backtest_biases.html) for general pitfalls."
+]
+
+[params.fast_period]
+type = "int"
+default = 10
+min = 2
+max = 50
+step = 1
+description = "Fast KAMA period"
+sweepable = true
+
+[params.slow_period]
+type = "int"
+default = 30
+min = 5
+max = 100
+step = 1
+description = "Slow KAMA period (must be > fast_period)"
+sweepable = true
+
+[params.er_period]
+type = "int"
+default = 10
+min = 2
+max = 50
+step = 1
+description = "Efficiency Ratio period"
+sweepable = true
+
+[params.risk_per_trade_pct]
+type = "float"
+default = 0.02
+min = 0.005
+max = 0.05
+step = 0.005
+description = "Risk per trade as fraction of capital"
+sweepable = true
+
+[params.max_position_pct]
+type = "float"
+default = 0.10
+min = 0.01
+max = 0.2
+step = 0.01
+description = "Maximum position as fraction of capital"
+sweepable = false
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit"
+sweepable = false
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)"
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy"
+sweepable = false
+
+[requires]
+bars = ["close"]
+fundamentals = []
+indicators = []
+history_bars = 40
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]

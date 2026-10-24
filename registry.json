@@ -95,6 +95,39 @@
         "volume",
         "statistical"
       ]
+    },
+    {
+      "name": "turtle_20",
+      "category": "catalog/trend",
+      "path": "catalog/trend/turtle_20",
+      "description": "Richard Dennis Turtle Trading System - Donchian breakout with ATR position sizing and pyramiding",
+      "tags": [
+        "trend",
+        "volatility",
+        "statistical"
+      ]
+    },
+    {
+      "name": "kama_crossover",
+      "category": "catalog/trend",
+      "path": "catalog/trend/kama_crossover",
+      "description": "Dual KAMA crossover with Efficiency Ratio adaptation for whipsaw suppression",
+      "tags": [
+        "trend",
+        "moving_average",
+        "statistical"
+      ]
+    },
+    {
+      "name": "supertrend_follow",
+      "category": "catalog/trend",
+      "path": "catalog/trend/supertrend_follow",
+      "description": "Multi-timeframe Supertrend with ATR trailing stops and trend filter",
+      "tags": [
+        "trend",
+        "volatility",
+        "statistical"
+      ]
     }
   ]
 }

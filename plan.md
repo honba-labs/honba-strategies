@@ -537,24 +537,24 @@ honba-strategies info twap
 
 ---
 
-### Phase 4: Trend Following & Breakout SDK (StockSharp Port) (M4) — Week 8–9
+### Phase 4: Trend Following & Breakout SDK (StockSharp Port) (M4) — Week 8–9 ✅ COMPLETED
 > Porting StockSharp classic and adaptive trend following systems.
 
-- [ ] **4.1 Turtle Trading System (`TurtleStrategy`)**
-  - [ ] Implement in `src/honba_strategies/trend/turtle.py`.
-  - [ ] Classical Richard Dennis 20-day (System 1) and 55-day (System 2) Donchian breakout channels.
-  - [ ] Volatility-normalized position sizing based on 20-day ATR ($N$).
-  - [ ] Pyramiding logic: add 1 unit every $0.5N$ profit up to 4 units; hard stop at $2N$ from last entry.
-  - [ ] Add catalog entry in `catalog/trend/turtle_20/` and unit tests in `tests/unit/trend/test_turtle.py`.
-- [ ] **4.2 Adaptive Moving Average Crossover (`KamaCrossoverStrategy`)**
-  - [ ] Implement in `src/honba_strategies/trend/kama.py`.
-  - [ ] Dual KAMA (Kaufman Adaptive Moving Average) adapting to the market Efficiency Ratio (ER).
-  - [ ] Suppress whipsaw signals during sideways consolidation; react sharply during fast regime shifts.
-  - [ ] Add catalog entry in `catalog/trend/kama_crossover/` and unit tests in `tests/unit/trend/test_kama.py`.
-- [ ] **4.3 Multi-Timeframe Supertrend (`SupertrendStrategy`)**
-  - [ ] Implement in `src/honba_strategies/trend/supertrend.py`.
-  - [ ] Higher-timeframe (1-hour) trend direction filter combined with lower-timeframe (5-minute) ATR trailing stops.
-  - [ ] Add catalog entry in `catalog/trend/supertrend_follow/` and unit tests.
+- [x] **4.1 Turtle Trading System (`TurtleStrategy`)**
+  - [x] Implement in `src/honba_strategies/trend/turtle.py`.
+  - [x] Classical Richard Dennis 20-day (System 1) and 55-day (System 2) Donchian breakout channels.
+  - [x] Volatility-normalized position sizing based on 20-day ATR ($N$).
+  - [x] Pyramiding logic: add 1 unit every $0.5N$ profit up to 4 units; hard stop at $2N$ from last entry.
+  - [x] Add catalog entry in `catalog/trend/turtle_20/` and unit tests in `tests/unit/trend/test_turtle.py`.
+- [x] **4.2 Adaptive Moving Average Crossover (`KamaCrossoverStrategy`)**
+  - [x] Implement in `src/honba_strategies/trend/kama.py`.
+  - [x] Dual KAMA (Kaufman Adaptive Moving Average) adapting to the market Efficiency Ratio (ER).
+  - [x] Suppress whipsaw signals during sideways consolidation; react sharply during fast regime shifts.
+  - [x] Add catalog entry in `catalog/trend/kama_crossover/` and unit tests in `tests/unit/trend/test_kama.py`.
+- [x] **4.3 Multi-Timeframe Supertrend (`SupertrendStrategy`)**
+  - [x] Implement in `src/honba_strategies/trend/supertrend.py`.
+  - [x] Higher-timeframe (1-hour) trend direction filter combined with lower-timeframe (5-minute) ATR trailing stops.
+  - [x] Add catalog entry in `catalog/trend/supertrend_follow/` and unit tests.
 
 ---
 

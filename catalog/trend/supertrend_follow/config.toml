@@ -1,0 +1,14 @@
+name = "supertrend"
+symbol = ""
+exchange = ""
+
+[params]
+atr_period = 10
+multiplier = 3.0
+trend_timeframe = "1h"
+entry_timeframe = "5m"
+risk_per_trade_pct = 0.02
+max_position_pct = 0.10
+freeze_limit = 1800
+max_allocation = 1.0
+capital = 1000000

@@ -20,7 +20,8 @@ DIRS = [
     # execution strategies intentionally generate consecutive same-side slices
     # arbitrage strategies intentionally generate same-side orders for two legs
     # market making strategies intentionally generate same-side orders for multiple levels
-    if not e["path"].startswith(("universe/alpha", "portfolio/", "catalog/execution/", "catalog/arbitrage/", "catalog/market_making/"))
+    # trend strategies intentionally generate same-side orders for pyramiding/trend following
+    if not e["path"].startswith(("universe/alpha", "portfolio/", "catalog/execution/", "catalog/arbitrage/", "catalog/market_making/", "catalog/trend/"))
 ]
 
 

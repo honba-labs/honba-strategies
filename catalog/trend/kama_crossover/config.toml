@@ -1,0 +1,13 @@
+name = "kama_crossover"
+symbol = ""
+exchange = ""
+
+[params]
+fast_period = 10
+slow_period = 30
+er_period = 10
+risk_per_trade_pct = 0.02
+max_position_pct = 0.10
+freeze_limit = 1800
+max_allocation = 1.0
+capital = 1000000

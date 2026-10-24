@@ -1,0 +1,15 @@
+name = "turtle"
+symbol = ""
+exchange = ""
+
+[params]
+system = 1
+atr_period = 20
+atr_multiplier = 2.0
+pyramid_threshold = 0.5
+max_units = 4
+risk_per_trade_pct = 0.02
+max_position_pct = 0.10
+freeze_limit = 1800
+max_allocation = 1.0
+capital = 1000000

@@ -1,0 +1,107 @@
+schema = 1
+id = "signal.supertrend_follow"
+kind = "signal"
+title = "Supertrend Trend Following"
+description = "Multi-timeframe Supertrend with ATR trailing stops and trend filter"
+tags = ["trend", "supertrend", "atr", "trailing_stop"]
+pitfalls = [
+  "Supertrend can whipsaw in choppy markets; use appropriate multiplier",
+  "ATR-based stops can be wide; requires sufficient capital",
+  "Multi-timeframe confirmation can delay entries; tune timeframes carefully",
+  "See [avoiding backtest biases](https://honba-labs.github.io/honba/book/backtesting/avoiding_backtest_biases.html) for general pitfalls."
+]
+
+[params.atr_period]
+type = "int"
+default = 10
+min = 5
+max = 50
+step = 1
+description = "ATR period for Supertrend calculation"
+sweepable = true
+
+[params.multiplier]
+type = "float"
+default = 3.0
+min = 1.0
+max = 5.0
+step = 0.5
+description = "ATR multiplier for Supertrend bands"
+sweepable = true
+
+[params.trend_timeframe]
+type = "str"
+default = "1h"
+description = "Higher timeframe for trend filter"
+sweepable = false
+
+[params.entry_timeframe]
+type = "str"
+default = "5m"
+description = "Lower timeframe for entry signals"
+sweepable = false
+
+[params.risk_per_trade_pct]
+type = "float"
+default = 0.02
+min = 0.005
+max = 0.05
+step = 0.005
+description = "Risk per trade as fraction of capital"
+sweepable = true
+
+[params.max_position_pct]
+type = "float"
+default = 0.10
+min = 0.01
+max = 0.2
+step = 0.01
+description = "Maximum position as fraction of capital"
+sweepable = false
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit"
+sweepable = false
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)"
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy"
+sweepable = false
+
+[requires]
+bars = ["high", "low", "close"]
+fundamentals = []
+indicators = []
+history_bars = 10
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk", "execute"]
