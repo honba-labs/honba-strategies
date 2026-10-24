@@ -38,7 +38,7 @@ def test_buys_rsi2_dip_above_cloud_and_exits_above_prior_two_highs(
     load_strategy, make_bars
 ):
     s, cfg = build(load_strategy, **SMALL)
-    result = replay(s, make_bars(RAMP_THEN_DIP + [140], cfg.symbol))
+    result = replay(s, make_bars([*RAMP_THEN_DIP, 140], cfg.symbol))
     assert [f.side for f in result.fills] == [OrderSide.BUY, OrderSide.SELL]
     assert (result.fills[0].ts, result.fills[0].price, result.fills[0].quantity) == (
         42,
@@ -56,7 +56,7 @@ def test_no_entry_below_cloud(load_strategy, make_bars):
 
 def test_holds_until_close_clears_both_prior_highs(load_strategy, make_bars):
     s, cfg = build(load_strategy, **SMALL)
-    result = replay(s, make_bars(RAMP_THEN_DIP + [132, 130, 136], cfg.symbol))
+    result = replay(s, make_bars([*RAMP_THEN_DIP, 132, 130, 136], cfg.symbol))
     # 132 clears the prior 131 high but not the 135 high; 130 clears neither; 136 does.
     assert [f.side for f in result.fills] == [OrderSide.BUY, OrderSide.SELL]
     assert result.fills[1].ts == 45

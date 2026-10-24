@@ -1,0 +1,91 @@
+schema = 1
+id = "execute.vwap"
+kind = "execute"
+title = "VWAP Execution"
+description = "Volume-weighted average price execution: dynamic slice sizing based on historical intraday volume profile with real-time pace adjustment."
+tags = ["execution", "slicing", "vwap"]
+pitfalls = [
+  "Requires accurate historical volume profile for the instrument.",
+  "Participation rate too high increases market impact.",
+  "Volume droughts can cause execution to stall.",
+]
+
+[params.total_quantity]
+type = "float"
+default = 1000
+min = 1
+max = 1000000
+step = 10
+description = "Total parent order quantity to execute."
+sweepable = true
+
+[params.slice_size]
+type = "float"
+default = 100
+min = 1
+max = 100000
+step = 1
+description = "Base quantity per child slice."
+sweepable = true
+
+[params.participation_rate]
+type = "float"
+default = 0.1
+min = 0.01
+max = 0.5
+step = 0.01
+description = "Target participation rate (fraction of market volume)."
+sweepable = true
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit (lots per order)."
+sweepable = false
+
+[params.volume_profile_path]
+type = "str"
+default = ""
+description = "Path to historical volume profile CSV (optional)."
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy."
+sweepable = false
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)."
+sweepable = false
+
+[requires]
+bars = ["close", "volume"]
+fundamentals = []
+indicators = []
+history_bars = 0
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk"]

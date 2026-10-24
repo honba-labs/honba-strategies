@@ -1,6 +1,7 @@
 """Every registered strategy ships a valid ``step.toml`` that agrees with its code and config."""
 
 import copy
+import json
 import re
 import sys
 import tomllib
@@ -10,11 +11,6 @@ import pytest
 from honba.strategies.base import Parameter
 from honba.strategies.indicators import indicator_spec, list_indicators
 
-ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT))
-
-import json
-
 from tools.mini_schema import validate
 from tools.validate_chain import (
     KIND_ORDER,
@@ -23,6 +19,9 @@ from tools.validate_chain import (
     schema_errors,
     value_errors,
 )
+
+ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT))
 
 ENTRIES = json.loads((ROOT / "registry.json").read_text())["strategies"]
 IDS = [e["name"] for e in ENTRIES]

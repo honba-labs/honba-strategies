@@ -108,4 +108,4 @@ def test_scaffold_marker_only_on_trivial_strategies():
 
 
 def test_registered_paths_are_strategy_dirs():
-    assert REGISTERED <= {d.relative_to(ROOT).as_posix() for d in REAL}
+    assert {d.relative_to(ROOT).as_posix() for d in REAL} >= REGISTERED

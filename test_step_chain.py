@@ -4,14 +4,14 @@ import copy
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT))
-
 from tools.validate_chain import (
     load_step,
     validate_chain,
     validate_params,
 )
+
+ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT))
 
 
 def step(

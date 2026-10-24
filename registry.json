@@ -163,6 +163,46 @@
         "breadth",
         "statistical"
       ]
+    },
+    {
+      "name": "twap",
+      "category": "catalog/execution",
+      "path": "catalog/execution/twap",
+      "description": "TWAP execution: divides parent order into equal time-based slices with randomized jitter to avoid detection.",
+      "tags": [
+        "volume",
+        "statistical"
+      ]
+    },
+    {
+      "name": "vwap",
+      "category": "catalog/execution",
+      "path": "catalog/execution/vwap",
+      "description": "VWAP execution: dynamic slice sizing based on historical intraday volume profile with real-time pace adjustment.",
+      "tags": [
+        "volume",
+        "statistical"
+      ]
+    },
+    {
+      "name": "pov",
+      "category": "catalog/execution",
+      "path": "catalog/execution/pov",
+      "description": "POV execution: participates at target rate of market volume, dynamically adjusting slice size based on real-time volume.",
+      "tags": [
+        "volume",
+        "statistical"
+      ]
+    },
+    {
+      "name": "iceberg",
+      "category": "catalog/execution",
+      "path": "catalog/execution/iceberg",
+      "description": "Synthetic iceberg order: displays small visible quantity while holding hidden reserve, replenishing on fill.",
+      "tags": [
+        "volume",
+        "statistical"
+      ]
     }
   ]
 }

@@ -1,0 +1,14 @@
+name = "iceberg"
+symbol = "NIFTY50"
+exchange = "NSE"
+side = "BUY"
+
+[params]
+total_quantity = 1000        # Total parent order quantity
+display_size = 100           # Visible quantity per slice
+display_variance = 0.2       # Random variance in display size (20%)
+freeze_limit = 1800          # SEBI single-order freeze limit
+min_refill_interval = 2      # Min bars between refills
+price_limit = 0.0            # Max price deviation from mid (0 = market orders)
+capital = 1000000            # INR available to the strategy
+max_allocation = 1.0             # Fraction of capital deployed

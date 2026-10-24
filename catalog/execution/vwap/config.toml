@@ -1,0 +1,13 @@
+name = "vwap"
+symbol = "NIFTY50"
+exchange = "NSE"
+side = "BUY"
+
+[params]
+total_quantity = 1000        # Total parent order quantity
+slice_size = 100             # Base quantity per child slice
+participation_rate = 0.1     # Target participation rate (10% of market volume)
+freeze_limit = 1800          # SEBI single-order freeze limit
+volume_profile_path = ""     # Path to historical volume profile CSV (optional)
+capital = 1000000            # INR available to the strategy
+max_allocation = 1.0             # Fraction of capital deployed

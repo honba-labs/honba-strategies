@@ -1,0 +1,14 @@
+name = "pov"
+symbol = "NIFTY50"
+exchange = "NSE"
+side = "BUY"
+
+[params]
+total_quantity = 1000        # Total parent order quantity
+max_slice_size = 200         # Max slice size (lots)
+min_slice_size = 10          # Min slice size (lots)
+target_rate = 0.05           # Target participation rate (5% of market volume)
+freeze_limit = 1800          # SEBI single-order freeze limit
+volume_window = 5            # Rolling volume window (minutes)
+capital = 1000000            # INR available to the strategy
+max_allocation = 1.0             # Fraction of capital deployed

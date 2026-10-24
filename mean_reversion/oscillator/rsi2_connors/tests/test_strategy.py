@@ -36,7 +36,7 @@ def test_buys_oversold_dip_above_trend_and_exits_over_exit_sma(
     load_strategy, make_bars
 ):
     s, cfg = build(load_strategy, **SMALL)
-    result = replay(s, make_bars(RAMP_THEN_DIP + [140], cfg.symbol))
+    result = replay(s, make_bars([*RAMP_THEN_DIP, 140], cfg.symbol))
     assert [f.side for f in result.fills] == [OrderSide.BUY, OrderSide.SELL]
     assert (result.fills[0].ts, result.fills[0].price, result.fills[0].quantity) == (
         42,

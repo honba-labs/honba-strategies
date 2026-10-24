@@ -41,7 +41,7 @@ IDS = [e["name"] for e in READMES_REQUIRED]
 
 
 def test_pending_names_are_registered():
-    assert PENDING_README_SECTIONS <= {e["name"] for e in ENTRIES}
+    assert {e["name"] for e in ENTRIES} >= PENDING_README_SECTIONS
 
 
 @pytest.mark.parametrize("e", READMES_REQUIRED, ids=IDS)

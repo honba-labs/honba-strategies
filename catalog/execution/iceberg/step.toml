@@ -1,0 +1,103 @@
+schema = 1
+id = "execute.iceberg"
+kind = "execute"
+title = "Iceberg Execution"
+description = "Synthetic iceberg order: displays small visible quantity while holding hidden reserve, replenishing on fill with randomized display size."
+tags = ["execution", "slicing", "iceberg"]
+pitfalls = [
+  "Hidden reserve not visible to market; may execute slower than expected.",
+  "Randomized display size helps avoid detection but adds uncertainty.",
+  "Requires sufficient hidden reserve to maintain iceberg structure.",
+]
+
+[params.total_quantity]
+type = "float"
+default = 1000
+min = 1
+max = 1000000
+step = 10
+description = "Total parent order quantity (hidden + visible)."
+sweepable = true
+
+[params.display_size]
+type = "float"
+default = 100
+min = 1
+max = 100000
+step = 1
+description = "Visible quantity per slice (shown in order book)."
+sweepable = true
+
+[params.display_variance]
+type = "float"
+default = 0.2
+min = 0.0
+max = 0.5
+step = 0.05
+description = "Random variance in display size (fraction of display_size)."
+sweepable = true
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit (lots per order)."
+sweepable = false
+
+[params.min_refill_interval]
+type = "int"
+default = 2
+min = 0
+max = 60
+step = 1
+description = "Minimum bars between visible leg refills."
+sweepable = true
+
+[params.price_limit]
+type = "float"
+default = 0.0
+min = 0.0
+max = 10000.0
+step = 0.01
+description = "Max price deviation from mid (0 = market orders)."
+sweepable = true
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy."
+sweepable = false
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)."
+sweepable = false
+
+[requires]
+bars = ["close", "high", "low"]
+fundamentals = []
+indicators = []
+history_bars = 0
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk"]

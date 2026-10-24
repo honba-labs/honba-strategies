@@ -31,7 +31,7 @@ def session(closes, start="09:15", day=20_000, step=5, symbol="NIFTY50"):
 
 
 CALM = [100, 101, 99, 100, 101, 99]  # session VWAP ~ 100, small dispersion
-DIP_THEN_RECOVER = CALM + [95, 96, 98, 100.5, 101]
+DIP_THEN_RECOVER = [*CALM, 95, 96, 98, 100.5, 101]
 
 
 def test_config_declares_vwap(load_strategy):
@@ -52,7 +52,7 @@ def test_buys_below_lower_band_and_exits_at_vwap(load_strategy):
     levels = [ref.update_bar(b) for b in bars]
     assert bars[6].close < levels[6].lower  # the dip bar really is below the band
     assert result.fills[0].ts == bars[6].ts
-    sell_bar = next(b for b, v in zip(bars[7:], levels[7:]) if b.close >= v.vwap)
+    sell_bar = next(b for b, v in zip(bars[7:], levels[7:], strict=False) if b.close >= v.vwap)
     assert result.fills[1].ts == sell_bar.ts
 
 

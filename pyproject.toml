@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "honba-strategies"
+version = "0.1.0"
+description = "Production quantitative strategy SDK for Honba platform (StockSharp port)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "AGPL-3.0" }
+authors = [{ name = "honba-labs" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: GNU Affero General Public License v3 (AGPLv3)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+dependencies = [
+    "honba>=0.1.0",
+    "pydantic>=2.0",
+    "scipy>=1.12",
+    "numpy>=1.26",
+    "pandas>=2.2",
+    "ruff>=0.5",
+    "tomli>=2.0",
+    "tomli-w>=1.0",
+]
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.24", "mypy>=1.10", "ruff>=0.5"]
+optimization = ["cvxpy>=1.6"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["honba_strategies*"]
+
+[tool.setuptools.package-data]
+"honba_strategies" = ["py.typed"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF", "ARG", "PTH", "TID", "ERA"]
+ignore = ["E501", "ERA001"]
+fixable = ["ALL"]
+unfixable = ["ERA001"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["honba_strategies"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+strict = true
+namespace_packages = true
+exclude = ["tests/**", "catalog/**"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+
+[project.scripts]
+honba-strategies = "honba_strategies.cli:app"

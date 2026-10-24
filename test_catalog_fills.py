@@ -17,7 +17,8 @@ DIRS = [
     ROOT / e["path"]
     for e in json.loads((ROOT / "registry.json").read_text())["strategies"]
     # multi-instrument portfolios (symbol "MULTI") are covered by their own tests
-    if not e["path"].startswith(("universe/alpha", "portfolio/"))
+    # execution strategies intentionally generate consecutive same-side slices
+    if not e["path"].startswith(("universe/alpha", "portfolio/", "catalog/execution/"))
 ]
 
 
@@ -47,7 +48,9 @@ def test_no_duplicate_orders_with_delayed_fills(d, delay, load_strategy):
         and c is not Strategy
         and c.__module__ == mod.__name__
     )
-    cfg = StrategyConfig.from_toml(d / "config.toml")
+    # Use the strategy's Config class if available, otherwise fall back to StrategyConfig
+    config_cls = getattr(cls, "Config", StrategyConfig)
+    cfg = config_cls.from_toml(d / "config.toml")
     s = cls(cfg)
     result = replay(s, wave_bars(cfg.symbol), fill_delay=delay)
     assert result.fills, f"{d.name} never traded on the wave series"
