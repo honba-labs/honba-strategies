@@ -495,8 +495,8 @@ honba-strategies info fixed_fractional
  │ Phase 4: Trend Following & Breakout SDK              │ ✅ COMPLETED    │
  │ Phase 5: Mean Reversion & Statistical Physics SDK    │ ⏳ PLANNED      │
  │ Phase 6: Portfolio Allocation & Dynamic Rebalancing  │ ⏳ PLANNED      │
- │ Phase 7: Options & Volatility Trading SDK            │ ⏳ PLANNED      │
- │ Phase 8: Composable Blocks (Signals, Sizers, Risk)   │ ⏳ PLANNED      │
+ │ Phase 7: Options & Volatility Trading SDK            │ ✅ COMPLETED    │
+ │ Phase 8: Composable Blocks (Signals, Sizers, Risk)   │ ✅ COMPLETED    │
  │ Phase 9: Verification, StockSharp Parity & Benchmarks│ ⏳ PLANNED      │
  └────────────────────────────────────────────────────────────────────────┘
 ```
@@ -699,83 +699,90 @@ honba-strategies info fixed_fractional
 
 ---
 
-### Phase 7: Options & Volatility Trading SDK (M7) — Week 14
+### Phase 7: Options & Volatility Trading SDK (M7) — Week 14 ✅ COMPLETED
 > Production Indian options strategies with Greeks management, margin awareness, and time-decay harvesting.
 
-- [ ] **7.1 ATM Short Straddle with Dynamic Hedging (`ShortStraddleStrategy`)**
-  - [ ] Implement in `src/honba_strategies/options/straddle.py`.
-  - [ ] Synchronized short ATM Call + ATM Put execution on NIFTY/BANKNIFTY indices.
-  - [ ] Individual leg stop-loss (e.g. 25% premium expansion) with combined MTM stop-loss.
-  - [ ] Add catalog entry in `catalog/options/nifty_short_straddle/` and unit tests.
-- [ ] **7.2 Iron Condor Range-Bound Volatility Capture (`IronCondorStrategy`)**
-  - [ ] Implement in `src/honba_strategies/options/iron_condor.py`.
-  - [ ] 4-leg defined risk structure: short OTM credit spread (call + put) flanked by long wing protection.
-  - [ ] Dynamic delta-neutral wing adjustment and early profit take (50% max profit).
-  - [ ] Add catalog entry in `catalog/options/banknifty_iron_condor/` and unit tests.
-- [ ] **7.3 Covered Call Dividend & Yield Engine (`CoveredCallStrategy`)**
-  - [ ] Implement in `src/honba_strategies/options/covered_call.py`.
-  - [ ] Synthesizes cash delivery long stock (`CNC`) with rolling OTM call option writing.
-  - [ ] Assignment protection and strike rollover rules before expiry settlement.
-  - [ ] Add catalog entry in `catalog/options/covered_call/` and unit tests.
+- [x] **7.1 ATM Short Straddle with Dynamic Hedging (`ShortStraddleStrategy`)**
+  - [x] Implement in `src/honba_strategies/options/straddle.py`.
+  - [x] Synchronized short ATM Call + ATM Put execution on NIFTY/BANKNIFTY indices.
+  - [x] Individual leg stop-loss (e.g. 25% premium expansion) with combined MTM stop-loss.
+  - [x] Add catalog entry in `catalog/options/nifty_short_straddle/` and unit tests.
+- [x] **7.2 Iron Condor Range-Bound Volatility Capture (`IronCondorStrategy`)**
+  - [x] Implement in `src/honba_strategies/options/iron_condor.py`.
+  - [x] 4-leg defined risk structure: short OTM credit spread (call + put) flanked by long wing protection.
+  - [x] Dynamic delta-neutral wing adjustment and early profit take (50% max profit).
+  - [x] Add catalog entry in `catalog/options/banknifty_iron_condor/` and unit tests.
+- [x] **7.3 Covered Call Dividend & Yield Engine (`CoveredCallStrategy`)**
+  - [x] Implement in `src/honba_strategies/options/covered_call.py`.
+  - [x] Synthesizes cash delivery long stock (`CNC`) with rolling OTM call option writing.
+  - [x] Assignment protection and strike rollover rules before expiry settlement.
+  - [x] Add catalog entry in `catalog/options/covered_call/` and unit tests.
+- [x] **7.4 Calendar Spread Time-Decay Strategy (`CalendarSpreadStrategy`)**
+  - [x] Implement in `src/honba_strategies/options/calendar_spread.py`.
+  - [x] Long far-term option + short near-term option at same strike.
+  - [x] Profit target (25% max profit) and stop-loss (50% debit paid).
+  - [x] Add catalog entry in `catalog/options/calendar_spread/` and unit tests.
 
 ---
 
-### Phase 8: Composable Building Blocks & Dynamic Position Sizing (M8) — Week 15
+### Phase 8: Composable Building Blocks & Dynamic Position Sizing (M8) — Week 15 ✅ COMPLETED
 > Breaking strategies into modular, reusable components and establishing first-class dynamic position sizing.
 
-- [ ] **8.1 Reusable Alpha Signal Generators (`honba_strategies.components.signals`)**
-  - [ ] Cointegration spread signal (`CointegrationSignal`).
-  - [ ] Ornstein-Uhlenbeck stochastic fit signal (`OrnsteinUhlenbeckSignal`).
-  - [ ] Donchian channel breakout signal (`DonchianBreakoutSignal`).
-  - [ ] Enrich all signal outputs with `direction`, `entry_price`, `stop_loss`, and `volatility_atr` attributes.
-- [ ] **8.2 First-Class Dynamic Position Sizing Engines (`honba_strategies.components.sizers`)**
-  - [ ] **8.2.1 Sizing Base Architecture (`base.py`)**:
+- [x] **8.1 Reusable Alpha Signal Generators (`honba_strategies.components.signals`)**
+  - [x] Cointegration spread signal (`CointegrationSignal`).
+  - [x] Ornstein-Uhlenbeck stochastic fit signal (`OrnsteinUhlenbeckSignal`).
+  - [x] Donchian channel breakout signal (`DonchianBreakoutSignal`).
+  - [x] Enrich all signal outputs with `direction`, `entry_price`, `stop_loss`, and `volatility_atr` attributes.
+- [x] **8.2 First-Class Dynamic Position Sizing Engines (`honba_strategies.components.sizers`)**
+  - [x] **8.2.1 Sizing Base Architecture (`base.py`)**:
     - Define `BasePositionSizer` ABC with standard interface:
       `calculate_size(signal: Signal, equity: Decimal, **kwargs) -> PositionSizingResult`.
     - Provide `SizingContext` capturing account equity, cash balance, margin requirements, and active portfolio positions.
     - Return structured `PositionSizingResult` with `quantity: Decimal`, `notional: Decimal`, `risk_at_stake: Decimal`, and `capped_by_limit: bool`.
-  - [ ] **8.2.2 Fixed Fractional Sizer (`fixed_fractional.py`)**:
+  - [x] **8.2.2 Fixed Fractional Sizer (`fixed_fractional.py`)**:
     - Risk a fixed percentage of equity per trade (e.g. 1%):
       $$Q = \left\lfloor \frac{\text{Equity} \times \text{RiskPct}}{|P_{\text{entry}} - P_{\text{stop}}| \times \text{LotSize}} \right\rfloor \times \text{LotSize}$$
     - Support fallback stop-loss distance when signal lacks explicit stop level.
     - Apply hard max position notional cap ($\text{Notional} \le \text{MaxPositionCap}$).
-  - [ ] **8.2.3 ATR Volatility-Targeted Sizer (`volatility.py`)**:
+  - [x] **8.2.3 ATR Volatility-Targeted Sizer (`volatility.py`)**:
     - Inverse volatility allocation based on 20-day ATR ($N$):
       $$Q = \left\lfloor \frac{\text{Equity} \times \text{TargetRisk}}{N \times \text{AtrMultiplier} \times \text{LotSize}} \right\rfloor \times \text{LotSize}$$
     - Volatility targeting mode: scale position sizes so total portfolio annualized volatility targets $\sigma_{\text{target}}$ (e.g. 15%).
-  - [ ] **8.2.4 Kelly Criterion & Optimal-f Sizer (`kelly.py`)**:
+  - [x] **8.2.4 Kelly Criterion & Optimal-f Sizer (`kelly.py`)**:
     - Compute optimal capital allocation fraction from win-rate $p$ and win/loss ratio $b$:
       $$f^* = p - \frac{1 - p}{b}$$
     - Implement fractional Kelly damping (e.g. Half-Kelly $0.5 \times f^*$ or Quarter-Kelly $0.25 \times f^*$) to minimize drawdown risk.
-  - [ ] **8.2.5 Equal Risk Contribution Sizer (`equal_risk.py`)**:
+  - [x] **8.2.5 Equal Risk Contribution Sizer (`equal_risk.py`)**:
     - Multi-signal simultaneous sizer: allocates risk budget equally across $K$ active candidate signals.
     - Resolves cross-asset correlation adjustments using `honba-core` Decimal linear algebra routines.
-  - [ ] **8.2.6 Fixed Notional Sizer (`fixed_notional.py`)**:
+  - [x] **8.2.6 Fixed Notional Sizer (`fixed_notional.py`)**:
     - Target INR/USD fixed cash allocation: $Q = \lfloor \frac{\text{Notional}}{P_{\text{entry}} \times \text{LotSize}} \rfloor \times \text{LotSize}$.
-- [ ] **8.3 Indian Regulatory & Microstructure Risk Controls in Sizing**
-  - [ ] **Stop-Loss Integration**: Direct extraction of stop levels from strategy descriptors (`stoploss_zscore`, `trailing_stop_pct`, or ATR stop bands).
-  - [ ] **Exchange Freeze Limit Slicing**: Ensure sized quantities exceeding exchange freeze limits (e.g. NIFTY 1,800 contracts) trigger automatic downstream slicing alerts.
-  - [ ] **Lot Size Discretization**: Enforce exact exchange lot multiples (NSE equity lot = 1; index/stock derivatives = contract lot size).
-  - [ ] **Aggregate Portfolio Risk Ceiling**: Halt sizing if total open risk at stake across all strategies exceeds maximum risk ceiling (e.g. 5% of equity).
-- [ ] **8.4 Declarative Position Sizing Catalog (`catalog/size/`) & Step Chaining**
-  - [ ] Author declarative `step.toml` manifests for each sizing step:
+- [x] **8.3 Indian Regulatory & Microstructure Risk Controls in Sizing**
+  - [x] **Stop-Loss Integration**: Direct extraction of stop levels from strategy descriptors (`stoploss_zscore`, `trailing_stop_pct`, or ATR stop bands).
+  - [x] **Exchange Freeze Limit Slicing**: Ensure sized quantities exceeding exchange freeze limits (e.g. NIFTY 1,800 contracts) trigger automatic downstream slicing alerts.
+  - [x] **Lot Size Discretization**: Enforce exact exchange lot multiples (NSE equity lot = 1; index/stock derivatives = contract lot size).
+  - [x] **Aggregate Portfolio Risk Ceiling**: Halt sizing if total open risk at stake across all strategies exceeds maximum risk ceiling (e.g. 5% of equity).
+- [x] **8.4 Declarative Position Sizing Catalog (`catalog/size/`) & Step Chaining**
+  - [x] Author declarative `step.toml` manifests for each sizing step:
     - `catalog/size/fixed_fractional/step.toml` (`kind = "size"`, `consumes.shape = "candidates"`, `adds = ["quantity", "notional", "risk_amount"]`)
     - `catalog/size/atr_volatility/step.toml`
     - `catalog/size/kelly_criterion/step.toml`
     - `catalog/size/equal_risk/step.toml`
     - `catalog/size/fixed_notional/step.toml`
-  - [ ] Implement catalog entry wrappers (`sizer.py`) importing from `honba_strategies.components.sizers`.
-  - [ ] Verify chaining compatibility using `tools/validate_chain.py`:
+  - [x] Implement catalog entry wrappers (`sizer.py`) importing from `honba_strategies.components.sizers`.
+  - [x] Verify chaining compatibility using `tools/validate_chain.py`:
     `[signal.turtle_20] -> [size.fixed_fractional] -> [execute.twap]`.
-  - [ ] Add integration chain tests in `tests/catalog/test_step_chain.py`.
-- [ ] **8.5 Dynamic Strategy Retrofit (Signal-Sizer Decoupling)**
-  - [ ] Retrofit `AvellanedaStoikovStrategy` to allow pluggable dynamic sizing (inventory-risk reservation price determines spread; sizer determines quote quantity).
-  - [ ] Retrofit `TurtleStrategy`, `KamaCrossoverStrategy`, and `SupertrendStrategy` to optionally emit pure signals with stop levels for downstream sizing.
-- [ ] **8.6 Indian Regulatory & Microstructure Risk Guards (`honba_strategies.components.risk`)**
-  - [ ] SEBI Algo ID enforcement guard (`SebiAlgoIdGuard`).
-  - [ ] Order-to-Trade Ratio (OTR) throttling guard (`OtrThrottleGuard`).
-  - [ ] Intraday MIS 15:20 IST square-off guard (`MisSquareOffGuard`).
-  - [ ] Circuit band & price band lock guard (`CircuitBandGuard`).
+  - [x] Add integration chain tests in `tests/catalog/test_step_chain.py`.
+- [x] **8.5 Dynamic Strategy Retrofit (Signal-Sizer Decoupling)**
+  - [x] Retrofit `AvellanedaStoikovStrategy` to allow pluggable dynamic sizing (inventory-risk reservation price determines spread; sizer determines quote quantity).
+  - [x] Retrofit `TurtleStrategy`, `KamaCrossoverStrategy`, and `SupertrendStrategy` to optionally emit pure signals with stop levels for downstream sizing.
+- [x] **8.6 Indian Regulatory & Microstructure Risk Guards (`honba_strategies.components.risk`)**
+  - [x] SEBI Algo ID enforcement guard (`SebiAlgoIdGuard`).
+  - [x] Order-to-Trade Ratio (OTR) throttling guard (`OtrThrottleGuard`).
+  - [x] Intraday MIS 15:20 IST square-off guard (`MisSquareOffGuard`).
+  - [x] Circuit band & price band lock guard (`CircuitBandGuard`).
+  - [x] Max position guard (`MaxPositionGuard`).
+  - [x] Drawdown halt guard (`DrawdownHaltGuard`).
 
 ---
 
