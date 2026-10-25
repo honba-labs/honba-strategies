@@ -112,7 +112,7 @@ class OuMeanReversionStrategy(Strategy):
         current_price = float(bar.close)
         zscore = self._calculate_zscore(current_price)
 
-        current_pos = self.position(self.instrument_id) if hasattr(self, 'instrument_id') else Decimal("0")
+        self.position(self.instrument_id) if hasattr(self, 'instrument_id') else Decimal("0")
 
         # Long entry: zscore <= -entry_zscore (price below mean)
         if self.position(self.instrument_id) <= 0 and zscore <= -self.entry_zscore:

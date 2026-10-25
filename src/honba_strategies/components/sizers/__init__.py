@@ -22,22 +22,22 @@ from honba_strategies.components.sizers.base import (
     Signal,
     SizingContext,
 )
+from honba_strategies.components.sizers.equal_risk import EqualRiskSizer
 from honba_strategies.components.sizers.fixed_fractional import FixedFractionalSizer
 from honba_strategies.components.sizers.fixed_notional import FixedNotionalSizer
 from honba_strategies.components.sizers.kelly import KellySizer
-from honba_strategies.components.sizers.equal_risk import EqualRiskSizer
 from honba_strategies.components.sizers.volatility import AtrVolatilitySizer
 
 __all__ = [
+    "AtrVolatilitySizer",
     "BasePositionSizer",
+    "EqualRiskSizer",
+    "FixedFractionalSizer",
+    "FixedNotionalSizer",
+    "KellySizer",
     "PositionSizingResult",
     "Signal",
     "SizingContext",
-    "FixedFractionalSizer",
-    "AtrVolatilitySizer",
-    "KellySizer",
-    "EqualRiskSizer",
-    "FixedNotionalSizer",
 ]
 
 # Sizer registry for discovery

@@ -34,7 +34,7 @@ class TestPairsTradingStrategy:
 
     def test_pairs_strategy_initialization(self):
         """Test that pairs strategy initializes correctly."""
-        s, cfg = self.build()
+        s, _cfg = self.build()
         assert s.name == "pairs"
         assert s.leg_a_symbol == "HDFCBANK"
         assert s.leg_b_symbol == "ICICIBANK"
@@ -65,7 +65,7 @@ class TestPairsTradingStrategy:
         """Test cointegration estimation."""
         mock_polyfit.return_value = (0.95, 0.02)  # beta, alpha
 
-        s, cfg = self.build()
+        s, _cfg = self.build()
         s.on_start()
 
         # Feed enough bars to trigger cointegration estimation

@@ -1,11 +1,12 @@
 """Tests for Equal Risk Contribution Sizer catalog entry."""
 
-import pytest
 from decimal import Decimal
+
+import pytest
+from honba.entities.instrument import InstrumentId
 
 from honba_strategies.components.sizers import EqualRiskSizer
 from honba_strategies.components.sizers.base import Signal, SizingContext
-from honba.entities.instrument import InstrumentId
 
 
 class TestEqualRiskSizer:

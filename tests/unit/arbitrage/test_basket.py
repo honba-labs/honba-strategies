@@ -34,7 +34,7 @@ class TestBasketArbitrageStrategy:
 
     def test_basket_arbitrage_initialization(self):
         """Test that basket arbitrage strategy initializes correctly."""
-        s, cfg = self.build()
+        s, _cfg = self.build()
         assert s.name == "basket"
         assert s.config.etf_symbol == "NIFTYBEES"
         assert len(s.config.constituents) >= 10  # Minimum for basket arbitrage
@@ -50,7 +50,7 @@ class TestBasketArbitrageStrategy:
 
     def test_synthetic_basket_calculation(self):
         """Test synthetic basket price calculation."""
-        s, cfg = self.build()
+        s, _cfg = self.build()
         s.on_start()
 
         # Set some constituent prices

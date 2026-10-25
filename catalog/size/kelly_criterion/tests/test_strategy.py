@@ -1,7 +1,8 @@
 """Tests for Kelly Criterion Sizer catalog entry."""
 
-import pytest
 from decimal import Decimal
+
+import pytest
 
 from honba_strategies.components.sizers import KellySizer
 from honba_strategies.core.registry import get_strategy, list_strategies

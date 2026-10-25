@@ -1,7 +1,8 @@
 """Tests for Fixed Fractional Sizer catalog entry."""
 
-import pytest
 from decimal import Decimal
+
+import pytest
 
 from honba_strategies.components.sizers import FixedFractionalSizer
 from honba_strategies.core.registry import get_strategy, list_strategies
@@ -12,7 +13,9 @@ class TestFixedFractionalSizer:
 
     def test_strategy_import(self):
         """Test that the sizer can be imported from catalog."""
-        from catalog.size.fixed_fractional.strategy import FixedFractionalSizer as CatalogFixedFractionalSizer
+        from catalog.size.fixed_fractional.strategy import (
+            FixedFractionalSizer as CatalogFixedFractionalSizer,
+        )
         assert CatalogFixedFractionalSizer is FixedFractionalSizer
 
     def test_registry_integration(self):
@@ -38,8 +41,9 @@ class TestFixedFractionalSizer:
 
     def test_basic_sizing_with_explicit_stop(self):
         """Test sizing with explicit stop-loss in signal."""
-        from honba_strategies.components.sizers.base import Signal, SizingContext
         from honba.entities.instrument import InstrumentId
+
+        from honba_strategies.components.sizers.base import Signal, SizingContext
 
         sizer = FixedFractionalSizer(
             risk_pct=Decimal("0.01"),

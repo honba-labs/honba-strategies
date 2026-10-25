@@ -69,3 +69,10 @@ python_functions = ["test_*"]
 
 [project.scripts]
 honba-strategies = "honba_strategies.cli:app"
+
+[tool.mutmut]
+source_paths = ["src/honba_strategies/components/sizers/"]
+backup = false
+runner = "python -m pytest tests/ -x"
+pytest_add_cli_args_test_selection = ["tests/"]
+dict_synonyms = false

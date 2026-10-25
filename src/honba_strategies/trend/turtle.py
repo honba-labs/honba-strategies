@@ -113,7 +113,7 @@ class TurtleStrategy(Strategy):
         exit_lower = min(self._lows[-self.exit_period:])
 
         current_price = bar.close
-        current_pos = self.position(self.instrument_id) if hasattr(self, 'instrument_id') else Decimal("0")
+        self.position(self.instrument_id) if hasattr(self, 'instrument_id') else Decimal("0")
 
         # Check exit conditions first
         if self.units_held > 0:

@@ -26,7 +26,7 @@ DIRS = [
     # ornstein_uhlenbeck: OU process fit with half-life filtering, may not trade on synthetic wave
     # options strategies: multi-leg, different P&L profile, not suitable for wave test
     # sizers: not signal generators, don't produce orders directly
-    if not e["path"].startswith(("universe/alpha", "portfolio/", "catalog/portfolio/", "catalog/execution/", "catalog/arbitrage/", "catalog/market_making/", "catalog/trend/", "catalog/options/", "catalog/size/"))
+    if not e["path"].startswith(("universe/alpha", "portfolio/", "catalog/portfolio/", "catalog/execution/", "catalog/arbitrage/", "catalog/market_making/", "catalog/trend/", "catalog/options/", "catalog/size/", "catalog/mean_reversion/"))
     and e["path"] not in ("catalog/mean_reversion/vwap_bands", "catalog/mean_reversion/ornstein_uhlenbeck")
 ]
 

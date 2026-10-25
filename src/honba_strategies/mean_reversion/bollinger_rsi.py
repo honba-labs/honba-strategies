@@ -110,9 +110,8 @@ class BollingerRsiStrategy(Strategy):
             self._enter_long(price)
 
         # Exit long: price returns to middle band or touches upper band
-        elif current_pos > 0:
-            if price >= self._bb_middle or price >= self._bb_upper:
-                self._exit_position(price)
+        elif current_pos > 0 and (price >= self._bb_middle or price >= self._bb_upper):
+            self._exit_position(price)
 
     def _update_bollinger(self) -> None:
         """Calculate Bollinger Bands."""

@@ -106,11 +106,11 @@ class CalendarSpreadStrategy(Strategy):
         # Simplified - would need option chain data
         spot = bar.close
         if self.strike_selection == "atm":
-            strike = spot
+            pass
         elif self.strike_selection == "otm_call":
-            strike = spot * Decimal("1.02")
+            spot * Decimal("1.02")
         else:  # otm_put
-            strike = spot * Decimal("0.98")
+            spot * Decimal("0.98")
 
         # Estimate premiums (simplified)
         near_premium = spot * Decimal("0.015")  # 7-day

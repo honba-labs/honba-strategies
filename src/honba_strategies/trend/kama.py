@@ -150,7 +150,7 @@ class KamaCrossoverStrategy(Strategy):
 
     def _enter_long(self, price: Decimal) -> None:
         """Enter long position."""
-        risk_amount = self.config.capital * self.config.risk_per_trade_pct
+        self.config.capital * self.config.risk_per_trade_pct
         # Simple position sizing - can be enhanced
         qty = (self.config.capital * self.config.max_position_pct) / price
 

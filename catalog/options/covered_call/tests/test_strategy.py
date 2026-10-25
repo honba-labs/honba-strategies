@@ -1,10 +1,11 @@
 """Tests for Covered Call catalog entry."""
 
-import pytest
 from decimal import Decimal
 
-from honba_strategies.options import CoveredCallConfig, CoveredCallStrategy
+import pytest
+
 from honba_strategies.core.registry import get_strategy, list_strategies
+from honba_strategies.options import CoveredCallConfig, CoveredCallStrategy
 
 
 class TestCoveredCall:

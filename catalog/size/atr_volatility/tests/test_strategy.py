@@ -1,7 +1,8 @@
 """Tests for ATR Volatility Sizer catalog entry."""
 
-import pytest
 from decimal import Decimal
+
+import pytest
 
 from honba_strategies.components.sizers import AtrVolatilitySizer
 from honba_strategies.core.registry import get_strategy, list_strategies
@@ -12,7 +13,9 @@ class TestAtrVolatilitySizer:
 
     def test_strategy_import(self):
         """Test that the sizer can be imported from catalog."""
-        from catalog.size.atr_volatility.strategy import AtrVolatilitySizer as CatalogAtrVolatilitySizer
+        from catalog.size.atr_volatility.strategy import (
+            AtrVolatilitySizer as CatalogAtrVolatilitySizer,
+        )
         assert CatalogAtrVolatilitySizer is AtrVolatilitySizer
 
     def test_registry_integration(self):
@@ -39,8 +42,9 @@ class TestAtrVolatilitySizer:
 
     def test_inverse_vol_mode_basic(self):
         """Test basic inverse volatility sizing."""
-        from honba_strategies.components.sizers.base import Signal, SizingContext
         from honba.entities.instrument import InstrumentId
+
+        from honba_strategies.components.sizers.base import Signal, SizingContext
 
         sizer = AtrVolatilitySizer(
             target_risk_pct=Decimal("0.015"),

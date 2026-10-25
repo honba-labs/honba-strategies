@@ -9,7 +9,12 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any
 
-from honba_strategies.components.sizers.base import BasePositionSizer, PositionSizingResult, Signal, SizingContext
+from honba_strategies.components.sizers.base import (
+    BasePositionSizer,
+    PositionSizingResult,
+    Signal,
+    SizingContext,
+)
 
 
 class AtrVolatilitySizer(BasePositionSizer):

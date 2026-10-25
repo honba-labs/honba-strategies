@@ -1,7 +1,8 @@
 """Tests for Fixed Notional Sizer catalog entry."""
 
-import pytest
 from decimal import Decimal
+
+import pytest
 
 from honba_strategies.components.sizers import FixedNotionalSizer
 from honba_strategies.core.registry import get_strategy, list_strategies
@@ -12,7 +13,9 @@ class TestFixedNotionalSizer:
 
     def test_strategy_import(self):
         """Test that the sizer can be imported from catalog."""
-        from catalog.size.fixed_notional.strategy import FixedNotionalSizer as CatalogFixedNotionalSizer
+        from catalog.size.fixed_notional.strategy import (
+            FixedNotionalSizer as CatalogFixedNotionalSizer,
+        )
         assert CatalogFixedNotionalSizer is FixedNotionalSizer
 
     def test_registry_integration(self):
@@ -38,8 +41,9 @@ class TestFixedNotionalSizer:
 
     def test_basic_notional_sizing(self):
         """Test basic fixed notional sizing."""
-        from honba_strategies.components.sizers.base import Signal, SizingContext
         from honba.entities.instrument import InstrumentId
+
+        from honba_strategies.components.sizers.base import Signal, SizingContext
 
         sizer = FixedNotionalSizer(
             target_notional=Decimal("600000"),

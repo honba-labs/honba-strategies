@@ -1,10 +1,11 @@
 """Tests for Calendar Spread catalog entry."""
 
-import pytest
 from decimal import Decimal
 
-from honba_strategies.options import CalendarSpreadConfig, CalendarSpreadStrategy
+import pytest
+
 from honba_strategies.core.registry import get_strategy, list_strategies
+from honba_strategies.options import CalendarSpreadConfig, CalendarSpreadStrategy
 
 
 class TestCalendarSpread:

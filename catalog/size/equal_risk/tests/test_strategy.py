@@ -1,7 +1,8 @@
 """Tests for Equal Risk Sizer catalog entry."""
 
-import pytest
 from decimal import Decimal
+
+import pytest
 
 from honba_strategies.components.sizers import EqualRiskSizer
 from honba_strategies.core.registry import get_strategy, list_strategies
@@ -47,8 +48,9 @@ class TestEqualRiskSizer:
             use_correlation=False,
         )
 
-        from honba_strategies.components.sizers.base import Signal, SizingContext
         from honba.entities.instrument import InstrumentId
+
+        from honba_strategies.components.sizers.base import Signal, SizingContext
 
         signal = Signal(
             direction=1,

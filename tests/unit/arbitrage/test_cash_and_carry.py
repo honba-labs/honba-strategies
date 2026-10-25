@@ -33,7 +33,7 @@ class TestCashAndCarryStrategy:
 
     def test_cash_and_carry_initialization(self):
         """Test that cash-and-carry strategy initializes correctly."""
-        s, cfg = self.build()
+        s, _cfg = self.build()
         assert s.name == "cash_and_carry"
         assert s.config.spot_symbol == "RELIANCE"
         assert s.config.futures_expiry == "2026-12-25"
@@ -50,7 +50,7 @@ class TestCashAndCarryStrategy:
 
     def test_cash_and_carry_fair_basis(self):
         """Test fair basis calculation."""
-        s, cfg = self.build()
+        s, _cfg = self.build()
         s.on_start()
 
         # Test with 30 days to expiry (directly call without patching)
