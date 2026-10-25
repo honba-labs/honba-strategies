@@ -1,5 +1,5 @@
 name = "vwap_bands"
-symbol = ""
+symbol = "NIFTY50"
 exchange = ""
 
 [params]

@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from honba_strategies.mean_reversion import BollingerRsiStrategy, BollingerRsiConfig
+from honba_strategies.mean_reversion import BollingerRsiConfig, BollingerRsiStrategy
 
 
 def test_bollinger_rsi_catalog_entry():

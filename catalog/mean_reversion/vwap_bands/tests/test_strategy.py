@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from honba_strategies.mean_reversion import VwapBandReversionStrategy, VwapBandConfig
+from honba_strategies.mean_reversion import VwapBandConfig, VwapBandReversionStrategy
 
 
 def test_vwap_bands_catalog_entry():

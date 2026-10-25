@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from honba_strategies.portfolio import MarkowitzStrategy, MarkowitzConfig
+from honba_strategies.portfolio import MarkowitzConfig, MarkowitzStrategy
 
 
 def test_markowitz_catalog_entry():

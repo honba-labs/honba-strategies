@@ -1,8 +1,7 @@
 """Tests for Risk Parity strategy (catalog entry)."""
 
-from decimal import Decimal
 
-from honba_strategies.portfolio import RiskParityStrategy, RiskParityConfig
+from honba_strategies.portfolio import RiskParityConfig, RiskParityStrategy
 
 
 def test_risk_parity_catalog_entry():

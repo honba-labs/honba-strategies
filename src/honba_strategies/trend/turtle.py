@@ -9,9 +9,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from honba.strategies.base import Strategy
+
 from honba_strategies.core.config import BaseStrategyConfig
 from honba_strategies.core.registry import register_strategy
 
@@ -59,7 +60,7 @@ class TurtleStrategy(Strategy):
     Config = TurtleConfig
 
     def __init__(self, config: TurtleConfig) -> None:
-        super().__init__(config)
+        super().__init__()
         self.config = config
 
         # System parameters
@@ -70,14 +71,14 @@ class TurtleStrategy(Strategy):
         # ATR parameters
         self.atr_period = config.atr_period
         self.atr_multiplier = config.atr_multiplier
-        self.N: Optional[Decimal] = None  # Volatility measure (N = ATR * multiplier)
+        self.N: Decimal | None = None  # Volatility measure (N = ATR * multiplier)
 
         # Position management
         self.max_units = config.max_units
         self.pyramid_threshold = config.pyramid_threshold
         self.units_held = 0
-        self.entry_price: Optional[Decimal] = None
-        self.stop_price: Optional[Decimal] = None
+        self.entry_price: Decimal | None = None
+        self.stop_price: Decimal | None = None
 
         # Indicators
         self._highs: list[Decimal] = []
@@ -246,17 +247,12 @@ class TurtleStrategy(Strategy):
         """Check for exit signals."""
         # Hard stop
         if self.stop_price is not None:
-            if self.units_held > 0 and price <= self.stop_price:
-                self._exit_all(price, "STOP")
-                return
-            elif self.units_held < 0 and price >= self.stop_price:
+            if (self.units_held > 0 and price <= self.stop_price) or (self.units_held < 0 and price >= self.stop_price):
                 self._exit_all(price, "STOP")
                 return
 
         # Channel exit
-        if self.units_held > 0 and price <= exit_channel:
-            self._exit_all(price, "CHANNEL_EXIT")
-        elif self.units_held < 0 and price >= exit_channel:
+        if (self.units_held > 0 and price <= exit_channel) or (self.units_held < 0 and price >= exit_channel):
             self._exit_all(price, "CHANNEL_EXIT")
 
     def _exit_all(self, price: Decimal, reason: str) -> None:

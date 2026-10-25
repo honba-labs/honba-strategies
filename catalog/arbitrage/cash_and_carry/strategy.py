@@ -1,5 +1,5 @@
 """Cash-and-Carry Strategy - catalog entry."""
 
-from honba_strategies.arbitrage import CashAndCarryStrategy, CashAndCarryConfig
+from honba_strategies.arbitrage import CashAndCarryConfig, CashAndCarryStrategy
 
-__all__ = ["CashAndCarryStrategy", "CashAndCarryConfig"]
+__all__ = ["CashAndCarryConfig", "CashAndCarryStrategy"]

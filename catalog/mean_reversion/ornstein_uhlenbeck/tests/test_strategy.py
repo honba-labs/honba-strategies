@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from honba_strategies.mean_reversion import OuMeanReversionStrategy, OuConfig
+from honba_strategies.mean_reversion import OuConfig, OuMeanReversionStrategy
 
 
 def test_ou_mean_reversion_catalog_entry():

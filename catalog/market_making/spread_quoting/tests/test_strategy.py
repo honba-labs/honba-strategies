@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from honba_strategies.market_making import SpreadQuotingStrategy, SpreadQuotingConfig
+from honba_strategies.market_making import SpreadQuotingConfig, SpreadQuotingStrategy
 
 
 def test_spread_quoting_catalog_entry():

@@ -8,9 +8,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, Dict, Optional
+from typing import ClassVar
 
 from honba.strategies.base import Strategy
+
 from honba_strategies.core.config import BaseStrategyConfig
 from honba_strategies.core.registry import register_strategy
 
@@ -47,15 +48,15 @@ class RiskParityStrategy(Strategy):
     Config = RiskParityConfig
 
     def __init__(self, config: RiskParityConfig) -> None:
-        super().__init__(config)
+        super().__init__()
         self.config = config
 
         self.lookback_window = config.lookback_window
         self.max_leverage = config.max_leverage
 
-        self.returns_history: Dict[str, list[Decimal]] = {}
-        self.volatilities: Dict[str, Decimal] = {}
-        self.target_weights: Dict[str, Decimal] = {}
+        self.returns_history: dict[str, list[Decimal]] = {}
+        self.volatilities: dict[str, Decimal] = {}
+        self.target_weights: dict[str, Decimal] = {}
         self.universe: list[str] = []
 
     def on_start(self) -> None:

@@ -1,5 +1,5 @@
 """Avellaneda-Stoikov Strategy - catalog entry."""
 
-from honba_strategies.market_making import AvellanedaStoikovStrategy, AvellanedaStoikovConfig
+from honba_strategies.market_making import AvellanedaStoikovConfig, AvellanedaStoikovStrategy
 
-__all__ = ["AvellanedaStoikovStrategy", "AvellanedaStoikovConfig"]
+__all__ = ["AvellanedaStoikovConfig", "AvellanedaStoikovStrategy"]

@@ -9,9 +9,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from honba.strategies.base import Strategy
+
 from honba_strategies.core.config import BaseStrategyConfig
 from honba_strategies.core.registry import register_strategy
 
@@ -52,7 +53,7 @@ class IronCondorStrategy(Strategy):
     Config = IronCondorConfig
 
     def __init__(self, config: IronCondorConfig) -> None:
-        super().__init__(config)
+        super().__init__()
         self.config = config
 
         self.wing_width = config.wing_width

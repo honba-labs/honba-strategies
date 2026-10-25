@@ -5,15 +5,15 @@ and integrate SEBI freeze limit compliance, exact Decimal arithmetic,
 and declarative catalog manifests.
 """
 
-from honba_strategies.trend.turtle import TurtleStrategy, TurtleConfig
-from honba_strategies.trend.kama import KamaCrossoverStrategy, KamaConfig
-from honba_strategies.trend.supertrend import SupertrendStrategy, SupertrendConfig
+from honba_strategies.trend.kama import KamaConfig, KamaCrossoverStrategy
+from honba_strategies.trend.supertrend import SupertrendConfig, SupertrendStrategy
+from honba_strategies.trend.turtle import TurtleConfig, TurtleStrategy
 
 __all__ = [
-    "TurtleStrategy",
-    "TurtleConfig",
-    "KamaCrossoverStrategy",
     "KamaConfig",
-    "SupertrendStrategy",
+    "KamaCrossoverStrategy",
     "SupertrendConfig",
+    "SupertrendStrategy",
+    "TurtleConfig",
+    "TurtleStrategy",
 ]

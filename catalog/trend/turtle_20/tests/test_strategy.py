@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from honba_strategies.trend import TurtleStrategy, TurtleConfig
+from honba_strategies.trend import TurtleConfig, TurtleStrategy
 
 
 def test_turtle_catalog_entry():

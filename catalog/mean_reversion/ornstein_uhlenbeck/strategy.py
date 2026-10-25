@@ -1,5 +1,5 @@
 """OU Mean Reversion Strategy - catalog entry."""
 
-from honba_strategies.mean_reversion import OuMeanReversionStrategy, OuConfig
+from honba_strategies.mean_reversion import OuConfig, OuMeanReversionStrategy
 
-__all__ = ["OuMeanReversionStrategy", "OuConfig"]
+__all__ = ["OuConfig", "OuMeanReversionStrategy"]

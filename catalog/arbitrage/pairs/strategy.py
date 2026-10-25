@@ -1,8 +1,8 @@
 """Pairs Trading Strategy - catalog entry."""
 
-from honba_strategies.arbitrage import PairsTradingStrategy, PairsConfig
+from honba_strategies.arbitrage import PairsConfig, PairsTradingStrategy
 
-__all__ = ["PairsTradingStrategy", "PairsConfig"]
+__all__ = ["PairsConfig", "PairsTradingStrategy"]
 
 # Alias for registry compatibility
 PairsStrategy = PairsTradingStrategy

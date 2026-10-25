@@ -9,13 +9,13 @@ and trades only scrips with half-life < 5 trading days.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, Optional
-
-import math
+from typing import ClassVar
 
 from honba.strategies.base import Strategy
+
 from honba_strategies.core.config import BaseStrategyConfig
 from honba_strategies.core.registry import register_strategy
 
@@ -69,7 +69,7 @@ class OuMeanReversionStrategy(Strategy):
     Config = OuConfig
 
     def __init__(self, config: OuConfig) -> None:
-        super().__init__(config)
+        super().__init__()
         self.config = config
 
         self.lookback_window = config.lookback_window
@@ -79,10 +79,10 @@ class OuMeanReversionStrategy(Strategy):
         self.max_half_life = config.max_half_life_days
 
         # OU parameters
-        self.theta: Optional[float] = None
-        self.mu: Optional[float] = None
-        self.sigma: Optional[float] = None
-        self.half_life: Optional[float] = None
+        self.theta: float | None = None
+        self.mu: float | None = None
+        self.sigma: float | None = None
+        self.half_life: float | None = None
 
         # Price history
         self._closes: list[Decimal] = []

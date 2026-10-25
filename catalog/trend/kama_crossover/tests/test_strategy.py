@@ -1,8 +1,7 @@
 """Tests for KAMA Crossover strategy (catalog entry)."""
 
-from decimal import Decimal
 
-from honba_strategies.trend import KamaCrossoverStrategy, KamaConfig
+from honba_strategies.trend import KamaConfig, KamaCrossoverStrategy
 
 
 def test_kama_crossover_catalog_entry():

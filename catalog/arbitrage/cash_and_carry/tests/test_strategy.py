@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from honba_strategies.arbitrage import CashAndCarryStrategy, CashAndCarryConfig
+from honba_strategies.arbitrage import CashAndCarryConfig, CashAndCarryStrategy
 
 
 def test_cash_and_carry_catalog_entry():

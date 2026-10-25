@@ -1,5 +1,5 @@
 """Equal Weight Rebalancer Strategy - catalog entry."""
 
-from honba_strategies.portfolio import EqualWeightRebalancer, EqualWeightConfig
+from honba_strategies.portfolio import EqualWeightConfig, EqualWeightRebalancer
 
-__all__ = ["EqualWeightRebalancer", "EqualWeightConfig"]
+__all__ = ["EqualWeightConfig", "EqualWeightRebalancer"]

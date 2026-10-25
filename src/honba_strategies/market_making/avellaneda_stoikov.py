@@ -9,13 +9,13 @@ raises bid when short. Dynamic half-spread calculation.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import ClassVar
 
-import math
-
 from honba.strategies.base import QuotingStrategy
+
 from honba_strategies.core.config import BaseStrategyConfig
 from honba_strategies.core.registry import register_strategy
 

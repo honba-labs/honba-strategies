@@ -12,6 +12,7 @@ from decimal import Decimal
 from typing import ClassVar
 
 from honba.strategies.base import ArbitrageStrategy
+
 from honba_strategies.core.config import BaseStrategyConfig
 from honba_strategies.core.registry import register_strategy
 
@@ -128,7 +129,7 @@ class CashAndCarryStrategy(ArbitrageStrategy):
 
     def _get_days_to_expiry(self) -> int:
         """Calculate days to futures expiry."""
-        from datetime import datetime, date
+        from datetime import date, datetime
         expiry = datetime.strptime(self.config.futures_expiry, "%Y-%m-%d").date()
         days = (expiry - date.today()).days
         return max(0, days)
@@ -163,9 +164,7 @@ class CashAndCarryStrategy(ArbitrageStrategy):
             pass
         elif key in self._active_positions:
             # Check exit condition: basis converged to fair value
-            if abs(actual_basis - fair_basis) < threshold / Decimal("2"):
-                self._exit_position(key)
-            elif self._days_in_positions.get(key, 0) >= self.config.max_holding_days:
+            if abs(actual_basis - fair_basis) < threshold / Decimal("2") or self._days_in_positions.get(key, 0) >= self.config.max_holding_days:
                 self._exit_position(key)
 
     def _enter_position(self, key: str, spot: float, futures: float) -> None:

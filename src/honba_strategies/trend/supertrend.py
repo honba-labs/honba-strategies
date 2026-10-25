@@ -8,9 +8,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from honba.strategies.base import Strategy
+
 from honba_strategies.core.config import BaseStrategyConfig
 from honba_strategies.core.registry import register_strategy
 
@@ -55,7 +56,7 @@ class SupertrendStrategy(Strategy):
     Config = SupertrendConfig
 
     def __init__(self, config: SupertrendConfig) -> None:
-        super().__init__(config)
+        super().__init__()
         self.config = config
 
         self.atr_period = config.atr_period
@@ -67,8 +68,8 @@ class SupertrendStrategy(Strategy):
         self._highs: list[Decimal] = []
         self._lows: list[Decimal] = []
         self._closes: list[Decimal] = []
-        self._atr: Optional[Decimal] = None
-        self._supertrend: Optional[Decimal] = None
+        self._atr: Decimal | None = None
+        self._supertrend: Decimal | None = None
         self._trend: int = 0  # 1 = uptrend, -1 = downtrend
 
     def on_bar(self, bar) -> None:

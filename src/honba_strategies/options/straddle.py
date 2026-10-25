@@ -8,9 +8,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from honba.strategies.base import Strategy
+
 from honba_strategies.core.config import BaseStrategyConfig
 from honba_strategies.core.registry import register_strategy
 
@@ -51,7 +52,7 @@ class ShortStraddleStrategy(Strategy):
     Config = ShortStraddleConfig
 
     def __init__(self, config: ShortStraddleConfig) -> None:
-        super().__init__(config)
+        super().__init__()
         self.config = config
 
         self.sl_pct_per_leg = config.sl_pct_per_leg
@@ -59,8 +60,8 @@ class ShortStraddleStrategy(Strategy):
         self.profit_target_pct = config.profit_target_pct
         self.lots = config.lots
 
-        self.call_entry_premium: Optional[Decimal] = None
-        self.put_entry_premium: Optional[Decimal] = None
+        self.call_entry_premium: Decimal | None = None
+        self.put_entry_premium: Decimal | None = None
         self.straddle_entered = False
 
     def on_bar(self, bar) -> None:

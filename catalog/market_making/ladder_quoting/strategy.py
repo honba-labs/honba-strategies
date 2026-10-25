@@ -1,5 +1,5 @@
 """Ladder Quoting Strategy - catalog entry."""
 
-from honba_strategies.market_making import LadderQuotingStrategy, LadderQuotingConfig
+from honba_strategies.market_making import LadderQuotingConfig, LadderQuotingStrategy
 
-__all__ = ["LadderQuotingStrategy", "LadderQuotingConfig"]
+__all__ = ["LadderQuotingConfig", "LadderQuotingStrategy"]

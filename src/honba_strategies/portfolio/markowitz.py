@@ -8,9 +8,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, Dict, Optional
+from typing import ClassVar
 
 from honba.strategies.base import Strategy
+
 from honba_strategies.core.config import BaseStrategyConfig
 from honba_strategies.core.registry import register_strategy
 
@@ -24,7 +25,7 @@ class MarkowitzConfig(BaseStrategyConfig):
     risk_free_rate: Decimal = Decimal("0.06")  # 6% annual
     max_weight: Decimal = Decimal("0.20")  # 20% max single position
     min_weight: Decimal = Decimal("0.00")
-    target_return: Optional[Decimal] = None
+    target_return: Decimal | None = None
 
     _registry_meta: ClassVar[dict] = {
         "name": "markowitz",
@@ -49,7 +50,7 @@ class MarkowitzStrategy(Strategy):
     Config = MarkowitzConfig
 
     def __init__(self, config: MarkowitzConfig) -> None:
-        super().__init__(config)
+        super().__init__()
         self.config = config
 
         self.lookback_window = config.lookback_window
@@ -57,9 +58,9 @@ class MarkowitzStrategy(Strategy):
         self.max_weight = config.max_weight
         self.min_weight = config.min_weight
 
-        self.expected_returns: Dict[str, Decimal] = {}
-        self.cov_matrix: Dict[str, Dict[str, Decimal]] = {}
-        self.target_weights: Dict[str, Decimal] = {}
+        self.expected_returns: dict[str, Decimal] = {}
+        self.cov_matrix: dict[str, dict[str, Decimal]] = {}
+        self.target_weights: dict[str, Decimal] = {}
         self.universe: list[str] = []
 
     def on_start(self) -> None:

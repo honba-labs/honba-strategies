@@ -1,12 +1,12 @@
 """Unit tests for Pairs Trading strategy."""
 
 from decimal import Decimal
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from honba.domain import Bar, InstrumentId
 
-from honba_strategies.arbitrage import PairsTradingStrategy, PairsConfig
+from honba_strategies.arbitrage import PairsConfig, PairsTradingStrategy
 
 
 def make_bar(symbol, close, ts=None):

@@ -1,5 +1,5 @@
 """Markowitz Strategy - catalog entry."""
 
-from honba_strategies.portfolio import MarkowitzStrategy, MarkowitzConfig
+from honba_strategies.portfolio import MarkowitzConfig, MarkowitzStrategy
 
-__all__ = ["MarkowitzStrategy", "MarkowitzConfig"]
+__all__ = ["MarkowitzConfig", "MarkowitzStrategy"]

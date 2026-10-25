@@ -1,5 +1,5 @@
 """Risk Parity Strategy - catalog entry."""
 
-from honba_strategies.portfolio import RiskParityStrategy, RiskParityConfig
+from honba_strategies.portfolio import RiskParityConfig, RiskParityStrategy
 
-__all__ = ["RiskParityStrategy", "RiskParityConfig"]
+__all__ = ["RiskParityConfig", "RiskParityStrategy"]

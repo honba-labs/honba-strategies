@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from honba_strategies.portfolio import EqualWeightRebalancer, EqualWeightConfig
+from honba_strategies.portfolio import EqualWeightConfig, EqualWeightRebalancer
 
 
 def test_equal_weight_catalog_entry():

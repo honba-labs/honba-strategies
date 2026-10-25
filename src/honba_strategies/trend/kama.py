@@ -8,9 +8,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from honba.strategies.base import Strategy
+
 from honba_strategies.core.config import BaseStrategyConfig
 from honba_strategies.core.registry import register_strategy
 
@@ -56,7 +57,7 @@ class KamaCrossoverStrategy(Strategy):
     Config = KamaConfig
 
     def __init__(self, config: KamaConfig) -> None:
-        super().__init__(config)
+        super().__init__()
         self.config = config
 
         self.fast_period = config.fast_period
@@ -64,10 +65,10 @@ class KamaCrossoverStrategy(Strategy):
         self.er_period = config.er_period
 
         # KAMA state
-        self.fast_kama: Optional[Decimal] = None
-        self.slow_kama: Optional[Decimal] = None
-        self.fast_sc: Optional[Decimal] = None
-        self.slow_sc: Optional[Decimal] = None
+        self.fast_kama: Decimal | None = None
+        self.slow_kama: Decimal | None = None
+        self.fast_sc: Decimal | None = None
+        self.slow_sc: Decimal | None = None
 
         # Price history for ER calculation
         self._closes: list[Decimal] = []
@@ -116,7 +117,7 @@ class KamaCrossoverStrategy(Strategy):
             if current_pos >= 0:
                 self._exit_position(bar.close)
 
-    def _calculate_er(self) -> Optional[Decimal]:
+    def _calculate_er(self) -> Decimal | None:
         """Calculate Efficiency Ratio (ER) over er_period."""
         if len(self._closes) < self.er_period + 1:
             return None

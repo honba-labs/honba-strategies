@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from honba_strategies.arbitrage import PairsTradingStrategy, PairsConfig
+from honba_strategies.arbitrage import PairsConfig, PairsTradingStrategy
 
 
 def test_pairs_trading_catalog_entry():

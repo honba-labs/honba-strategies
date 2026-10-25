@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from honba_strategies.market_making import LadderQuotingStrategy, LadderQuotingConfig
+from honba_strategies.market_making import LadderQuotingConfig, LadderQuotingStrategy
 
 
 def test_ladder_quoting_catalog_entry():

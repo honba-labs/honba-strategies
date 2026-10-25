@@ -1,12 +1,11 @@
 """Unit tests for Cash-and-Carry strategy."""
 
 from decimal import Decimal
-from unittest.mock import patch
 
 import pytest
 from honba.domain import Bar, InstrumentId
 
-from honba_strategies.arbitrage import CashAndCarryStrategy, CashAndCarryConfig
+from honba_strategies.arbitrage import CashAndCarryConfig, CashAndCarryStrategy
 
 
 def make_bar(symbol, close, ts=None):

@@ -8,9 +8,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, Dict, Optional
+from typing import ClassVar
 
 from honba.strategies.base import Strategy
+
 from honba_strategies.core.config import BaseStrategyConfig
 from honba_strategies.core.registry import register_strategy
 
@@ -51,14 +52,14 @@ class EqualWeightRebalancer(Strategy):
     Config = EqualWeightConfig
 
     def __init__(self, config: EqualWeightConfig) -> None:
-        super().__init__(config)
+        super().__init__()
         self.config = config
 
         self.drift_threshold = config.drift_threshold
         self.transaction_cost_bps = config.transaction_cost_bps
         self.max_positions = config.max_positions
 
-        self.target_weights: Dict[str, Decimal] = {}
+        self.target_weights: dict[str, Decimal] = {}
         self.universe: list[str] = []
 
     def on_start(self) -> None:
@@ -105,7 +106,7 @@ class EqualWeightRebalancer(Strategy):
         if needs_rebalance:
             self._rebalance(current_values, total_value)
 
-    def _rebalance(self, current_values: Dict[str, Decimal], total_value: Decimal) -> None:
+    def _rebalance(self, current_values: dict[str, Decimal], total_value: Decimal) -> None:
         """Perform rebalancing trades."""
         for symbol, target_w in self.target_weights.items():
             target_value = total_value * target_w

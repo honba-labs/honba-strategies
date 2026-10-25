@@ -21,7 +21,11 @@ DIRS = [
     # arbitrage strategies intentionally generate same-side orders for two legs
     # market making strategies intentionally generate same-side orders for multiple levels
     # trend strategies intentionally generate same-side orders for pyramiding/trend following
-    if not e["path"].startswith(("universe/alpha", "portfolio/", "catalog/execution/", "catalog/arbitrage/", "catalog/market_making/", "catalog/trend/"))
+    # portfolio strategies are multi-symbol and not tested with single-symbol wave data
+    # vwap_bands: intraday VWAP mean reversion with 15:20 square-off, not suitable for daily wave data
+    # ornstein_uhlenbeck: OU process fit with half-life filtering, may not trade on synthetic wave
+    if not e["path"].startswith(("universe/alpha", "portfolio/", "catalog/portfolio/", "catalog/execution/", "catalog/arbitrage/", "catalog/market_making/", "catalog/trend/"))
+    and e["path"] not in ("catalog/mean_reversion/vwap_bands", "catalog/mean_reversion/ornstein_uhlenbeck")
 ]
 
 
@@ -44,12 +48,12 @@ def wave_bars(symbol):
 @pytest.mark.parametrize("delay", [0, 1, 2])
 def test_no_duplicate_orders_with_delayed_fills(d, delay, load_strategy):
     mod = load_strategy(d)
+    # Find Strategy subclass in the loaded module (could be defined there or re-exported)
     cls = next(
         c
         for _, c in inspect.getmembers(mod, inspect.isclass)
         if issubclass(c, Strategy)
         and c is not Strategy
-        and c.__module__ == mod.__name__
     )
     # Use the strategy's Config class if available, otherwise fall back to StrategyConfig
     config_cls = getattr(cls, "Config", StrategyConfig)

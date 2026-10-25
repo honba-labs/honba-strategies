@@ -1,5 +1,5 @@
 """Spread Quoting Strategy - catalog entry."""
 
-from honba_strategies.market_making import SpreadQuotingStrategy, SpreadQuotingConfig
+from honba_strategies.market_making import SpreadQuotingConfig, SpreadQuotingStrategy
 
-__all__ = ["SpreadQuotingStrategy", "SpreadQuotingConfig"]
+__all__ = ["SpreadQuotingConfig", "SpreadQuotingStrategy"]

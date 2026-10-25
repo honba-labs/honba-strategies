@@ -1,5 +1,5 @@
 """VWAP Band Reversion Strategy - catalog entry."""
 
-from honba_strategies.mean_reversion import VwapBandReversionStrategy, VwapBandConfig
+from honba_strategies.mean_reversion import VwapBandConfig, VwapBandReversionStrategy
 
-__all__ = ["VwapBandReversionStrategy", "VwapBandConfig"]
+__all__ = ["VwapBandConfig", "VwapBandReversionStrategy"]

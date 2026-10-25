@@ -1,7 +1,6 @@
 """Unit tests for Basket Arbitrage strategy."""
 
 from decimal import Decimal
-from unittest.mock import patch
 
 import pytest
 from honba.domain import Bar, InstrumentId

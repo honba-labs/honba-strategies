@@ -13,8 +13,8 @@ from decimal import Decimal
 from typing import ClassVar
 
 import numpy as np
-
 from honba.strategies.base import ArbitrageStrategy
+
 from honba_strategies.core.config import BaseStrategyConfig
 from honba_strategies.core.registry import register_strategy
 

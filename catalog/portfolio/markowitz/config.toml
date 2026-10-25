@@ -1,5 +1,5 @@
 name = "markowitz"
-symbol = ""
+symbol = "NIFTY50"
 exchange = ""
 
 [params]

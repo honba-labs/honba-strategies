@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from honba_strategies.trend import SupertrendStrategy, SupertrendConfig
+from honba_strategies.trend import SupertrendConfig, SupertrendStrategy
 
 
 def test_supertrend_catalog_entry():

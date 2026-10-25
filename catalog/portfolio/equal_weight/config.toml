@@ -1,5 +1,5 @@
 name = "equal_weight"
-symbol = ""
+symbol = "NIFTY50"
 exchange = ""
 
 [params]

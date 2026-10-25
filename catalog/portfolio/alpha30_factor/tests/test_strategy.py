@@ -1,8 +1,7 @@
 """Tests for Alpha Factor strategy (catalog entry)."""
 
-from decimal import Decimal
 
-from honba_strategies.portfolio import AlphaFactorStrategy, AlphaFactorConfig
+from honba_strategies.portfolio import AlphaFactorConfig, AlphaFactorStrategy
 
 
 def test_alpha30_factor_catalog_entry():

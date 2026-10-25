@@ -8,9 +8,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from honba.strategies.base import Strategy
+
 from honba_strategies.core.config import BaseStrategyConfig
 from honba_strategies.core.registry import register_strategy
 
@@ -57,7 +58,7 @@ class VwapBandReversionStrategy(Strategy):
     Config = VwapBandConfig
 
     def __init__(self, config: VwapBandConfig) -> None:
-        super().__init__(config)
+        super().__init__()
         self.config = config
 
         self.std_dev_mult = config.std_dev_mult
@@ -67,11 +68,11 @@ class VwapBandReversionStrategy(Strategy):
         # VWAP state
         self._typical_prices: list[Decimal] = []
         self._volumes: list[Decimal] = []
-        self._vwap: Optional[Decimal] = None
-        self._std_dev: Optional[Decimal] = None
-        self._upper_band: Optional[Decimal] = None
-        self._lower_band: Optional[Decimal] = None
-        self._vwap_value: Optional[Decimal] = None
+        self._vwap: Decimal | None = None
+        self._std_dev: Decimal | None = None
+        self._upper_band: Decimal | None = None
+        self._lower_band: Decimal | None = None
+        self._vwap_value: Decimal | None = None
 
     def on_bar(self, bar) -> None:
         """Process bar and update VWAP bands."""

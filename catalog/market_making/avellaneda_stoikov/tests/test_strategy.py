@@ -2,7 +2,7 @@
 
 from decimal import Decimal
 
-from honba_strategies.market_making import AvellanedaStoikovStrategy, AvellanedaStoikovConfig
+from honba_strategies.market_making import AvellanedaStoikovConfig, AvellanedaStoikovStrategy
 
 
 def test_avellaneda_stoikov_catalog_entry():

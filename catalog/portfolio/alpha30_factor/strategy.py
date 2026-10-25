@@ -1,5 +1,5 @@
 """Alpha Factor Strategy - catalog entry."""
 
-from honba_strategies.portfolio import AlphaFactorStrategy, AlphaFactorConfig
+from honba_strategies.portfolio import AlphaFactorConfig, AlphaFactorStrategy
 
-__all__ = ["AlphaFactorStrategy", "AlphaFactorConfig"]
+__all__ = ["AlphaFactorConfig", "AlphaFactorStrategy"]

@@ -8,9 +8,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from honba.strategies.base import Strategy
+
 from honba_strategies.core.config import BaseStrategyConfig
 from honba_strategies.core.registry import register_strategy
 
@@ -62,8 +63,9 @@ class BollingerRsiStrategy(Strategy):
     Config = BollingerRsiConfig
 
     def __init__(self, config: BollingerRsiConfig) -> None:
-        super().__init__(config)
+        super().__init__()
         self.config = config
+        self.instrument_id = config.instrument_id
 
         self.bb_period = config.bb_period
         self.bb_std_dev = config.bb_std_dev
@@ -73,14 +75,14 @@ class BollingerRsiStrategy(Strategy):
 
         # State for indicators
         self._closes: list[Decimal] = []
-        self._bb_upper: Optional[Decimal] = None
-        self._bb_middle: Optional[Decimal] = None
-        self._bb_lower: Optional[Decimal] = None
-        self._rsi: Optional[Decimal] = None
+        self._bb_upper: Decimal | None = None
+        self._bb_middle: Decimal | None = None
+        self._bb_lower: Decimal | None = None
+        self._rsi: Decimal | None = None
 
     def on_bar(self, bar) -> None:
         """Process incoming bar and update indicators."""
-        self._closes.append(bar.close)
+        self._closes.append(Decimal(str(bar.close)))
 
         # Keep sufficient history
         max_period = max(self.bb_period, self.rsi_period)
@@ -100,17 +102,17 @@ class BollingerRsiStrategy(Strategy):
         if self._bb_upper is None or self._bb_middle is None or self._bb_lower is None or self._rsi is None:
             return
 
-        current_pos = self.position(self.instrument_id) if hasattr(self, 'instrument_id') else Decimal("0")
-        price = bar.close
+        current_pos = self.position(self.instrument_id)
+        price = Decimal(str(bar.close))
 
         # Long entry: price below lower band AND RSI oversold
         if current_pos <= 0 and price <= self._bb_lower and self._rsi <= self.rsi_oversold:
-            self._enter_long(bar.close)
+            self._enter_long(price)
 
         # Exit long: price returns to middle band or touches upper band
-        elif self.position(self.instrument_id) > 0:
+        elif current_pos > 0:
             if price >= self._bb_middle or price >= self._bb_upper:
-                self._exit_position(bar.close)
+                self._exit_position(price)
 
     def _update_bollinger(self) -> None:
         """Calculate Bollinger Bands."""

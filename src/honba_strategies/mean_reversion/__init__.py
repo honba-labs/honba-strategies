@@ -5,15 +5,15 @@ and integrate SEBI freeze limit compliance, exact Decimal arithmetic,
 and declarative catalog manifests.
 """
 
-from honba_strategies.mean_reversion.bollinger_rsi import BollingerRsiStrategy, BollingerRsiConfig
-from honba_strategies.mean_reversion.vwap_bands import VwapBandReversionStrategy, VwapBandConfig
-from honba_strategies.mean_reversion.ornstein_uhlenbeck import OuMeanReversionStrategy, OuConfig
+from honba_strategies.mean_reversion.bollinger_rsi import BollingerRsiConfig, BollingerRsiStrategy
+from honba_strategies.mean_reversion.ornstein_uhlenbeck import OuConfig, OuMeanReversionStrategy
+from honba_strategies.mean_reversion.vwap_bands import VwapBandConfig, VwapBandReversionStrategy
 
 __all__ = [
-    "BollingerRsiStrategy",
     "BollingerRsiConfig",
-    "VwapBandReversionStrategy",
-    "VwapBandConfig",
-    "OuMeanReversionStrategy",
+    "BollingerRsiStrategy",
     "OuConfig",
+    "OuMeanReversionStrategy",
+    "VwapBandConfig",
+    "VwapBandReversionStrategy",
 ]

@@ -8,9 +8,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, Dict, Optional
+from typing import ClassVar
 
 from honba.strategies.base import Strategy
+
 from honba_strategies.core.config import BaseStrategyConfig
 from honba_strategies.core.registry import register_strategy
 
@@ -54,7 +55,7 @@ class AlphaFactorStrategy(Strategy):
     Config = AlphaFactorConfig
 
     def __init__(self, config: AlphaFactorConfig) -> None:
-        super().__init__(config)
+        super().__init__()
         self.config = config
 
         self.momentum_weight = config.momentum_weight
@@ -64,8 +65,8 @@ class AlphaFactorStrategy(Strategy):
         self.top_n = config.top_n
         self.max_weight = config.max_weight
 
-        self.factor_scores: Dict[str, Decimal] = {}
-        self.target_weights: Dict[str, Decimal] = {}
+        self.factor_scores: dict[str, Decimal] = {}
+        self.target_weights: dict[str, Decimal] = {}
         self.universe: list[str] = []
 
     def on_start(self) -> None:
