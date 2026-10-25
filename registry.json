@@ -197,6 +197,94 @@
         "statistical",
         "breadth"
       ]
+    },
+    {
+      "name": "nifty_short_straddle",
+      "category": "catalog/options",
+      "path": "catalog/options/nifty_short_straddle",
+      "description": "ATM Short Straddle with dynamic hedging on NIFTY/BANKNIFTY indices",
+      "tags": [
+        "volatility",
+        "statistical"
+      ]
+    },
+    {
+      "name": "banknifty_iron_condor",
+      "category": "catalog/options",
+      "path": "catalog/options/banknifty_iron_condor",
+      "description": "Iron Condor 4-leg defined risk structure with delta-neutral adjustment and early profit take",
+      "tags": [
+        "volatility",
+        "statistical"
+      ]
+    },
+    {
+      "name": "covered_call",
+      "category": "catalog/options",
+      "path": "catalog/options/covered_call",
+      "description": "Covered call writing with dividend capture and strike rollover on CNC delivery stocks",
+      "tags": [
+        "volatility",
+        "statistical"
+      ]
+    },
+    {
+      "name": "calendar_spread",
+      "category": "catalog/options",
+      "path": "catalog/options/calendar_spread",
+      "description": "Time-decay term structure calendar spread: long far-term option, short near-term option at same strike",
+      "tags": [
+        "volatility",
+        "statistical"
+      ]
+    },
+    {
+      "name": "fixed_fractional",
+      "category": "catalog/size",
+      "path": "catalog/size/fixed_fractional",
+      "description": "Fixed Fractional Sizing: Risk a fixed percentage of equity per trade vs stop-loss distance",
+      "tags": [
+        "statistical",
+        "volatility"
+      ]
+    },
+    {
+      "name": "atr_volatility",
+      "category": "catalog/size",
+      "path": "catalog/size/atr_volatility",
+      "description": "ATR Volatility Sizing: Inverse volatility allocation based on Average True Range with optional portfolio volatility targeting",
+      "tags": [
+        "statistical",
+        "volatility"
+      ]
+    },
+    {
+      "name": "kelly_criterion",
+      "category": "catalog/size",
+      "path": "catalog/size/kelly_criterion",
+      "description": "Kelly Criterion Sizing: Optimal capital allocation fraction from win-rate and win/loss ratio with fractional Kelly damping",
+      "tags": [
+        "statistical"
+      ]
+    },
+    {
+      "name": "equal_risk",
+      "category": "catalog/size",
+      "path": "catalog/size/equal_risk",
+      "description": "Equal Risk Contribution Sizing: Allocates risk budget equally across active signals with optional correlation adjustment",
+      "tags": [
+        "statistical",
+        "volatility"
+      ]
+    },
+    {
+      "name": "fixed_notional",
+      "category": "catalog/size",
+      "path": "catalog/size/fixed_notional",
+      "description": "Fixed Notional Sizing: Targets a fixed cash allocation per position with lot-size discretization",
+      "tags": [
+        "statistical"
+      ]
     }
   ]
 }

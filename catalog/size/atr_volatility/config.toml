@@ -1,0 +1,9 @@
+[params]
+target_risk_pct = 0.015
+atr_multiplier = 2.0
+max_position_notional = 500000.0
+lot_size = 1.0
+freeze_limit = 1800
+target_annual_vol = 0.0
+trading_days = 252
+atr_period = 20

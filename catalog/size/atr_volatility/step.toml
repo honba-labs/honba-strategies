@@ -1,0 +1,34 @@
+schema = 1
+id = "size.atr_volatility"
+kind = "size"
+title = "ATR Volatility Position Sizer"
+description = "Inverse volatility allocation based on Average True Range with optional portfolio volatility targeting"
+tags = ["sizing", "volatility", "risk_management"]
+pitfalls = [
+  "Requires ATR from market data; fails silently if unavailable",
+  "Volatility targeting mode assumes constant correlation - may underestimate risk in crises",
+  "Inverse vol sizing can lead to large positions in low-vol regimes",
+  "ATR is backward-looking; sudden regime changes not captured",
+]
+
+[params]
+target_risk_pct = { type = "float", default = 0.015, min = 0.001, max = 0.1, step = 0.001, description = "Target risk as fraction of equity (inverse vol mode)" }
+atr_multiplier = { type = "float", default = 2.0, min = 0.5, max = 5.0, step = 0.1, description = "ATR multiplier for stop distance" }
+max_position_notional = { type = "float", default = 500000.0, min = 10000.0, max = 10000000.0, step = 10000.0, description = "Maximum position notional cap (INR)" }
+lot_size = { type = "float", default = 1.0, min = 1.0, max = 100.0, step = 1.0, description = "Exchange lot size for discretization" }
+freeze_limit = { type = "int", default = 1800, min = 1, max = 10000, step = 1, description = "Exchange single-order freeze limit (contracts)" }
+target_annual_vol = { type = "float", default = 0.0, min = 0.0, max = 0.5, step = 0.01, description = "Target annualized portfolio volatility (enables vol targeting mode, 0=disabled)" }
+trading_days = { type = "int", default = 252, min = 200, max = 365, step = 1, description = "Trading days per year for annualization" }
+atr_period = { type = "int", default = 20, min = 2, max = 100, step = 1, description = "ATR period for volatility calculation" }
+
+[requires]
+bars = ["close", "high", "low", "ts"]
+indicators = [{ kind = "atr", period = "$atr_period" }]
+history_bars = "$atr_period"
+
+[consumes]
+shape = "candidates"
+
+[emits]
+shape = "weights"
+adds = ["quantity", "notional", "risk_amount"]

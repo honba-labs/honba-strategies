@@ -1,0 +1,11 @@
+[params]
+win_rate = 0.55
+win_loss_ratio = 1.5
+kelly_fraction = 0.5
+max_position_notional = 500000.0
+max_risk_per_trade = 10000.0
+lot_size = 1.0
+freeze_limit = 1800
+fallback_stop_atr_mult = 2.0
+min_kelly_fraction = 0.0
+max_kelly_fraction = 1.0

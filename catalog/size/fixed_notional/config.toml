@@ -1,0 +1,5 @@
+[params]
+target_notional = 100000.0
+max_position_notional = 100000.0
+lot_size = 1.0
+freeze_limit = 1800

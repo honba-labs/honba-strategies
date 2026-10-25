@@ -1,0 +1,32 @@
+schema = 1
+id = "signal.covered_call"
+kind = "signal"
+title = "Covered Call"
+description = "Covered call writing with dividend capture and strike rollover on CNC delivery stocks"
+tags = ["volatility", "yield"]
+pitfalls = [
+  "Assignment risk: stock called away at strike",
+  "Dividend capture requires holding through ex-date",
+  "Rolling calls incurs transaction costs and slippage",
+  "CNC delivery requires full capital - no leverage",
+]
+
+[params]
+otm_pct = { type = "float", default = 0.05, min = 0.02, max = 0.15, step = 0.01, description = "OTM percentage for call strike (5%)" }
+roll_days_before_expiry = { type = "int", default = 2, min = 1, max = 7, step = 1, description = "Days before expiry to roll call" }
+min_premium_yield = { type = "float", default = 0.01, min = 0.005, max = 0.05, step = 0.005, description = "Minimum premium yield % (1%)" }
+max_assignment_risk = { type = "float", default = 0.30, min = 0.1, max = 0.5, step = 0.05, description = "Max delta for assignment risk (30%)" }
+quantity = { type = "int", default = 100, min = 1, max = 10000, step = 1, description = "Number of shares to hold (CNC)" }
+freeze_limit = { type = "int", default = 1800, min = 1, max = 10000, step = 1, description = "Exchange freeze limit" }
+
+[requires]
+bars = ["close", "ts"]
+indicators = []
+history_bars = 1
+
+[consumes]
+shape = "universe"
+
+[emits]
+shape = "candidates"
+adds = ["direction", "entry_price", "stop_loss", "volatility_atr"]

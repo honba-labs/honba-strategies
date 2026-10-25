@@ -1,0 +1,32 @@
+schema = 1
+id = "size.fixed_fractional"
+kind = "size"
+title = "Fixed Fractional Position Sizer"
+description = "Risk a fixed percentage of equity per trade divided by stop-loss distance"
+tags = ["sizing", "risk_management"]
+pitfalls = [
+  "Requires signals with explicit stop-loss levels; uses ATR fallback otherwise",
+  "Position size scales linearly with equity - large accounts may hit freeze limits",
+  "Does not account for correlation between concurrent signals",
+  "Fixed risk % can lead to overtrading in low-volatility regimes",
+]
+
+[params]
+risk_pct = { type = "float", default = 0.01, min = 0.001, max = 0.1, step = 0.001, description = "Risk percentage of equity per trade (1% default)" }
+max_position_notional = { type = "float", default = 500000.0, min = 10000.0, max = 10000000.0, step = 10000.0, description = "Maximum position notional cap (INR)" }
+max_risk_per_trade = { type = "float", default = 10000.0, min = 1000.0, max = 100000.0, step = 1000.0, description = "Maximum absolute risk per trade (INR)" }
+lot_size = { type = "float", default = 1.0, min = 1.0, max = 100.0, step = 1.0, description = "Exchange lot size for discretization" }
+freeze_limit = { type = "int", default = 1800, min = 1, max = 10000, step = 1, description = "Exchange single-order freeze limit (contracts)" }
+fallback_stop_atr_mult = { type = "float", default = 2.0, min = 0.5, max = 5.0, step = 0.1, description = "ATR multiplier for fallback stop when signal lacks explicit stop" }
+
+[requires]
+bars = ["close", "ts"]
+indicators = []
+history_bars = 1
+
+[consumes]
+shape = "candidates"
+
+[emits]
+shape = "weights"
+adds = ["quantity", "notional", "risk_amount"]

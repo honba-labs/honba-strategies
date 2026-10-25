@@ -1,0 +1,30 @@
+schema = 1
+id = "size.fixed_notional"
+kind = "size"
+title = "Fixed Notional Position Sizer"
+description = "Targets a fixed cash allocation per position with lot-size discretization"
+tags = ["sizing", "capital_allocation"]
+pitfalls = [
+  "Ignores volatility/stop-loss - risk per trade varies",
+  "Fixed notional exceeds freeze limits for low-priced",
+  "No risk management - 10% move on 1L = 10K loss",
+  "Not suitable for leveraged instruments without guards",
+]
+
+[params]
+target_notional = { type = "float", default = 100000.0, min = 10000.0, max = 10000000.0, step = 10000.0, description = "Target cash notional per position (INR)" }
+max_position_notional = { type = "float", default = 100000.0, min = 10000.0, max = 10000000.0, step = 10000.0, description = "Hard cap on position notional (can equal target)" }
+lot_size = { type = "float", default = 1.0, min = 1.0, max = 100.0, step = 1.0, description = "Exchange lot size for discretization" }
+freeze_limit = { type = "int", default = 1800, min = 1, max = 10000, step = 1, description = "Exchange single-order freeze limit (contracts)" }
+
+[requires]
+bars = ["close", "ts"]
+indicators = []
+history_bars = 1
+
+[consumes]
+shape = "candidates"
+
+[emits]
+shape = "weights"
+adds = ["quantity", "notional", "risk_amount"]

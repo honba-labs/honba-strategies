@@ -1,0 +1,9 @@
+[params]
+entry_time = "09:25"
+exit_time = "15:10"
+wing_width = 200
+short_delta = 0.16
+profit_target_pct = 0.50
+adjustment_delta = 0.30
+lots = 1
+freeze_limit = 1800

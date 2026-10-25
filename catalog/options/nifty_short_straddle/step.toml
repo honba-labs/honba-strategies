@@ -1,0 +1,34 @@
+schema = 1
+id = "signal.nifty_short_straddle"
+kind = "signal"
+title = "NIFTY Short Straddle"
+description = "ATM Short Straddle with dynamic hedging on NIFTY/BANKNIFTY indices"
+tags = ["volatility", "statistical"]
+pitfalls = [
+  "Short straddle has unlimited risk - stop-loss is critical",
+  "High gamma risk near expiry - avoid last 2 days",
+  "IV crush after events causes rapid losses",
+  "Wide option spreads increase slippage",
+]
+
+[params]
+entry_time = { type = "str", default = "09:20", pattern = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$", description = "Entry time (IST)" }
+exit_time = { type = "str", default = "15:15", pattern = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$", description = "Exit time (IST)" }
+sl_pct_per_leg = { type = "float", default = 0.25, min = 0.1, max = 0.5, step = 0.05, description = "Stop-loss per leg as % of premium (25%)" }
+combined_sl_pct = { type = "float", default = 0.20, min = 0.1, max = 0.5, step = 0.05, description = "Combined MTM stop-loss % (20%)" }
+profit_target_pct = { type = "float", default = 0.50, min = 0.2, max = 0.8, step = 0.05, description = "Profit target as % of max profit (50%)" }
+lots = { type = "int", default = 1, min = 1, max = 10, step = 1, description = "Number of lots per leg" }
+max_positions = { type = "int", default = 1, min = 1, max = 5, step = 1, description = "Maximum concurrent straddles" }
+freeze_limit = { type = "int", default = 1800, min = 1, max = 10000, step = 1, description = "Exchange freeze limit" }
+
+[requires]
+bars = ["close", "ts"]
+indicators = []
+history_bars = 1
+
+[consumes]
+shape = "universe"
+
+[emits]
+shape = "candidates"
+adds = ["direction", "entry_price", "stop_loss", "volatility_atr"]

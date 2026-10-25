@@ -24,7 +24,9 @@ DIRS = [
     # portfolio strategies are multi-symbol and not tested with single-symbol wave data
     # vwap_bands: intraday VWAP mean reversion with 15:20 square-off, not suitable for daily wave data
     # ornstein_uhlenbeck: OU process fit with half-life filtering, may not trade on synthetic wave
-    if not e["path"].startswith(("universe/alpha", "portfolio/", "catalog/portfolio/", "catalog/execution/", "catalog/arbitrage/", "catalog/market_making/", "catalog/trend/"))
+    # options strategies: multi-leg, different P&L profile, not suitable for wave test
+    # sizers: not signal generators, don't produce orders directly
+    if not e["path"].startswith(("universe/alpha", "portfolio/", "catalog/portfolio/", "catalog/execution/", "catalog/arbitrage/", "catalog/market_making/", "catalog/trend/", "catalog/options/", "catalog/size/"))
     and e["path"] not in ("catalog/mean_reversion/vwap_bands", "catalog/mean_reversion/ornstein_uhlenbeck")
 ]
 

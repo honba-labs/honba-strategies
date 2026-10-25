@@ -182,8 +182,10 @@ PORTFOLIO = set()
 
 
 def test_no_registered_step_is_kind_size():
-    # a sizer consumes candidates and emits weights; none of the catalog strategies is one
-    assert [e["name"] for e in ENTRIES if _step(e)["kind"] == "size"] == []
+    # a sizer consumes candidates and emits weights; catalog now includes sizers
+    size_steps = [e["name"] for e in ENTRIES if _step(e)["kind"] == "size"]
+    expected_sizers = {"fixed_fractional", "atr_volatility", "kelly_criterion", "equal_risk", "fixed_notional"}
+    assert set(size_steps) == expected_sizers
 
 
 def test_schema_accepts_list_or_string_consumes_shape():

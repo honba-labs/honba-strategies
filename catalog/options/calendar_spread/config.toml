@@ -1,0 +1,8 @@
+[params]
+strike_selection = "atm"
+near_expiry_days = 7
+far_expiry_days = 35
+profit_target_pct = 0.25
+stop_loss_pct = 0.50
+lots = 1
+freeze_limit = 1800

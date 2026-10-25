@@ -1,0 +1,7 @@
+[params]
+otm_pct = 0.05
+roll_days_before_expiry = 2
+min_premium_yield = 0.01
+max_assignment_risk = 0.30
+quantity = 100
+freeze_limit = 1800

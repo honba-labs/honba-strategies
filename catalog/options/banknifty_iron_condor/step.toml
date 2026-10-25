@@ -1,0 +1,34 @@
+schema = 1
+id = "signal.banknifty_iron_condor"
+kind = "signal"
+title = "BankNifty Iron Condor"
+description = "Iron Condor 4-leg defined risk structure with delta-neutral adjustment and early profit take"
+tags = ["volatility", "statistical"]
+pitfalls = [
+  "Defined risk but max loss can be substantial",
+  "Theta decay accelerates near expiry - best held 7-14 days",
+  "Rolling wings can lock in losses if market reverses",
+  "Wide spreads increase 4-leg entry slippage",
+]
+
+[params]
+entry_time = { type = "str", default = "09:25", pattern = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$", description = "Entry time (IST)" }
+exit_time = { type = "str", default = "15:10", pattern = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$", description = "Exit time (IST)" }
+wing_width = { type = "int", default = 200, min = 50, max = 1000, step = 50, description = "Distance between short and long strikes (points)" }
+short_delta = { type = "float", default = 0.16, min = 0.05, max = 0.30, step = 0.01, description = "Target delta for short strikes" }
+profit_target_pct = { type = "float", default = 0.50, min = 0.2, max = 0.8, step = 0.05, description = "Profit target as % of max profit (50%)" }
+adjustment_delta = { type = "float", default = 0.30, min = 0.20, max = 0.45, step = 0.05, description = "Delta threshold for wing adjustment" }
+lots = { type = "int", default = 1, min = 1, max = 10, step = 1, description = "Number of lots per leg" }
+freeze_limit = { type = "int", default = 1800, min = 1, max = 10000, step = 1, description = "Exchange freeze limit" }
+
+[requires]
+bars = ["close", "ts"]
+indicators = []
+history_bars = 1
+
+[consumes]
+shape = "universe"
+
+[emits]
+shape = "candidates"
+adds = ["direction", "entry_price", "stop_loss", "volatility_atr"]
