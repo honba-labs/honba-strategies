@@ -493,11 +493,11 @@ honba-strategies info fixed_fractional
  │ Phase R: Source Code Restructure & Dump Elimination  │ ✅ COMPLETED    │
  │ Phase 3: High-Frequency Market Making & Quoting SDK  │ ✅ COMPLETED    │
  │ Phase 4: Trend Following & Breakout SDK              │ ✅ COMPLETED    │
- │ Phase 5: Mean Reversion & Statistical Physics SDK    │ ⏳ PLANNED      │
- │ Phase 6: Portfolio Allocation & Dynamic Rebalancing  │ ⏳ PLANNED      │
+ │ Phase 5: Mean Reversion & Statistical Physics SDK    │ ✅ COMPLETED      │
+ │ Phase 6: Portfolio Allocation & Dynamic Rebalancing  │ ✅ COMPLETED      │
  │ Phase 7: Options & Volatility Trading SDK            │ ✅ COMPLETED    │
  │ Phase 8: Composable Blocks (Signals, Sizers, Risk)   │ ✅ COMPLETED    │
- │ Phase 9: Verification, StockSharp Parity & Benchmarks│ ⏳ PLANNED      │
+ │ Phase 9: Verification, StockSharp Parity & Benchmarks│ 🔄 IN PROGRESS      │
  └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -654,48 +654,48 @@ honba-strategies info fixed_fractional
 
 ---
 
-### Phase 5: Mean Reversion & Statistical Physics SDK (StockSharp Port) (M5) — Week 10–11
+### Phase 5: Mean Reversion & Statistical Physics SDK (StockSharp Port) (M5) — Week 10–11 ✅ COMPLETED
 > Porting StockSharp statistical and volatility-envelope mean reversion algorithms.
 
-- [ ] **5.1 Bollinger Band + RSI Exhaustion (`BollingerRsiStrategy`)**
-  - [ ] Implement in `src/honba_strategies/mean_reversion/bollinger_rsi.py`.
-  - [ ] Long entry when price closes below Lower Bollinger Band ($2\sigma$) and RSI $< 25$.
-  - [ ] Exit on reversion to Middle Band (20 SMA) or opposite band touch.
-  - [ ] Add catalog entry in `catalog/mean_reversion/bollinger_rsi/` and unit tests.
-- [ ] **5.2 Intraday VWAP Band Reversion (`VwapBandReversionStrategy`)**
-  - [ ] Implement in `src/honba_strategies/mean_reversion/vwap_bands.py`.
-  - [ ] Intraday mean reversion when price deviates $\ge 2.5\sigma$ from session VWAP.
-  - [ ] Strict 15:20 IST auto-square-off enforcement for MIS equity.
-  - [ ] Add catalog entry in `catalog/mean_reversion/vwap_bands/` and unit tests.
-- [ ] **5.3 Ornstein-Uhlenbeck Mean Reversion (`OuMeanReversionStrategy`)**
-  - [ ] Implement in `src/honba_strategies/mean_reversion/ornstein_uhlenbeck.py`.
-  - [ ] Fits continuous-time Ornstein-Uhlenbeck stochastic process:
+- [x] **5.1 Bollinger Band + RSI Exhaustion (`BollingerRsiStrategy`)**
+  - [x] Implement in `src/honba_strategies/mean_reversion/bollinger_rsi.py`.
+  - [x] Long entry when price closes below Lower Bollinger Band ($2\sigma$) and RSI $< 25$.
+  - [x] Exit on reversion to Middle Band (20 SMA) or opposite band touch.
+  - [x] Add catalog entry in `catalog/mean_reversion/bollinger_rsi/` and unit tests.
+- [x] **5.2 Intraday VWAP Band Reversion (`VwapBandReversionStrategy`)**
+  - [x] Implement in `src/honba_strategies/mean_reversion/vwap_bands.py`.
+  - [x] Intraday mean reversion when price deviates $\ge 2.5\sigma$ from session VWAP.
+  - [x] Strict 15:20 IST auto-square-off enforcement for MIS equity.
+  - [x] Add catalog entry in `catalog/mean_reversion/vwap_bands/` and unit tests.
+- [x] **5.3 Ornstein-Uhlenbeck Mean Reversion (`OuMeanReversionStrategy`)**
+  - [x] Implement in `src/honba_strategies/mean_reversion/ornstein_uhlenbeck.py`.
+  - [x] Fits continuous-time Ornstein-Uhlenbeck stochastic process:
     $$dX_t = \theta (\mu - X_t) dt + \sigma dW_t$$
-  - [ ] Computes exact half-life of mean reversion ($t_{1/2} = \frac{\ln 2}{\theta}$) and trades only scrips with $t_{1/2} < 5$ days.
-  - [ ] Add catalog entry in `catalog/mean_reversion/ornstein_uhlenbeck/` and unit tests.
+  - [x] Computes exact half-life of mean reversion ($t_{1/2} = \frac{\ln 2}{\theta}$) and trades only scrips with $t_{1/2} < 5$ days.
+  - [x] Add catalog entry in `catalog/mean_reversion/ornstein_uhlenbeck/` and unit tests.
 
 ---
 
-### Phase 6: Portfolio Allocation & Dynamic Rebalancing SDK (StockSharp Port) (M6) — Week 12–13
+### Phase 6: Portfolio Allocation & Dynamic Rebalancing SDK (StockSharp Port) (M6) — Week 12–13 ✅ COMPLETED
 > Porting StockSharp portfolio management and asset allocation models.
 
-- [ ] **6.1 Equal Weight & Periodic Rebalancer (`EqualWeightRebalancer`)**
-  - [ ] Implement in `src/honba_strategies/portfolio/equal_weight.py`, inheriting from `honba.strategies.base.RebalancingStrategy`.
-  - [ ] Target weight allocations across universe with configurable drift threshold bands (e.g. $\pm 5\%$).
-  - [ ] Transaction cost aware rebalancing threshold gate.
-  - [ ] Add catalog entry in `catalog/portfolio/equal_weight/` and unit tests.
-- [ ] **6.2 Risk Parity Allocation (`RiskParityStrategy`)**
-  - [ ] Implement in `src/honba_strategies/portfolio/risk_parity.py`.
-  - [ ] Weight assets inversely proportional to their historical volatility matrix so each asset contributes equal risk.
-  - [ ] Add catalog entry in `catalog/portfolio/risk_parity/` and unit tests.
-- [ ] **6.3 Mean-Variance Markowitz Optimizer (`MarkowitzStrategy`)**
-  - [ ] Implement in `src/honba_strategies/portfolio/markowitz.py`.
-  - [ ] Quadratic optimization maximizing Sharpe ratio subject to minimum/maximum weight and sector bounds.
-  - [ ] Add catalog entry in `catalog/portfolio/markowitz/` and unit tests.
-- [ ] **6.4 Alpha Factor Portfolios (`AlphaFactorStrategy`)**
-  - [ ] Implement in `src/honba_strategies/portfolio/alpha_factors.py`.
-  - [ ] Multi-factor portfolio scoring (Momentum, Low Vol, Quality, Value) across NSE indices (NIFTY 200, NIFTY 500).
-  - [ ] Add catalog entries in `catalog/portfolio/alpha30_factor/`, `catalog/portfolio/alpha_low_vol/`, etc.
+- [x] **6.1 Equal Weight & Periodic Rebalancer (`EqualWeightRebalancer`)**
+  - [x] Implement in `src/honba_strategies/portfolio/equal_weight.py`, inheriting from `honba.strategies.base.RebalancingStrategy`.
+  - [x] Target weight allocations across universe with configurable drift threshold bands (e.g. $\pm 5\%$).
+  - [x] Transaction cost aware rebalancing threshold gate.
+  - [x] Add catalog entry in `catalog/portfolio/equal_weight/` and unit tests.
+- [x] **6.2 Risk Parity Allocation (`RiskParityStrategy`)**
+  - [x] Implement in `src/honba_strategies/portfolio/risk_parity.py`.
+  - [x] Weight assets inversely proportional to their historical volatility matrix so each asset contributes equal risk.
+  - [x] Add catalog entry in `catalog/portfolio/risk_parity/` and unit tests.
+- [x] **6.3 Mean-Variance Markowitz Optimizer (`MarkowitzStrategy`)**
+  - [x] Implement in `src/honba_strategies/portfolio/markowitz.py`.
+  - [x] Quadratic optimization maximizing Sharpe ratio subject to minimum/maximum weight and sector bounds.
+  - [x] Add catalog entry in `catalog/portfolio/markowitz/` and unit tests.
+- [x] **6.4 Alpha Factor Portfolios (`AlphaFactorStrategy`)**
+  - [x] Implement in `src/honba_strategies/portfolio/alpha_factors.py`.
+  - [x] Multi-factor portfolio scoring (Momentum, Low Vol, Quality, Value) across NSE indices (NIFTY 200, NIFTY 500).
+  - [x] Add catalog entries in `catalog/portfolio/alpha30_factor/`, `catalog/portfolio/alpha_low_vol/`, etc.
 
 ---
 
@@ -786,7 +786,7 @@ honba-strategies info fixed_fractional
 
 ---
 
-### Phase 9: Verification, StockSharp Parity & Benchmark Suite (M9) — Week 16
+### Phase 9: Verification, StockSharp Parity & Benchmark Suite (M9) — Week 16 🔄 IN PROGRESS
 > Ensuring institutional fidelity, numeric accuracy, and complete clean repository status.
 
 - [ ] **9.1 Test Suite & Coverage**
