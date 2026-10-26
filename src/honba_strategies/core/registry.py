@@ -23,7 +23,7 @@ class StrategyMetadata:
     cls: type
     config_cls: type[BaseStrategyConfig]
     description: str = ""
-    tags: list[str] = None
+    tags: list[str] | None = None
     step_manifest: dict | None = None
     version: str = "1.0.0"
     strategy_api_version: str = "1.0.0"
@@ -40,12 +40,15 @@ class StrategyRegistry:
     """
 
     _instance: StrategyRegistry | None = None
+    _strategies: dict[str, StrategyMetadata]
+    _categories: dict[str, list[str]]
 
     def __new__(cls) -> StrategyRegistry:
         if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._strategies: dict[str, StrategyMetadata] = {}
-            cls._instance._categories: dict[str, list[str]] = {}
+            instance = super().__new__(cls)
+            instance._strategies = {}
+            instance._categories = {}
+            cls._instance = instance
         return cls._instance
 
     def register(
@@ -192,7 +195,7 @@ class StrategyRegistry:
                         try:
                             import tomllib
                         except ImportError:
-                            import tomli as tomllib
+                            import tomli as tomllib  # type: ignore
                         with step_path.open("rb") as f:
                             step_manifest = tomllib.load(f)
 
@@ -308,7 +311,7 @@ def _auto_discover() -> None:
         try:
             module = importlib.import_module(module_name)
             for attr_name in dir(module):
-                obj = getattr(module, attr_name)
+                obj: Any = getattr(module, attr_name)
                 if (
                     inspect.isclass(obj)
                     and hasattr(obj, "__module__")
@@ -316,7 +319,7 @@ def _auto_discover() -> None:
                     and attr_name.endswith("Strategy")
                     and hasattr(obj, "_registry_meta")
                 ):
-                    meta = obj._registry_meta
+                    meta: dict[str, Any] = obj._registry_meta  # type: ignore[attr-defined]
                     register_strategy(
                         meta["name"],
                         meta["category"],

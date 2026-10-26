@@ -79,6 +79,6 @@ def test_no_duplicate_orders_with_delayed_fills(d, delay, load_strategy):
     if symbol == "MULTI":
         symbol = "NIFTY50"
     bars = wave_bars(symbol)
-    ledger = replay(cls(config), bars, fill_delay_bars=delay)
+    ledger = replay(cls(config), bars, fill_delay=delay)
     # Check that orders are generated and fills processed
     assert ledger is not None

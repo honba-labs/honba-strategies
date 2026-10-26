@@ -1,5 +1,7 @@
 """Tests for TWAP execution strategy v1 (catalog entry)."""
 
+from decimal import Decimal
+
 from catalog.execution.twap.v1.strategy import TwapStrategy
 from honba_strategies.execution import TwapConfig
 
@@ -10,8 +12,8 @@ def test_twap_v1_catalog_entry():
         name="twap",
         symbol="NIFTY50",
         exchange="NSE",
-        total_quantity=1000,
-        slice_size=100,
+        total_quantity=Decimal(1000),
+        slice_size=Decimal(100),
     )
     strategy = TwapStrategy(config)
     assert strategy.name == "twap"
