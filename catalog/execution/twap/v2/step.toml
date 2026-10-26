@@ -1,0 +1,96 @@
+schema = 1
+id = "execute.twap"
+kind = "execute"
+title = "TWAP Execution"
+description = "Time-weighted average price execution: divides parent order into equal slices over a duration window with randomized jitter."
+tags = ["execution", "slicing", "twap"]
+version = "2.0.0"
+strategy_api_version = "2.0.0"
+pitfalls = [
+  "Large parent orders may still impact market if duration is too short.",
+  "Jitter helps avoid detection but adds execution uncertainty.",
+  "SEBI freeze limits must be respected per exchange rules.",
+]
+
+[params.total_quantity]
+type = "float"
+default = 1000
+min = 1
+max = 1000000
+step = 10
+description = "Total parent order quantity to execute."
+sweepable = true
+
+[params.slice_size]
+type = "float"
+default = 100
+min = 1
+max = 100000
+step = 1
+description = "Quantity per child slice."
+sweepable = true
+
+[params.duration_minutes]
+type = "int"
+default = 60
+min = 1
+max = 480
+step = 1
+description = "Total execution window in minutes."
+sweepable = true
+
+[params.jitter_seconds]
+type = "int"
+default = 5
+min = 0
+max = 60
+step = 1
+description = "Max random jitter per slice (seconds) to avoid algo detection."
+sweepable = true
+
+[params.freeze_limit]
+type = "int"
+default = 1800
+min = 1
+max = 100000
+step = 1
+description = "SEBI single-order freeze limit (lots per order)."
+sweepable = false
+
+[params.capital]
+type = "float"
+default = 1000000
+min = 1000
+max = 10000000000
+description = "INR available to the strategy."
+sweepable = false
+
+[params.max_allocation]
+type = "float"
+default = 1.0
+min = 0.01
+max = 1.0
+step = 0.01
+description = "Fraction of capital deployed (max)."
+sweepable = false
+
+[requires]
+bars = ["close"]
+fundamentals = []
+indicators = []
+history_bars = 0
+pit = false
+
+[consumes]
+shape = "universe"
+columns = ["symbol"]
+
+[emits]
+shape = "orders"
+adds = ["side", "quantity", "price"]
+report = []
+reportable = []
+
+[chain]
+after = ["universe"]
+before = ["risk"]

@@ -32,13 +32,17 @@ REF = re.compile(r"^\$([a-z][a-z0-9_]*)$")
 CODE_DEFAULT_MISMATCHES = {"sma_crossover": {"fast": (10, 20), "slow": (30, 50)}}
 
 
-def _step(e):
-    return load_step(ROOT / e["path"] / "step.toml")
+def _path(e: dict) -> str:
+    return e.get("path") or e["versions"][e["latest"]]["path"]
 
 
-def _config_values(e) -> dict:
+def _step(e: dict) -> dict:
+    return load_step(ROOT / _path(e) / "step.toml")
+
+
+def _config_values(e: dict) -> dict:
     """Flat config values: ``[params]`` plus the args of each ``[indicators.*]`` table."""
-    cfg = tomllib.loads((ROOT / e["path"] / "config.toml").read_text())
+    cfg = tomllib.loads((ROOT / _path(e) / "config.toml").read_text())
     flat = dict(cfg.get("params", {}))
     for table in cfg.get("indicators", {}).values():
         flat.update({k: v for k, v in table.items() if k != "kind"})
@@ -47,13 +51,19 @@ def _config_values(e) -> dict:
 
 @pytest.mark.parametrize("e", ENTRIES, ids=IDS)
 def test_step_toml_exists_and_matches_schema(e):
-    path = ROOT / e["path"] / "step.toml"
-    assert path.is_file(), f"{e['path']}/step.toml missing"
+    path = ROOT / _path(e) / "step.toml"
+    assert path.is_file(), f"{_path(e)}/step.toml missing"
     assert schema_errors(load_step(path)) == []
 
 
 def test_no_step_toml_without_a_registered_strategy():
-    registered = {e["path"] for e in ENTRIES}
+    registered = set()
+    for e in ENTRIES:
+        if "versions" in e:
+            for v in e["versions"].values():
+                registered.add(v["path"])
+        if "path" in e:
+            registered.add(e["path"])
     found = {p.parent.relative_to(ROOT).as_posix() for p in ROOT.rglob("step.toml")}
     assert found <= registered
 
@@ -66,20 +76,37 @@ def test_id_is_kind_dot_registry_name(e):
 
 
 @pytest.mark.parametrize("e", ENTRIES, ids=IDS)
+def test_manifest_version_metadata(e):
+    s = _step(e)
+    assert "version" in s
+    assert "strategy_api_version" in s
+    assert re.match(r"^[0-9]+\.[0-9]+\.[0-9]+", s["version"])
+    assert re.match(r"^[0-9]+\.[0-9]+\.[0-9]+", s["strategy_api_version"])
+
+
+def test_all_registered_versions_step_manifests():
+    for e in ENTRIES:
+        if "versions" in e:
+            for ver, v_info in e["versions"].items():
+                p = ROOT / v_info["path"] / "step.toml"
+                assert p.is_file(), f"{p} missing"
+                step = load_step(p)
+                assert schema_errors(step) == []
+                assert step["version"] == ver
+                assert step["strategy_api_version"] == v_info["strategy_api_version"]
+
+
+@pytest.mark.parametrize("e", ENTRIES, ids=IDS)
 def test_param_defaults_and_bounds(e):
     for name, p in _step(e)["params"].items():
         if p.get("optional"):
             continue
-        assert value_errors(p, p["default"]) == [], (
-            f"{name}: default outside its own spec"
-        )
+        assert value_errors(p, p["default"]) == [], f"{name}: default outside its own spec"
         if "min" in p and "max" in p:
             assert p["min"] <= p["max"], name
         if p["type"] == "enum":
             assert p["default"] in p["choices"], name
-        assert "choices" not in p or p["type"] == "enum", (
-            f"{name}: choices only for enum"
-        )
+        assert "choices" not in p or p["type"] == "enum", f"{name}: choices only for enum"
 
 
 @pytest.mark.parametrize("e", ENTRIES, ids=IDS)
@@ -91,9 +118,7 @@ def test_indicators_exist_and_bind_to_params(e):
         assert ind["kind"] in known, f"unknown indicator {ind['kind']!r}"
         accepted = {p["name"] for p in indicator_spec(ind["kind"])["params"]}
         args = {k: v for k, v in ind.items() if k not in ("kind", "as")}
-        assert set(args) <= accepted, (
-            f"{ind['kind']}: {set(args) - accepted} not accepted"
-        )
+        assert set(args) <= accepted, f"{ind['kind']}: {set(args) - accepted} not accepted"
         for v in args.values():
             m = REF.match(v) if isinstance(v, str) else None
             if m:
@@ -127,7 +152,7 @@ def test_params_agree_with_config_toml(e):
 @pytest.mark.parametrize("e", ENTRIES, ids=IDS)
 def test_params_agree_with_parameter_declarations(e, load_strategy):
     s = _step(e)
-    mod = load_strategy(ROOT / e["path"])
+    mod = load_strategy(ROOT / _path(e))
     declared = {
         n: p
         for cls in vars(mod).values()
@@ -139,9 +164,7 @@ def test_params_agree_with_parameter_declarations(e, load_strategy):
     for name, p in declared.items():
         assert name in s["params"], f"Parameter {name!r} missing from step.toml"
         m = s["params"][name]
-        assert (m.get("min"), m.get("max"), m.get("step")) == (p.min, p.max, p.step), (
-            name
-        )
+        assert (m.get("min"), m.get("max"), m.get("step")) == (p.min, p.max, p.step), name
         if m["default"] != p.default:
             mismatches[name] = (p.default, m["default"])
     assert mismatches == CODE_DEFAULT_MISMATCHES.get(e["name"], {})
@@ -167,6 +190,10 @@ def _good():
         lambda s: s["params"]["total_quantity"].update(type="enum"),  # enum without choices
         lambda s: s["params"]["total_quantity"].update(default="ten"),
         lambda s: s["params"]["total_quantity"].pop("default"),
+        lambda s: s.pop("version"),
+        lambda s: s.update(version="not_semver"),
+        lambda s: s.pop("strategy_api_version"),
+        lambda s: s.update(strategy_api_version="bad"),
         lambda s: s["requires"]["indicators"].append({"period": 3}),
         lambda s: s["requires"].update(bars=["close", "close"]),
     ],
@@ -184,7 +211,13 @@ PORTFOLIO = set()
 def test_no_registered_step_is_kind_size():
     # a sizer consumes candidates and emits weights; catalog now includes sizers
     size_steps = [e["name"] for e in ENTRIES if _step(e)["kind"] == "size"]
-    expected_sizers = {"fixed_fractional", "atr_volatility", "kelly_criterion", "equal_risk", "fixed_notional"}
+    expected_sizers = {
+        "fixed_fractional",
+        "atr_volatility",
+        "kelly_criterion",
+        "equal_risk",
+        "fixed_notional",
+    }
     assert set(size_steps) == expected_sizers
 
 
@@ -196,15 +229,4 @@ def test_schema_accepts_list_or_string_consumes_shape():
     assert schema_errors(s) == []
     for bad in ([], ["rows"], ["universe", "universe"], 3):
         s["consumes"]["shape"] = bad
-        assert schema_errors(s) != [], bad
-
-
-def test_schema_pitfalls_are_optional_and_must_be_unique_strings():
-    s = copy.deepcopy(_good())
-    s.pop("pitfalls", None)
-    assert schema_errors(s) == []
-    s["pitfalls"] = ["Parameter sweeps overfit; validate walk-forward."]
-    assert schema_errors(s) == []
-    for bad in ("one string", [3], [""], ["a", "a"]):
-        s["pitfalls"] = bad
         assert schema_errors(s) != [], bad

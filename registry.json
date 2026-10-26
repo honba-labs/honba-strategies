@@ -3,12 +3,24 @@
     {
       "name": "twap",
       "category": "catalog/execution",
-      "path": "catalog/execution/twap",
-      "description": "TWAP execution: divides parent order into equal time-based slices with randomized jitter to avoid detection.",
+      "description": "TWAP execution: divides parent order into equal time slices.",
       "tags": [
         "volume",
         "statistical"
-      ]
+      ],
+      "latest": "2.0.0",
+      "versions": {
+        "1.2.0": {
+          "path": "catalog/execution/twap/v1",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        },
+        "2.0.0": {
+          "path": "catalog/execution/twap/v2",
+          "strategy_api_version": "2.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "vwap",
@@ -18,7 +30,15 @@
       "tags": [
         "volume",
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/execution/vwap",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "pov",
@@ -28,7 +48,15 @@
       "tags": [
         "volume",
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/execution/pov",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "iceberg",
@@ -38,7 +66,15 @@
       "tags": [
         "volume",
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/execution/iceberg",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "pairs",
@@ -47,7 +83,15 @@
       "description": "Statistical pairs trading with Engle-Granger cointegration and z-score signals.",
       "tags": [
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/arbitrage/pairs",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "cash_and_carry",
@@ -56,7 +100,15 @@
       "description": "Cash-and-carry basis arbitrage: long spot equity, short near-month futures.",
       "tags": [
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/arbitrage/cash_and_carry",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "basket",
@@ -65,7 +117,15 @@
       "description": "Index ETF vs synthetic basket creation/redemption arbitrage.",
       "tags": [
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/arbitrage/basket",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "spread_quoting",
@@ -75,7 +135,15 @@
       "tags": [
         "volume",
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/market_making/spread_quoting",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "avellaneda_stoikov",
@@ -84,7 +152,15 @@
       "description": "Avellaneda-Stoikov inventory-aware market making with dynamic skew",
       "tags": [
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/market_making/avellaneda_stoikov",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "ladder_quoting",
@@ -94,7 +170,15 @@
       "tags": [
         "volume",
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/market_making/ladder_quoting",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "turtle_20",
@@ -105,7 +189,15 @@
         "trend",
         "volatility",
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/trend/turtle_20",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "kama_crossover",
@@ -116,7 +208,15 @@
         "trend",
         "moving_average",
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/trend/kama_crossover",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "supertrend_follow",
@@ -127,7 +227,15 @@
         "trend",
         "volatility",
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/trend/supertrend_follow",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "bollinger_rsi",
@@ -137,7 +245,15 @@
       "tags": [
         "statistical",
         "volatility"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/mean_reversion/bollinger_rsi",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "vwap_bands",
@@ -147,7 +263,15 @@
       "tags": [
         "statistical",
         "volume"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/mean_reversion/vwap_bands",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "ornstein_uhlenbeck",
@@ -156,7 +280,15 @@
       "description": "Ornstein-Uhlenbeck Mean Reversion - OU process fit with half-life filtering",
       "tags": [
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/mean_reversion/ornstein_uhlenbeck",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "equal_weight",
@@ -166,7 +298,15 @@
       "tags": [
         "statistical",
         "breadth"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/portfolio/equal_weight",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "risk_parity",
@@ -176,7 +316,15 @@
       "tags": [
         "statistical",
         "volatility"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/portfolio/risk_parity",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "markowitz",
@@ -185,7 +333,15 @@
       "description": "Mean-variance optimization maximizing Sharpe ratio with constraints",
       "tags": [
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/portfolio/markowitz",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "alpha30_factor",
@@ -196,7 +352,15 @@
         "momentum",
         "statistical",
         "breadth"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/portfolio/alpha30_factor",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "nifty_short_straddle",
@@ -206,7 +370,15 @@
       "tags": [
         "volatility",
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/options/nifty_short_straddle",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "banknifty_iron_condor",
@@ -216,7 +388,15 @@
       "tags": [
         "volatility",
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/options/banknifty_iron_condor",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "covered_call",
@@ -226,7 +406,15 @@
       "tags": [
         "volatility",
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/options/covered_call",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "calendar_spread",
@@ -236,7 +424,15 @@
       "tags": [
         "volatility",
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/options/calendar_spread",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "fixed_fractional",
@@ -246,7 +442,15 @@
       "tags": [
         "statistical",
         "volatility"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/size/fixed_fractional",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "atr_volatility",
@@ -256,7 +460,15 @@
       "tags": [
         "statistical",
         "volatility"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/size/atr_volatility",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "kelly_criterion",
@@ -265,7 +477,15 @@
       "description": "Kelly Criterion Sizing: Optimal capital allocation fraction from win-rate and win/loss ratio with fractional Kelly damping",
       "tags": [
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/size/kelly_criterion",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "equal_risk",
@@ -275,7 +495,15 @@
       "tags": [
         "statistical",
         "volatility"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/size/equal_risk",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     },
     {
       "name": "fixed_notional",
@@ -284,7 +512,15 @@
       "description": "Fixed Notional Sizing: Targets a fixed cash allocation per position with lot-size discretization",
       "tags": [
         "statistical"
-      ]
+      ],
+      "latest": "1.0.0",
+      "versions": {
+        "1.0.0": {
+          "path": "catalog/size/fixed_notional",
+          "strategy_api_version": "1.0.0",
+          "deprecated": false
+        }
+      }
     }
   ]
 }

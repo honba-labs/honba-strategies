@@ -14,15 +14,21 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
 
-def step(
-    id_, kind, consumes, emits, adds=(), report=(), columns=("symbol",), fundamentals=()
-):
+def _twap_step_path() -> Path:
+    p2 = ROOT / "catalog/execution/twap/v2/step.toml"
+    if p2.is_file():
+        return p2
+    p1 = ROOT / "catalog/execution/twap/v1/step.toml"
+    if p1.is_file():
+        return p1
+    return ROOT / "catalog/execution/twap/step.toml"
+
+
+def step(id_, kind, consumes, emits, adds=(), report=(), columns=("symbol",), fundamentals=()):
     return {
         "id": id_,
         "kind": kind,
-        "params": {
-            "n": {"type": "int", "default": 5, "min": 1, "max": 10, "description": "n"}
-        },
+        "params": {"n": {"type": "int", "default": 5, "min": 1, "max": 10, "description": "n"}},
         "requires": {"fundamentals": list(fundamentals)},
         "consumes": {"shape": consumes, "columns": list(columns)},
         "emits": {"shape": emits, "adds": list(adds), "report": list(report)},
@@ -33,9 +39,7 @@ SCREEN = step("screen.nifty", "screen", "none", "universe")
 FILTER = step("filter.roe", "filter", "universe", "candidates", report=["roe"])
 SIGNAL = step("signal.x", "signal", "candidates", "orders", adds=["side", "quantity"])
 RISK = step("risk.stop", "risk", "orders", "orders", columns=("symbol", "quantity"))
-EXEC = step(
-    "execute.paper", "execute", "orders", "none", columns=("symbol", "side", "quantity")
-)
+EXEC = step("execute.paper", "execute", "orders", "none", columns=("symbol", "side", "quantity"))
 
 
 def test_valid_chain():
@@ -100,9 +104,7 @@ def test_column_supplied_by_upstream_report_or_fundamentals():
 
 def test_user_chosen_report_columns_must_be_reportable():
     flt = {**FILTER, "emits": {**FILTER["emits"], "reportable": ["market_cap"]}}
-    needs = step(
-        "signal.y", "signal", "candidates", "orders", columns=("symbol", "market_cap")
-    )
+    needs = step("signal.y", "signal", "candidates", "orders", columns=("symbol", "market_cap"))
     assert validate_chain([SCREEN, {**flt, "report": ["market_cap"]}, needs]) == []
     assert validate_chain([SCREEN, flt, needs]) != []  # not asked for, so not available
     errs = validate_chain([SCREEN, {**flt, "report": ["beta"]}])
@@ -126,7 +128,7 @@ def test_with_overrides_are_checked_against_params():
 
 
 def test_real_registered_steps_chain():
-    twap = load_step(ROOT / "catalog/execution/twap/step.toml")
+    twap = load_step(_twap_step_path())
     assert validate_chain([twap]) == []
     assert validate_chain([twap, twap]) != []  # orders are not a universe
 
@@ -163,7 +165,7 @@ def test_portfolio_execute_after_size_from_a_chain():
 
 
 def test_signal_then_size_is_rejected_with_a_helpful_message():
-    twap = load_step(ROOT / "catalog/execution/twap/step.toml")
+    twap = load_step(_twap_step_path())
     eq = step("size.equal_weight", "size", "candidates", "weights")
     errs = validate_chain([twap, eq])
     assert len(errs) == 2

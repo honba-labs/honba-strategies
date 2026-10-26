@@ -17,6 +17,7 @@ from honba_strategies.core.errors import StrategyNotFoundError
 @dataclass
 class StrategyMetadata:
     """Metadata for a registered strategy."""
+
     name: str
     category: str
     cls: type
@@ -24,6 +25,8 @@ class StrategyMetadata:
     description: str = ""
     tags: list[str] = None
     step_manifest: dict | None = None
+    version: str = "1.0.0"
+    strategy_api_version: str = "1.0.0"
 
     def __post_init__(self):
         if self.tags is None:
@@ -54,6 +57,8 @@ class StrategyRegistry:
         description: str = "",
         tags: list[str] | None = None,
         step_manifest: dict | None = None,
+        version: str = "1.0.0",
+        strategy_api_version: str = "1.0.0",
     ) -> None:
         """Register a strategy class."""
         if name in self._strategies:
@@ -67,6 +72,8 @@ class StrategyRegistry:
             description=description,
             tags=tags or [],
             step_manifest=step_manifest,
+            version=version,
+            strategy_api_version=strategy_api_version,
         )
 
         self._strategies[name] = metadata
@@ -142,17 +149,33 @@ class StrategyRegistry:
         for entry in data.get("strategies", []):
             name = entry["name"]
             category = entry["category"]
-            path = Path(entry["path"])
+            path_str = entry.get("path")
+            if not path_str and "versions" in entry:
+                latest = entry.get("latest")
+                if latest and latest in entry["versions"]:
+                    path_str = entry["versions"][latest]["path"]
+                else:
+                    path_str = next(iter(entry["versions"].values()))["path"]
+            path = Path(path_str)
 
             # Try to import the strategy module
             try:
-                module = importlib.import_module(f"honba_strategies.{category.replace('/', '.')}.{path.name}")
-                cls = getattr(module, "".join(w.capitalize() for w in name.split("_")) + "Strategy", None)
+                mod_target = path.name if not path.name.startswith("v") else path.parent.name
+                module = importlib.import_module(
+                    f"honba_strategies.{category.replace('/', '.')}.{mod_target}"
+                )
+                cls = getattr(
+                    module, "".join(w.capitalize() for w in name.split("_")) + "Strategy", None
+                )
                 if cls is None:
                     # Try common naming patterns
                     for attr in dir(module):
                         obj = getattr(module, attr)
-                        if inspect.isclass(obj) and issubclass(obj, object) and attr.endswith("Strategy"):
+                        if (
+                            inspect.isclass(obj)
+                            and issubclass(obj, object)
+                            and attr.endswith("Strategy")
+                        ):
                             cls = obj
                             break
 
@@ -163,10 +186,23 @@ class StrategyRegistry:
                     # Load step manifest if exists
                     step_manifest = None
                     step_path = Path("catalog") / path / "step.toml"
+                    if not step_path.exists():
+                        step_path = catalog_path.parent / path / "step.toml"
                     if step_path.exists():
-                        import tomli
+                        try:
+                            import tomllib
+                        except ImportError:
+                            import tomli as tomllib
                         with step_path.open("rb") as f:
-                            step_manifest = tomli.load(f)
+                            step_manifest = tomllib.load(f)
+
+                    version = "1.0.0"
+                    strategy_api_version = "1.0.0"
+                    if step_manifest:
+                        version = step_manifest.get("version", version)
+                        strategy_api_version = step_manifest.get(
+                            "strategy_api_version", strategy_api_version
+                        )
 
                     self.register(
                         name=name,
@@ -176,6 +212,8 @@ class StrategyRegistry:
                         description=entry.get("description", ""),
                         tags=entry.get("tags", []),
                         step_manifest=step_manifest,
+                        version=version,
+                        strategy_api_version=strategy_api_version,
                     )
             except ImportError:
                 # Strategy not yet implemented in SDK
@@ -199,11 +237,21 @@ def register_strategy(
         class MyStrategy:
             ...
     """
+
     def decorator(cls: type) -> type:
-        # Infer config class
-        config_cls = getattr(cls, "Config", None) or getattr(cls, "config_cls", None) or BaseStrategyConfig
-        _registry.register(name, category, cls, config_cls, description, tags)
+        config_cls = (
+            getattr(cls, "Config", None) or getattr(cls, "config_cls", None) or BaseStrategyConfig
+        )
+        _registry.register(
+            name=name,
+            category=category,
+            cls=cls,
+            config_cls=config_cls,
+            description=description,
+            tags=tags,
+        )
         return cls
+
     return decorator
 
 
@@ -268,13 +316,13 @@ def _auto_discover() -> None:
                     and attr_name.endswith("Strategy")
                     and hasattr(obj, "_registry_meta")
                 ):
-                        meta = obj._registry_meta
-                        register_strategy(
-                            meta["name"],
-                            meta["category"],
-                            meta.get("description", ""),
-                            meta.get("tags", []),
-                        )(obj)
+                    meta = obj._registry_meta
+                    register_strategy(
+                        meta["name"],
+                        meta["category"],
+                        meta.get("description", ""),
+                        meta.get("tags", []),
+                    )(obj)
         except ImportError:
             pass
 

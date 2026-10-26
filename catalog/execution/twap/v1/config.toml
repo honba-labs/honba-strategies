@@ -10,4 +10,4 @@ duration_minutes = 60    # Total execution window in minutes
 jitter_seconds = 5       # Max random jitter per slice (seconds)
 freeze_limit = 1800      # SEBI single-order freeze limit (e.g., NIFTY 1800)
 capital = 1000000        # INR available to the strategy
-max_allocation = 1.0         # Fraction of capital deployed
+max_allocation = 1.0     # Fraction of capital deployed

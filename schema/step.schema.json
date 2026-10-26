@@ -5,13 +5,43 @@
   "description": "step.toml: a declarative description of one chainable step (screen, filter, signal, size, risk, execute). Enough for a GUI to render a form for the params and to check that steps can be chained, without importing any Python.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "id", "kind", "title", "params", "requires", "consumes", "emits"],
+  "required": [
+    "schema",
+    "id",
+    "kind",
+    "title",
+    "version",
+    "strategy_api_version",
+    "params",
+    "requires",
+    "consumes",
+    "emits"
+  ],
   "properties": {
     "schema": { "const": 1 },
     "id": {
       "type": "string",
       "pattern": "^(screen|filter|signal|size|risk|execute)\\.[a-z][a-z0-9_]*$",
       "description": "'<kind>.<registry name>'."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$",
+      "description": "Semantic version of the step manifest and implementation, e.g. '1.0.0' or '1.2.0'."
+    },
+    "strategy_api_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$",
+      "description": "Target Strategy API version, e.g. '1.0.0' (v1 Strategy) or '2.0.0' (v2 Strategy)."
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "strategy_api_version": { "type": "string" },
+        "min_honba_version": { "type": "string" },
+        "max_honba_version": { "type": "string" }
+      }
     },
     "kind": { "enum": ["screen", "filter", "signal", "size", "risk", "execute"] },
     "title": { "type": "string", "minLength": 1 },

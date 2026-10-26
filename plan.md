@@ -800,5 +800,5 @@ honba-strategies info fixed_fractional
   - [x] Benchmark trade signals, reservation prices, sizing allocations, and slicing schedules against StockSharp C# reference implementations.
   - [x] Zero decimal discrepancy on accounting calculations (verified via `tests/parity/test_golden_vectors.py`).
 - [ ] **9.3 Indian Market Stress Testing in `honba-ya-backtest`**
-  - [ ] 5-year historical backtesting across NSE/NFO universe with dynamic position sizing, statutory taxes, and slippage models.
+  - [ ] 10-year historical backtesting across NSE/NFO universe with dynamic position sizing, statutory taxes, and slippage models.
   - [ ] Comparative benchmark: static sizing vs ATR volatility sizing vs Fixed Fractional sizing (evaluating CAGR, Max Drawdown, Calmar, and DSR).

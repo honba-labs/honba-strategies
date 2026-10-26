@@ -4,6 +4,8 @@ kind = "execute"
 title = "TWAP Execution"
 description = "Time-weighted average price execution: divides parent order into equal slices over a duration window with randomized jitter."
 tags = ["execution", "slicing", "twap"]
+version = "1.2.0"
+strategy_api_version = "1.0.0"
 pitfalls = [
   "Large parent orders may still impact market if duration is too short.",
   "Jitter helps avoid detection but adds execution uncertainty.",
