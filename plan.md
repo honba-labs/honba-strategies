@@ -64,7 +64,7 @@ To solve this without rewriting the strategies, `honba-strategies` establishes a
 
 ```text
 ┌─────────────────┐       ┌─────────────────┐       ┌──────────────────────┐       ┌─────────────────┐       ┌─────────────────┐
-│ Universe/Screen │ ───▶  │ Signal Strategy │ ───▶  │ Position Sizing Step │ ───▶  │ Risk Guards     │ ───▶  │ Execution Step  │
+│ Universe/Screen │ ───▶ │ Signal Strategy │ ───▶ │ Position Sizing Step │ ───▶ │ Risk Guards     │ ───▶ │ Execution Step  │
 │ [screen.*]      │       │ [signal.*]      │       │ [size.*]             │       │ [risk.*]        │       │ [execute.*]     │
 │ emits: universe │       │ emits:candidates│       │ emits: weights/adds  │       │ emits: verified │       │ emits: orders   │
 └─────────────────┘       └─────────────────┘       └──────────────────────┘       └─────────────────┘       └─────────────────┘
